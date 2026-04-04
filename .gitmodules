@@ -1,0 +1,6 @@
+[submodule "confidential-computing.tee.dcap-pq"]
+	path = confidential-computing.tee.dcap-pq
+	url = https://github.com/nicolabalzano/confidential-computing.tee.dcap-pq.git
+[submodule "confidential-computing.tdx.tdx-guest-pq"]
+	path = confidential-computing.tdx.tdx-guest-pq
+	url = https://github.com/nicolabalzano/confidential-computing.tdx.tdx-guest-pq.git
