@@ -1,0 +1,54 @@
+== tee.dcap TDX quote flow tour ==
+
+Flusso da seguire:
+  1. tdx-guest produce TDREPORT
+  2. QuoteGeneration/tdx_quote riceve il report
+  3. ae/tdqe costruisce e firma il quote
+  4. QuoteVerification verifica il quote
+
+FILE: /home/alocin/Documents/research/DilithiumInTDX/confidential-computing.tee.dcap/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_wrapper.cpp
+  pattern: g_default_ecdsa_p256_att_key_id
+    L60: extern const sgx_ql_att_key_id_t g_default_ecdsa_p256_att_key_id =
+    L478: &g_default_ecdsa_p256_att_key_id, sizeof(g_default_ecdsa_p256_att_key_id))) {
+  pattern: SGX_QL_ALG_ECDSA_P256
+    L75: SGX_QL_ALG_ECDSA_P256                                                                                // Supported QE3's algorithm_id
+    L114: if (SGX_QL_ALG_ECDSA_P256 != p_att_key_id->base.algorithm_id)
+  pattern: tee_att_create_context
+    L79: tee_att_error_t tee_att_create_context(const tee_att_att_key_id_t* p_att_key_id,
+
+FILE: /home/alocin/Documents/research/DilithiumInTDX/confidential-computing.tee.dcap/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp
+  pattern: tee_att_config_t::ecdsa_init_quote(
+    L1034: tee_att_error_t tee_att_config_t::ecdsa_init_quote(sgx_ql_cert_key_type_t certification_key_type,
+  pattern: tee_att_config_t::ecdsa_get_quote_size(
+    L1569: tee_att_error_t tee_att_config_t::ecdsa_get_quote_size(sgx_ql_cert_key_type_t certification_key_type,
+  pattern: tee_att_config_t::ecdsa_get_quote(
+    L1779: tee_att_error_t tee_att_config_t::ecdsa_get_quote(const sgx_report2_t *p_app_report,
+
+FILE: /home/alocin/Documents/research/DilithiumInTDX/confidential-computing.tee.dcap/ae/tdqe/quoting_enclave_tdqe.cpp
+  pattern: p_quote->header.att_key_type = SGX_QL_ALG_ECDSA_P256;
+    L1655: p_quote->header.att_key_type = SGX_QL_ALG_ECDSA_P256;
+  pattern: sgx_ecdsa_sign(
+    L1779: sgx_status = sgx_ecdsa_sign(p_quote_buf,
+  pattern: sgx_ecdsa_verify(
+    L1799: sgx_status = sgx_ecdsa_verify(p_quote_buf,
+  pattern: sizeof(sgx_ecdsa_sig_data_v4_t)
+    L1555: sign_size = sizeof(sgx_ecdsa_sig_data_v4_t) +           // ECDSA sig data structure
+
+FILE: /home/alocin/Documents/research/DilithiumInTDX/confidential-computing.tee.dcap/QuoteGeneration/quote_wrapper/common/inc/sgx_quote_3.h
+  pattern: SGX_QL_ALG_ECDSA_P256 = 2
+    L52: SGX_QL_ALG_ECDSA_P256 = 2, ///< ECDSA-256-with-P-256 curve, Non - Anonymous
+  pattern: typedef struct _sgx_ql_ecdsa_sig_data_t {
+    L149: typedef struct _sgx_ql_ecdsa_sig_data_t {
+  pattern: uint16_t            att_key_type;
+    L167: uint16_t            att_key_type;        ///< 2:  sgx_attestation_algorithm_id_t.  Describes the type of signature in the signature_data[] field.
+
+FILE: /home/alocin/Documents/research/DilithiumInTDX/confidential-computing.tee.dcap/QuoteVerification/dcap_quoteverify/tee_qv_class.cpp
+  pattern: tdx_qv::tee_get_verification_endorsement(
+    L452: quote3_error_t tdx_qv::tee_get_verification_endorsement(
+  pattern: tdx_qv_trusted::tee_get_verification_endorsement(
+    L473: quote3_error_t tdx_qv_trusted::tee_get_verification_endorsement(
+
+Conclusione:
+  - tdx-guest espone primitive TDX guest
+  - tee.dcap implementa davvero generazione e verifica del quote
+  - per Dilithium il lavoro critico e' in tee.dcap, non nel guest crate

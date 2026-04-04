@@ -1,0 +1,47 @@
+                                           SERVER FISICO (Host)
++-------------------+                     +---------------------------------------------------------------+
+|                   | 1. Invia challenge  | +-----------------------------------------------------------+ |
+|  Utente/App       |    (nonce)          | |       MACCHINA VIRTUALE SICURA (TD - TEE)                | |
+|  Esterna (Client) |-------------------->| | +-------------------------------------------------------+ | |
+|                   |                     | | | App (es. Machine Learning o Web Server)               | | |
+|                   |                     | | | Libreria Dilithium/ML-DSA: genera chiavi (Pk, Sk)    | | |
+|                   |                     | | |                                                       | | |
+|                   |                     | | | report_data = Hash(Pk || nonce)                       | | |
+|                   |                     | | +------------------------|------------------------------+ | |
+|                   |                     | |                          | 2. TDCALL (get_report)        | |
+|                   |                     | +--------------------------|----^--------------------------+ |
+|                   |                     |                            |    |                            |
+|                   |                     |   3. Ritorna TDREPORT      |    |                            |
+|                   |                     |   (include report_data)    v    |                            |
+|                   |                     | +-----------------------------------------------------------+ |
+|                   |                     | |            MODULO INTEL TDX (Hardware)                   | |
+|                   |                     | | (Genera TDREPORT includendo il report_data fornito       | |
+|                   |                     | |  dal TD; il report è verificabile localmente dal QE)     | |
+|                   |                     | +------------------------|----------------------------------+ |
+|                   |                     |                          | 4. TDVMCALL (get_quote)          |
+|                   |                     |                          v                                   |
+|                   |                     | +-----------------------------------------------------------+ |
+|                   |                     | |         QE / DCAP / Quote Generation sul lato host       | |
+|                   |                     | | (Converte TDREPORT in TDQUOTE firmata ECDSA              | |
+|                   |                     | |  secondo la chain di trust Intel)                        | |
+|                   |                     | +------------------------|----------------------------------+ |
+|                   |                     |                          | 5. Ritorna TDQUOTE               |
+|                   |                     |                          v                                   |
+|                   |                     | +-----------------------------------------------------------+ |
+|                   |                     | | App nel TD:                                               | |
+|                   |                     | | sigma = Sign_ML-DSA( Hash(TDQUOTE || nonce || claims) )  | |
+|                   | 6. Invia evidence   | | evidenza inviata = { TDQUOTE, Pk, sigma, claims }       | |
+|                   |<--------------------| +-----------------------------------------------------------+ |
++---------+---------+                                                                                     |
+          |                                                                                               |
+          | 7. Verifica TDQUOTE (DCAP/QVL)                                                                |
+          | 8. Estrae report_data                                                                         |
+          | 9. Controlla Hash(Pk || nonce)                                                                |
+          |10. Verifica sigma con ML-DSA                                                                  |
+          v                                                                                               |
++-------------------+                                                                                     |
+|                   | 11. Attestation OK -> instaurazione canale sicuro                                   |
+|  Utente/App       |====================================================================================>|
+|  Esterna (Client) |                 (Dati applicativi / ML / API protette)                             |
++-------------------+                                                                                     |
++---------------------------------------------------------------------------------------------------------+

@@ -1,0 +1,24 @@
+[package]
+name = "tdx-attestation-rust-lab"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = []
+guest = ["dep:tdx-guest"]
+
+[dependencies]
+tdx-guest = { path = "../../confidential-computing.tdx.tdx-guest", optional = true }
+
+[[bin]]
+name = "dcap_source_tour"
+path = "src/bin/dcap_source_tour.rs"
+
+[[bin]]
+name = "guest_source_tour"
+path = "src/bin/guest_source_tour.rs"
+
+[[bin]]
+name = "guest_api_tour"
+path = "src/bin/guest_api_tour.rs"
+required-features = ["guest"]

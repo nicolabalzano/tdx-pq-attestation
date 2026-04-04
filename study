@@ -1,0 +1,12 @@
+A Decade of Lattice Cryptography (Basi teoriche sui reticoli)       -
+ https://eprint.iacr.org/2015/939.pdf
+
+Fiat-Shamir with Aborts (rejection sampling)
+ 
+
+Dan Boneh & Victor Shoup "A Graduate Course in Applied Cryptography" (LWE e MLWE )
+ https://crypto.stanford.edu/~dabo/cryptobook/BonehShoup_0_4.pdf
+
+FIPS 204 con pseudocodice dettagliato per KeyGen, Sign, Verify (Dilithium)      -
+ https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.pdf       
+
