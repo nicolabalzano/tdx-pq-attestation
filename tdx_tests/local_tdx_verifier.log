@@ -1,0 +1,7 @@
+[verifier] listening on http://127.0.0.1:8123
+[verifier] issued challenge (64 bytes)
+[verifier] issued challenge (64 bytes)
+[verifier] issued challenge (64 bytes)
+[verifier] received quote submit request (10854 body bytes)
+[verifier] starting tdx_qv_verify_quote for 8000-byte quote
+[verifier] tdx_qv_verify_quote completed: qv_ret=0, qv_result=OK, collateral_expiration_status=0
