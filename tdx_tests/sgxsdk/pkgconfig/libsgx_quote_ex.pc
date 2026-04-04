@@ -1,0 +1,10 @@
+prefix=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk
+includedir=${prefix}/include
+libdir=${prefix}/lib64
+
+Name: libsgx_quote_ex
+Description: SGX quote extension library
+Version: 2.28.100.1
+Cflags: -I${includedir}
+Libs: -L${libdir} -lsgx_quote_ex
+Libs.private: -lsgx_quote_ex

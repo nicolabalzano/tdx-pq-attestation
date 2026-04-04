@@ -1,0 +1,13 @@
+wget -qO - https://download.01.org/intel-sgx/sgx_repo/ubuntu/intel-sgx-deb.key | gpg --dearmor | sudo tee /usr/share/keyrings/intel-sgx-keyring.gpg > /dev/null
+
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-sgx-keyring.gpg] https://download.01.org/intel-sgx/sgx_repo/ubuntu noble main" | sudo tee /etc/apt/sources.list.d/intel-sgx.list
+
+sudo apt update
+sudo apt install -y libsgx-urts libsgx-dcap-ql libsgx-dcap-default-qpl libsgx-dcap-ql-dev
+
+# Aggiorna il linker
+sudo ldconfig
+
+# Torna ai test e lancia
+cd ~/tdx_tests
+sudo -E ./run_tdx_tests.sh
