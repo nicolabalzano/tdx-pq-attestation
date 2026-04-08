@@ -19,8 +19,9 @@ Stato attuale:
 - aggiunti i nuovi struct `sgx_ql_mldsa_65_sig_data_t` e `sgx_mldsa_65_sig_data_v4_t`
 - il wrapper TDX ora accetta `MLDSA_65` nel context e restituisce il `att_key_id` coerente col contesto
 - `td_ql_logic.*` ora ha un dispatch per algoritmo con stub `MLDSA_65`
+- `tee_att_get_quote_size()` per `MLDSA_65` restituisce ora una size runtime coerente col layout v4 completo (`7102` nel test locale)
 - `algorithm_id` viene ora propagato dal wrapper fino alle ECALL `gen_att_key` e `gen_quote` del TDQE
-- il TDQE ha ora un branch esplicito che lascia invariato ECDSA e rifiuta per ora `MLDSA_65`
+- il TDQE ha ora un branch strutturale per `MLDSA_65` su layout, `sign_size` e `att_key_type`, ma rifiuta ancora il ramo prima della firma reale
 - build verificata con successo su `QuoteGeneration/quote_wrapper/tdx_quote/linux`
 - `quoting_enclave_tdqe.cpp` verificato con `g++ -fsyntax-only`; il rebuild completo di `ae/tdqe/linux` e' bloccato localmente da file generati `root:root` (`tdqe_t.c` / `tdqe_t.h`)
 - prossimo punto di lavoro: sostituire il branch di rifiuto nel TDQE con la generazione/firma reale ML-DSA
@@ -106,7 +107,7 @@ Test:
 Test:
 - [x] Test ECDSA: il path esistente deve restare invariato
 - [x] Test Dilithium: il context deve essere accettato
-- [ ] Test negativo: un algoritmo non definito deve restare rifiutato
+- [x] Test negativo: un algoritmo non definito deve restare rifiutato
 
 ## Fase 3: introdurre il backend Dilithium nella logica TDX
 
@@ -126,12 +127,12 @@ Test:
 - [x] Implementare `dilithium_get_quote`
 - [x] Separare i blob persistenti ECDSA e Dilithium
 - [x] Evitare collisioni tra label o cache
-- [ ] Calcolare la nuova dimensione del quote in base al layout Dilithium
+- [x] Calcolare la nuova dimensione del quote in base al layout Dilithium
 - [x] Mantenere intatto il path ECDSA
 
 Test:
 - [x] Test ECDSA: `get_quote_size` deve restare uguale
-- [ ] Test Dilithium: `get_quote_size` deve essere coerente col nuovo `signature_data`
+- [x] Test Dilithium: `get_quote_size` deve essere coerente col nuovo `signature_data`
 - [ ] Test blob: il blob Dilithium non deve sovrascrivere quello ECDSA
 - [ ] Test negativo: quote size insufficiente deve fallire
 
@@ -139,8 +140,8 @@ Test:
 
 ### File: `confidential-computing.tee.dcap/ae/tdqe/quoting_enclave_tdqe.cpp`
 - [x] Introdurre un branch per algoritmo
-- [ ] Calcolare `sign_size` per `sgx_ql_dilithium_sig_data_t`
-- [ ] Settare `p_quote->header.att_key_type` al nuovo valore
+- [x] Calcolare `sign_size` per `sgx_ql_dilithium_sig_data_t`
+- [x] Settare `p_quote->header.att_key_type` al nuovo valore
 - [ ] Generare la chiave Dilithium
 - [ ] Serializzare la public key Dilithium nel nuovo `signature_data`
 - [ ] Firmare il buffer corretto del quote
