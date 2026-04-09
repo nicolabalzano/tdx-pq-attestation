@@ -1,0 +1,100 @@
+What you need to add
+  Scegli una di queste strade:
+
+  - portare una piccola implementazione C di ML-DSA-65 direttamente nel tree, preferibilmente
+    standalone e senza dipendenze dinamiche
+  - oppure integrare una libreria gia' esistente, ma solo se puo' compilare ed eseguire dentro enclave
+    SGX/TDX senza syscall, heap strano o dipendenze OpenSSL/nontrusted
+
+  La strada pragmatica e':
+
+  - aggiungere una directory tipo confidential-computing.tee.dcap-pq/ae/tdqe/pq/
+  - metterci una API minima tua, ad esempio:
+
+  int tdqe_mldsa65_keygen(uint8_t *pub, size_t pub_len,
+                          uint8_t *priv, size_t priv_len,
+                          const uint8_t *seed, size_t seed_len);
+
+  int tdqe_mldsa65_sign(uint8_t *sig, size_t sig_len,
+                        const uint8_t *msg, size_t msg_len,
+                        const uint8_t *priv, size_t priv_len);
+
+  int tdqe_mldsa65_verify(const uint8_t *sig, size_t sig_len,
+                          const uint8_t *msg, size_t msg_len,
+                          const uint8_t *pub, size_t pub_len);
+
+  Where to integrate it
+
+  1. Estendi il blob TDQE.
+     File: confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.h
+
+  Oggi esiste solo:
+
+  - ref_ciphertext_ecdsa_data_sdk_t
+  - ref_plaintext_ecdsa_data_sdk_t
+
+  Devi aggiungere equivalenti ML-DSA, per esempio:
+
+  - ref_ciphertext_mldsa_data_sdk_t con private key ML-DSA
+  - ref_plaintext_mldsa_data_sdk_t con public key ML-DSA, key id hash, auth data, cert data, qe_report,
+    qe_id, ecc.
+
+  2. Aggiungi la generazione chiave ML-DSA nel TDQE.
+     File: confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp
+
+  Ti serve una funzione parallela a get_att_key_based_from_seal_key(...), ad esempio:
+
+  - derivi un seed dal seal key, come gia' fai per ECDSA
+  - passi quel seed a tdqe_mldsa65_keygen(...)
+  - memorizzi public/private key nei nuovi struct ML-DSA
+
+  3. Aggiorna gen_att_key(...).
+     Sempre in confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp
+
+  Nel branch:
+
+  - SGX_QL_ALG_ECDSA_P256: lasci invariato
+  - SGX_QL_ALG_MLDSA_65: fai
+      - validazione auth data
+      - keygen ML-DSA
+      - hash di public_key || authentication_data
+      - sgx_create_report(...) con quel digest
+      - seal del nuovo blob ML-DSA
+
+  4. Aggiorna verify_blob_internal(...).
+     Questa parte e' critica: oggi conosce solo il blob ECDSA.
+     Deve:
+
+  - leggere seal_blob_type
+  - dispatchare tra blob ECDSA e blob ML-DSA
+  - restituire il plaintext/ciphertext giusto per l’algoritmo richiesto
+
+  5. Completa gen_quote(...).
+     In confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp hai gia':
+
+  - sign_size ML-DSA
+
+  Ti manca:
+
+  - copiare la ML-DSA public key in attest_pub_key
+  - firmare p_quote_buf[0..sign_buf_size) con tdqe_mldsa65_sign(...)
+  - fare verify interna con tdqe_mldsa65_verify(...)
+  - non fare endian-swap ECDSA-style sul buffer firma ML-DSA
+
+  6. Aggiorna il wrapper logic per il nuovo blob.
+     File: confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp
+
+  Dopo che il TDQE sa davvero usare blob ML-DSA:
+
+  - mldsa_init_quote() non deve piu' riusare il path ECDSA
+  - mldsa_get_quote() non deve piu' riusare ecdsa_get_quote()
+  - serve un path proprio oppure un path comune generalizzato sul tipo blob/plaintext
+
+  Minimum implementation order
+
+  1. Integra la libreria ML-DSA e falla compilare dentro ae/tdqe
+  2. Aggiungi nuovi struct blob/plaintext in quoting_enclave_tdqe.h
+  3. Implementa keygen ML-DSA in gen_att_key(...)
+  4. Estendi verify_blob_internal(...)
+  5. Implementa sign/verify ML-DSA in gen_quote(...)
+  6. Solo dopo, ripulisci mldsa_init_quote() e mldsa_get_quote() in td_ql_logic.cpp

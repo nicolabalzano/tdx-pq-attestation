@@ -1,0 +1,43 @@
+Failed to open config file /etc/qgs.conf
+--no-daemon option found, will not run as a daemon
+thread number [1] found in cmdline
+Use unix socket: /home/alocin-local/tdx-pq-attestation/tdx_tests/bin/qgs.socket
+Added signal handler
+About to create QgsServer
+About to start main loop
+Added a new connection, now [1]
+handle_read: status [system:0]
+handle_read:[system:0Received 1068 bytes.]
+process legecy request [1068] bytes!.
+unpack message successfully in thread [7a3f5332e740]
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+call tee_att_create_context
+[qgs-debug] about to call tee_att_create_context
+[qgs-debug] tee_att_create_context ret=0x0 ctx=0x7a3f4c000b70
+create context in thread[7a3f52bff6c0]
+GET_QUOTE_REQ: report_size=1024 id_list_size=16
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=2
+About to delete ctx in cleanup
+[qgs-debug] ensure_context about to create selected context algorithm_id=5
+[qgs-debug] ensure_context create_context ret=0x0 ctx=0x7a3f4c000b70
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+GET_QUOTE_REQ: selected uuid=e86c046e... algorithm-aware context ready
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[load_qe td_ql_logic.cpp:599] Error, call sgx_create_enclave QE fail [load_qe], SGXError:0001.
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x11001 hash_size=32
+GET_QUOTE_REQ selected-context tee_att_init_quote return 0x11001
+Please use the correct uRTS library from PSW package.
+Return from get_resp
+resp_size is 0
+About to shutdown and close socket
+erased a connection, now [0]
+About to close acceptor
+Stopped [0] connections, about to clear connection list
+About to delete ctx in cleanup
+Joined thread pool
+Stopped io_service
+Quit main loop
+Deleted QgsServer object
+Socket file removed

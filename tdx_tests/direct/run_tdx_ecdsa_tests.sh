@@ -2,7 +2,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+TESTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$TESTS_DIR/.." && pwd)"
 TDX_ATTEST_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest/linux"
 QGS_MSG_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs_msg_lib/linux"
 QVL_INCLUDE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc"
@@ -12,12 +13,18 @@ QPL_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/qpl
 QV_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/linux"
 QG_BUILD_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/build/linux"
 QV_BUILD_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/build/linux"
-LOCAL_SGX_SDK="$SCRIPT_DIR/sgxsdk"
+LOCAL_SGX_SDK="$TESTS_DIR/sgxsdk"
 LOCAL_PREBUILT_OPENSSL_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/prebuilt/openssl"
 LOCAL_SGXSSL_PACKAGE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/sgxssl/Linux/package"
-LOCAL_QCNL_CONF="$SCRIPT_DIR/sgx_default_qcnl_local_test.conf"
+LOCAL_QCNL_CONF="$TESTS_DIR/sgx_default_qcnl_local_test.conf"
 LOCAL_VERIFIER_PORT="${TDX_LOCAL_VERIFIER_PORT:-8123}"
 LOCAL_VERIFIER_PID=""
+BIN_DIR="$TESTS_DIR/bin"
+VERIFIER_BIN="$BIN_DIR/local_tdx_verifier"
+VERIFIER_LOG="$BIN_DIR/local_tdx_verifier.log"
+TEST_APP_BIN="$BIN_DIR/test_app_direct"
+
+mkdir -p "$BIN_DIR"
 
 TDX_GUEST_DEV=""
 for dev in /dev/tdx_guest /dev/tdx-guest /dev/tdx*; do
@@ -96,19 +103,19 @@ if [[ -z "${TDX_VERIFIER_CHALLENGE_URL:-}" && -z "${TDX_VERIFIER_SUBMIT_URL:-}" 
 		-I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper" \
 		-I"$QVL_INCLUDE_DIR" \
 		-I"$QV_INCLUDE_DIR" \
-		-I"$REPO_ROOT/tdx_tests" \
-		-I"$REPO_ROOT/tdx_tests/sgxsdk/include" \
-		"$REPO_ROOT/tdx_tests/local_tdx_verifier.cpp" \
-		"$REPO_ROOT/tdx_tests/utils.cpp" \
+		-I"$TESTS_DIR/common" \
+		-I"$TESTS_DIR/sgxsdk/include" \
+		"$TESTS_DIR/verifier/local_tdx_verifier.cpp" \
+		"$TESTS_DIR/common/utils.cpp" \
 		-L"$QV_BUILD_LINUX_DIR" \
 		-L"$QG_BUILD_LINUX_DIR" \
 		-l:libsgx_dcap_quoteverify.so -l:libdcap_quoteprov.so -l:libsgx_default_qcnl_wrapper.so \
 		-lcurl -lpthread -ldl \
-		-o "$SCRIPT_DIR/local_tdx_verifier"
+		-o "$VERIFIER_BIN"
 
 	echo "[INFO] Starting local TDX verifier on 127.0.0.1:$LOCAL_VERIFIER_PORT ..."
 	LD_LIBRARY_PATH="$QV_BUILD_LINUX_DIR:$QG_BUILD_LINUX_DIR:${LD_LIBRARY_PATH:-}" \
-		"$SCRIPT_DIR/local_tdx_verifier" "$LOCAL_VERIFIER_PORT" >"$SCRIPT_DIR/local_tdx_verifier.log" 2>&1 &
+		"$VERIFIER_BIN" "$LOCAL_VERIFIER_PORT" >"$VERIFIER_LOG" 2>&1 &
 	LOCAL_VERIFIER_PID=$!
 
 	# Wait until the local verifier is reachable before starting the guest-side test.
@@ -121,7 +128,7 @@ if [[ -z "${TDX_VERIFIER_CHALLENGE_URL:-}" && -z "${TDX_VERIFIER_SUBMIT_URL:-}" 
 
 	if ! curl -fsS "http://127.0.0.1:$LOCAL_VERIFIER_PORT/challenge" >/dev/null 2>&1; then
 		echo "[ERROR] Local verifier failed to start. Log:"
-		sed -n '1,200p' "$SCRIPT_DIR/local_tdx_verifier.log"
+		sed -n '1,200p' "$VERIFIER_LOG"
 		exit 1
 	fi
 
@@ -136,15 +143,16 @@ echo "[INFO] Building direct test_app..."
 g++ -std=c++14 -O2 -Wall -Wextra -Werror \
 	-I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper" \
 	-I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest" \
+	-I"$TESTS_DIR/common" \
 	-I/usr/include/x86_64-linux-gnu \
-	"$REPO_ROOT/tdx_tests/test_tdx_quote_wrapper.cpp" \
-	"$REPO_ROOT/tdx_tests/utils.cpp" \
+	"$TESTS_DIR/direct/test_tdx_quote_wrapper.cpp" \
+	"$TESTS_DIR/common/utils.cpp" \
 	-L"$TDX_ATTEST_LINUX_DIR" -ltdx_attest \
 	-lcurl -lpthread -ldl \
-	-o "$SCRIPT_DIR/test_app_direct"
+	-o "$TEST_APP_BIN"
 
 echo "[INFO] Running test_app_direct (TDX-only)..."
 LD_LIBRARY_PATH="$TDX_ATTEST_LINUX_DIR:$QGS_MSG_LINUX_DIR:$QV_BUILD_LINUX_DIR:$QG_BUILD_LINUX_DIR:${LD_LIBRARY_PATH:-}" \
-	"$SCRIPT_DIR/test_app_direct"
+	"$TEST_APP_BIN"
 
 echo "[INFO] Done (TDX-only)."

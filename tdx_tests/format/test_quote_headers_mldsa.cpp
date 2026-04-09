@@ -1,10 +1,10 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "../confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc/sgx_quote_3.h"
-#include "../confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc/sgx_quote_4.h"
-#include "../confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc/sgx_quote_5.h"
-#include "../confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc/ecdsa_quote.h"
+#include "sgx_quote_3.h"
+#include "sgx_quote_4.h"
+#include "sgx_quote_5.h"
+#include "ecdsa_quote.h"
 
 static constexpr std::size_t kExpectedMldsaDefaultQuote5Size =
     sizeof(sgx_quote5_t) +

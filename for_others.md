@@ -55,3 +55,9 @@ cd /home/alocin-local/tdx-pq-attestation/tdx_tests
 
 sudo -E ./run_tdx_tests.sh
 ```
+
+
+Install also
+```bash
+sudo apt install -y libboost-all-dev
+```

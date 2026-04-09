@@ -1,7 +1,7 @@
 #include <cstddef>
 
-#include "../confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc/sgx_quote_4.h"
-#include "../confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc/ecdsa_quote.h"
+#include "sgx_quote_4.h"
+#include "ecdsa_quote.h"
 
 static constexpr std::size_t kExpectedTdqeDefaultEcdsaSignSize =
     sizeof(sgx_ecdsa_sig_data_v4_t) +

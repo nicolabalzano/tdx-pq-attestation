@@ -18,13 +18,254 @@ Stato attuale:
 - aggiornato lo schema header del quote con `SGX_QL_ALG_MLDSA_65`
 - aggiunti i nuovi struct `sgx_ql_mldsa_65_sig_data_t` e `sgx_mldsa_65_sig_data_v4_t`
 - il wrapper TDX ora accetta `MLDSA_65` nel context e restituisce il `att_key_id` coerente col contesto
-- `td_ql_logic.*` ora ha un dispatch per algoritmo con stub `MLDSA_65`
+- `td_ql_logic.*` ora ha un dispatch per algoritmo; `MLDSA_65` ha `get_quote_size()` reale e `init_quote/get_quote` instradati fino al backend
 - `tee_att_get_quote_size()` per `MLDSA_65` restituisce ora una size runtime coerente col layout v4 completo (`7102` nel test locale)
 - `algorithm_id` viene ora propagato dal wrapper fino alle ECALL `gen_att_key` e `gen_quote` del TDQE
 - il TDQE ha ora un branch strutturale per `MLDSA_65` su layout, `sign_size` e `att_key_type`, ma rifiuta ancora il ramo prima della firma reale
 - build verificata con successo su `QuoteGeneration/quote_wrapper/tdx_quote/linux`
 - `quoting_enclave_tdqe.cpp` verificato con `g++ -fsyntax-only`; il rebuild completo di `ae/tdqe/linux` e' bloccato localmente da file generati `root:root` (`tdqe_t.c` / `tdqe_t.h`)
-- prossimo punto di lavoro: sostituire il branch di rifiuto nel TDQE con la generazione/firma reale ML-DSA
+- il forcing del path `libtdx_attest -> qgs locale` ora usa davvero il codice del repo, ma su questa macchina fallisce in bootstrap con `TEE_ATT_INTERFACE_UNAVAILABLE` per assenza di SGX PCE/PSW
+- prossimo punto di lavoro: concentrare implementazione e test sul path TDX-only, senza considerare `qgs/tee_att_*` un target funzionale su sistemi `tdx_guest`-only
+
+## Piano di lavoro: trusted TDX-only ML-DSA path
+
+Obiettivo:
+- aggiungere un path di generazione quote ML-DSA sotto controllo del repo
+- mantenere la firma e la chiave privata nel TDQE trusted
+- evitare di dipendere dal bootstrap legacy `PCE/PSW` per il nuovo path di test trusted
+- non cambiare il trust boundary del TEE
+
+Vincoli di sicurezza:
+- [ ] NON spostare la firma fuori dal TDQE
+- [ ] NON esportare la private key ML-DSA fuori dal TDQE
+- [ ] NON trattare un quote userspace come se fosse una attestazione hardware reale
+- [ ] distinguere chiaramente tra:
+- [ ] `public direct path`
+- [ ] `trusted repo-local path`
+
+### Step 1: isolare il bootstrap legacy PCE-based
+
+Scopo:
+- individuare e rendere esplicito il punto in cui il wrapper entra nel ramo legacy che richiede `PCE/PSW`
+
+Lavoro:
+- [x] introdurre nel context TDX il concetto di `bootstrap mode`
+- [x] marcare il path attuale come `legacy_pce`
+- [ ] confermare i punti in cui il bootstrap legacy tocca:
+- [x] `PPID_RSA3072_ENCRYPTED`
+- [x] `sgx_pce_get_target()`
+- [x] `sgx_pce_sign_report()`
+- [x] `get_platform_quote_cert_data()`
+
+Deliverable:
+- un contesto interno che distingua esplicitamente il bootstrap legacy da un futuro bootstrap TDX-only
+
+### Step 2: definire il path trusted TDX-only senza cambiare il trust boundary
+
+Scopo:
+- definire cosa deve fare il nuovo path senza SGX/PCE
+
+Lavoro:
+- [x] decidere il punto di ingresso interno
+- [x] decidere quali dati minimi servono per arrivare a `gen_att_key` / `gen_quote`
+- [x] definire quali campi di certification data nel test trusted possono restare stubbed/local-only
+- [ ] definire il perimetro del risultato:
+- [ ] quote trusted locale generato dal TDQE
+- [ ] non per forza quote pubblico verificabile dal verifier di piattaforma
+
+Deliverable:
+- design tecnico del nuovo path trusted locale
+Stato:
+- il punto di ingresso interno e' `trusted_tdx_only_init_quote(...)`
+- il bootstrap locale genera un blob ML-DSA trusted nel TDQE usando un `target_info` locale sintetico e completa il blob via `store_cert_data(...)` con metadata local-only
+- il path trusted locale non dipende da `sgx_pce_get_target`, `sgx_pce_sign_report` o `get_platform_quote_cert_data`
+
+### Step 3: introdurre un harness di test trusted locale
+
+Scopo:
+- avere un test ML-DSA end-to-end sotto controllo del repo, ma ancora trusted
+
+Lavoro:
+- [ ] creare un harness dedicato in `tdx_tests`
+- [x] chiamare il wrapper/TDQE locale senza passare da `configfs`
+- [ ] verificare almeno:
+- [ ] quote generato
+- [ ] `att_key_type = MLDSA_65`
+- [ ] layout firma/public key ML-DSA coerente
+
+Deliverable:
+- test ripetibile di generazione quote ML-DSA trusted locale
+
+### Step 4: coprire coesistenza e negative tests del nuovo path
+
+Scopo:
+- evitare regressioni ECDSA e problemi di stato persistente
+
+Lavoro:
+- [ ] test blob ECDSA/ML-DSA separati
+- [ ] test buffer insufficiente
+- [ ] test algoritmo sconosciuto
+- [ ] test quote malformato locale
+
+Deliverable:
+- matrice minima di test sul path trusted locale
+
+### Step 5: solo dopo, rivalutare il path pubblico
+
+Scopo:
+- decidere se e come riportare il lavoro nel path pubblico `tdx_att_get_quote()`
+
+Lavoro:
+- [ ] verificare se esiste un provider TDX diretto che supporti ML-DSA
+- [ ] oppure verificare se il path `qgs/tee_att` puo' diventare TDX-only senza SGX
+
+Deliverable:
+- decisione architetturale sul reintegro nel path pubblico
+
+## Piano di test TDX-only
+
+Premessa ambiente:
+- questa macchina ha `tdx_guest`
+- questa macchina non ha SGX/PCE/PSW
+- quindi il path `qgs/tee_att_*` va considerato `UNAVAILABLE` e non va usato come criterio di successo per ML-DSA
+
+Obiettivo del piano:
+- validare tutto cio' che e' realmente testabile in un ambiente TDX-only
+- proteggere il path ECDSA esistente
+- preparare evidenze chiare di cio' che manca ancora per un end-to-end ML-DSA completo
+
+### Blocco A: regressione TDX diretta ECDSA
+
+Scopo:
+- dimostrare che il path storico TDX diretto continua a funzionare
+
+Test:
+- [x] Eseguire `./tdx_tests/direct/run_tdx_ecdsa_tests.sh`
+- [x] Verificare che `tdx_att_get_report()` funzioni
+- [x] Verificare che `tdx_att_get_quote()` generi un quote
+- [ ] Verificare che il quote resti ECDSA (`att_key_type=2` nel probe attuale)
+- [x] Verificare che il verifier locale accetti il quote ECDSA
+
+Criterio di successo:
+- il flow TDX diretto esistente non regredisce
+Esito attuale:
+- `PASS` per report, generazione quote e verifier locale
+- `ATTENZIONE`: nel test diretto ECDSA il `selected attestation key id` e' tornato `000...000` e il profilo e' stato stampato `unknown/non-default`; il quote pero' e' stato verificato con successo
+
+### Blocco B: backend ML-DSA locale TDQE
+
+Scopo:
+- validare la crittografia ML-DSA realmente integrata nel tree
+
+Test:
+- [x] Eseguire `./tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+- [x] Verificare il test `TDQE ML-DSA adapter`
+- [x] Verificare che `keygen/sign/verify` passino
+- [x] Verificare le size attese di `pub`, `priv`, `sig`
+
+Criterio di successo:
+- il backend ML-DSA locale e' stabile e riutilizzabile nel TDQE
+
+### Blocco C: layout e schema quote ML-DSA
+
+Scopo:
+- validare il formato del quote e i layout strutturali
+
+Test:
+- [x] Verificare `test_quote_headers_mldsa`
+- [x] Verificare `test_tdqe_quote_layout_mldsa`
+- [x] Verificare che `SGX_QL_ALG_MLDSA_65` esista negli header
+- [x] Verificare che i struct ML-DSA v3/v4 esistano e abbiano dimensioni coerenti
+
+Criterio di successo:
+- il formato quote ML-DSA e' stabile lato header/layout
+
+### Blocco D: wrapper TDX algorithm plumbing
+
+Scopo:
+- validare che il wrapper TDX riconosca e instradi `MLDSA_65`
+
+Test:
+- [x] Verificare `test_tdx_wrapper_algorithms`
+- [x] Verificare che `MLDSA_65` sia accettato nel context
+- [x] Verificare che `tee_att_get_quote_size()` per ML-DSA restituisca la size coerente (`7102` nel test locale corrente)
+- [x] Verificare che il path ECDSA continui a restare invariato
+
+Criterio di successo:
+- il wrapper distingue ECDSA e ML-DSA senza regressioni
+
+### Blocco E: direct-path capability probe
+
+Scopo:
+- misurare cosa il path TDX diretto pubblico espone davvero su questa macchina
+
+Test:
+- [x] Verificare `test_tdx_direct_mldsa_probe`
+- [x] Verificare gli attestation key ids pubblicati da `libtdx_attest`
+- [x] Verificare se il path diretto continua a selezionare solo ECDSA
+- [x] Verificare che l'eventuale path forzato `qgs` venga marcato `UNAVAILABLE` invece di essere confuso con un bug del codice ML-DSA
+
+Criterio di successo:
+- stato del supporto pubblico ML-DSA nel path diretto documentato con evidenza ripetibile
+Esito attuale:
+- il path diretto pubblico pubblica 2 key IDs
+- il path `configfs` diretto continua a restituire un quote ECDSA e non espone un meccanismo per richiedere davvero ML-DSA
+- il path `qgs/tee_att_*` forzato viene ora diagnosticato come `UNAVAILABLE` su sistemi `tdx_guest`-only
+- aggiornamento: il `qgs` locale ora seleziona davvero il context ML-DSA (`requested algorithm_id=5`, `create_context ret=0x0`)
+- aggiornamento: il nuovo fallimento e' piu' profondo e avviene in `load_qe()` durante `sgx_create_enclave`, quindi il blocco non e' piu' nel wiring ML-DSA ma nel runtime SGX/uRTS richiesto dal wrapper
+- conclusione pratica: su questa macchina ML-DSA non e' oggi testabile end-to-end nel path pubblico TDX; restano validi solo i test TDX-only locali di backend/layout/wrapper
+- aggiornamento: il wrapper ora usa per default `TEE_ATT_BOOTSTRAP_TRUSTED_TDX_ONLY` quando l'algoritmo richiesto e' `MLDSA_65`
+- aggiornamento: `tee_att_get_quote_size(MLDSA_65)` ora funziona sul nuovo bootstrap locale trusted
+- aggiornamento: `mldsa_get_quote()` non passa piu' dal ramo provider/PCE e chiama `gen_quote(...)` direttamente sul blob ML-DSA trusted locale
+
+### Blocco F: gestione blob e coesistenza ECDSA/ML-DSA
+
+Scopo:
+- evitare collisioni tra stato persistente ECDSA e ML-DSA
+
+Test:
+- [ ] Aggiungere/verificare un test per label blob separate
+- [ ] Verificare che il blob ML-DSA non sovrascriva quello ECDSA
+- [ ] Verificare che un blob con tipo inatteso venga rifiutato
+- [ ] Verificare che size incoerenti del blob vengano rifiutate
+
+Criterio di successo:
+- ECDSA e ML-DSA possono coesistere senza corruzione dello stato persistente
+
+### Blocco G: negative tests TDX-only
+
+Scopo:
+- validare gli error path reali senza dipendere da SGX
+
+Test:
+- [ ] quote buffer troppo piccolo
+- [ ] algoritmo sconosciuto
+- [ ] `att_key_id` non supportato
+- [ ] `signature_data_len` incoerente
+- [ ] parsing di quote ML-DSA malformato nei test locali che non richiedono verifier completo
+
+Criterio di successo:
+- gli error path principali sono coperti e diagnosticabili
+
+### Blocco H: test non applicabili su questa macchina
+
+Non applicabili qui:
+- [ ] end-to-end `qgs/tee_att_*` come criterio di successo ML-DSA
+- [ ] verifier completo ML-DSA nel path pubblico wrapper
+- [ ] bootstrap PCE/PSW SGX
+
+Nota:
+- questi punti richiedono una macchina o ambiente con SGX PCE/PSW disponibile
+
+### Ordine consigliato dei test
+
+- [x] 1. Regressione ECDSA diretta
+- [x] 2. Backend ML-DSA TDQE
+- [x] 3. Header/layout quote ML-DSA
+- [x] 4. Wrapper algorithm plumbing
+- [ ] 5. Blob coesistenza / negative tests
+- [ ] 6. Direct capability probe pubblico
+- [ ] 7. Solo fuori da questa macchina: path `qgs/tee_att_*` e verifier pubblico completi
 
 ## Fase 0: baseline e comprensione del flusso
 
