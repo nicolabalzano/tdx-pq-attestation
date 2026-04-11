@@ -86,15 +86,25 @@ Scopo:
 - avere un test ML-DSA end-to-end sotto controllo del repo, ma ancora trusted
 
 Lavoro:
-- [ ] creare un harness dedicato in `tdx_tests`
+- [x] creare un harness dedicato in `tdx_tests`
 - [x] chiamare il wrapper/TDQE locale senza passare da `configfs`
-- [ ] verificare almeno:
-- [ ] quote generato
-- [ ] `att_key_type = MLDSA_65`
-- [ ] layout firma/public key ML-DSA coerente
+- [x] verificare almeno:
+- [x] quote generato
+- [x] `att_key_type = MLDSA_65`
+- [x] layout firma/public key ML-DSA coerente
 
 Deliverable:
 - test ripetibile di generazione quote ML-DSA trusted locale
+Stato:
+- aggiunti probe dedicati per:
+- loader TDQE in `SIM`
+- `tee_att_init_quote()` ML-DSA
+- quote generation diretta ML-DSA
+- quote verification probe ML-DSA
+- nel path repo-local `SIM` il probe diretto ora genera davvero un quote ML-DSA con:
+- `selected att key id = e86c046e8cc44d958173fc43c1fa4f40`
+- `att_key_type = 5`
+- `quote_size = 7102`
 
 ### Step 4: coprire coesistenza e negative tests del nuovo path
 
@@ -217,6 +227,9 @@ Esito attuale:
 - aggiornamento: il wrapper ora usa per default `TEE_ATT_BOOTSTRAP_TRUSTED_TDX_ONLY` quando l'algoritmo richiesto e' `MLDSA_65`
 - aggiornamento: `tee_att_get_quote_size(MLDSA_65)` ora funziona sul nuovo bootstrap locale trusted
 - aggiornamento: `mldsa_get_quote()` non passa piu' dal ramo provider/PCE e chiama `gen_quote(...)` direttamente sul blob ML-DSA trusted locale
+- aggiornamento: il probe `test_tdx_mldsa_quote_verify_probe` genera un quote ML-DSA reale ma il verifier attuale lo classifica `UNSUPPORTED`
+- aggiornamento: nel path `SIM` repo-local il direct probe ora espone davvero quote ML-DSA, non solo backend/layout
+- aggiornamento: il blocker residuo non e' piu' il parsing del quote ma la certification data usata dal verifier
 
 ### Blocco F: gestione blob e coesistenza ECDSA/ML-DSA
 
@@ -249,6 +262,96 @@ Criterio di successo:
 
 ### Blocco H: test non applicabili su questa macchina
 
+## Piano di lavoro: supporto verifier ML-DSA
+
+Obiettivo:
+- far accettare al verifier QVL/QvE un quote TDX con `att_key_type=MLDSA_65`
+- mantenere invariato il path ECDSA
+
+### Step V1: sbloccare il parser QVL
+
+Scopo:
+- permettere a `quote.parse()/validate()` di accettare `att_key_type=5`
+
+Lavoro:
+- [x] aggiungere `MLDSA_65` agli `ALLOWED_ATTESTATION_KEY_TYPES`
+- [x] aggiungere costanti size ML-DSA in `QuoteConstants.h`
+- [x] introdurre una struttura auth-data v4 per ML-DSA parallela a quella ECDSA
+- [x] far dispatch del parser auth-data in base a `header.attestationKeyType`
+
+Deliverable:
+- il parser non rifiuta piu' il quote solo per `att_key_type=5`
+Stato:
+- `Quote::parse()` e `Quote::validate()` passano su quote ML-DSA generato localmente
+- `sgxAttestationGetQECertificationDataSize/Data` passano sul quote ML-DSA e restituiscono certification data valida dal punto di vista strutturale
+
+### Step V2: sbloccare certification data e collateral extraction
+
+Scopo:
+- evitare `SGX_QL_QUOTE_CERTIFICATION_DATA_UNSUPPORTED`
+
+Lavoro:
+- [x] verificare il certification-data type emesso dal quote ML-DSA
+- [x] aggiornare `extract_chain_from_quote(...)` / `get_fmspc_ca_from_quote(...)` per il nuovo layout se necessario
+- [ ] confermare che `tee_qv_get_collateral(...)` funzioni su quote ML-DSA
+
+Deliverable:
+- estrazione collateral su quote ML-DSA funzionante
+Stato:
+- il quote ML-DSA locale attuale emette certification data:
+- `type = 3`
+- `size = 404`
+- `tee_qv_get_collateral(...)` non crasha piu' nel parser e arriva fino alla classification finale
+- esito attuale:
+- `SGX_QL_QUOTE_CERTIFICATION_DATA_UNSUPPORTED (0xe01c)`
+- conclusione:
+- il verifier non sta piu' fallendo sul formato del quote ML-DSA
+- il verifier sta rifiutando il certification-data type local-only attuale
+- prossimo fix:
+- far emettere al path ML-DSA certification data verifier-compatible (`PCK_CERT_CHAIN`) invece del tipo local-only corrente
+
+### Step V3: aggiungere la verifica della signature area ML-DSA
+
+Scopo:
+- verificare davvero la signature area del quote ML-DSA
+
+Lavoro:
+- [x] individuare tutti i punti QVL che assumono `ECDSA_SIGNATURE_BYTE_LEN` / `ECDSA_PUBKEY_BYTE_LEN`
+- [x] introdurre helper di verify ML-DSA
+- [x] far verificare la quote signature ML-DSA oltre al parser
+
+Deliverable:
+- `tdx_qv_verify_quote(...)` puo' completare la verifica crittografica di una quote ML-DSA
+Stato:
+- `QuoteVerifier.cpp` usa ora `tdqe_mldsa65_verify(...)` per la signature area ML-DSA
+- il path ECDSA per QE report / PCK verification resta invariato
+- questo lavoro e' pronto, ma resta bloccato a runtime dal certification-data type del quote locale
+
+### Step V4: test
+
+Scopo:
+- avere evidenza ripetibile del supporto verifier ML-DSA
+
+Lavoro:
+- [ ] far passare `test_tdx_mldsa_quote_verify_probe`
+- [x] aggiungere un parser-only test QVL per `att_key_type=5`
+- [ ] aggiungere un negative test con quote/signature ML-DSA corrotta
+
+Deliverable:
+- supporto verifier ML-DSA misurabile e regressioni coperte
+Stato:
+- `test_tdx_mldsa_quote_verify_probe` oggi prova davvero:
+- generazione quote ML-DSA
+- `tee_qv_get_collateral(...)`
+- `tdx_qv_verify_quote(...)`
+- classificazione supportato / unsupported / partial
+- esito attuale:
+- il probe conferma che il verifier arriva a:
+- parse del quote ML-DSA
+- validazione strutturale del quote
+- estrazione certification data
+- ma si ferma su `QUOTE_CERTIFICATION_DATA_UNSUPPORTED`
+
 Non applicabili qui:
 - [ ] end-to-end `qgs/tee_att_*` come criterio di successo ML-DSA
 - [ ] verifier completo ML-DSA nel path pubblico wrapper
@@ -263,8 +366,9 @@ Nota:
 - [x] 2. Backend ML-DSA TDQE
 - [x] 3. Header/layout quote ML-DSA
 - [x] 4. Wrapper algorithm plumbing
+- [x] 5. Direct capability probe pubblico
+- [x] 6. Parser/verifier capability probe ML-DSA
 - [ ] 5. Blob coesistenza / negative tests
-- [ ] 6. Direct capability probe pubblico
 - [ ] 7. Solo fuori da questa macchina: path `qgs/tee_att_*` e verifier pubblico completi
 
 ## Fase 0: baseline e comprensione del flusso

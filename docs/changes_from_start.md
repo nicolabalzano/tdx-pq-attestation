@@ -4911,3 +4911,1307 @@ So the current state is:
 - ML-DSA wrapper context creation: working
 - trusted TDX-only ML-DSA bootstrap in the wrapper: implemented
 - end-to-end public-wrapper probing on this host: still unavailable because the selected context still needs SGX QE loading support that a `tdx_guest`-only system does not provide
+
+## Step 49: enabled real SGX simulation-mode linking for the TDQE/QGS/TDX-wrapper path
+
+### Why this step matters
+
+At this point it was clear that:
+- the host does not provide SGX hardware
+- QEMU without SGX-capable host hardware would not help
+- the only realistic local experiment left was to make the repo actually use `SGX_MODE=SIM`
+
+The repo already had a global `SGX_MODE ?= HW` setting, and the local SDK includes all the required simulation libraries:
+
+```text
+libsgx_trts_sim.a
+libsgx_tservice_sim.a
+libsgx_uae_service_sim.so
+libsgx_urts_sim.so
+```
+
+But the TDQE / QGS / TDX-wrapper path was not honoring that mode.
+
+### What I changed
+
+File: [ae/dep/buildenv.mk](/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/dep/buildenv.mk)
+
+Changed the enclave-side runtime libraries to respect `SGX_MODE`:
+
+```make
+ifneq ($(SGX_MODE), HW)
+URTSLIB := -lsgx_urts_sim
+TRTSLIB := -lsgx_trts_sim
+EXTERNAL_LIB_NO_CRYPTO += -lsgx_tservice_sim
+else
+URTSLIB := -lsgx_urts
+TRTSLIB := -lsgx_trts
+EXTERNAL_LIB_NO_CRYPTO += -lsgx_tservice
+endif
+```
+
+File: [QuoteGeneration/quote_wrapper/qgs/Makefile](/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs/Makefile)
+
+Changed the QGS untrusted runtime libraries to respect `SGX_MODE`:
+
+```make
+ifneq ($(SGX_MODE), HW)
+QGS_URTS_LIBS = -lsgx_urts_sim -lsgx_uae_service_sim
+else
+QGS_URTS_LIBS = -lsgx_urts -lsgx_uae_service
+endif
+```
+
+File: [QuoteGeneration/quote_wrapper/tdx_quote/linux/Makefile](/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/linux/Makefile)
+
+Changed the TDX wrapper untrusted link path to respect `SGX_MODE`:
+
+```make
+ifneq ($(SGX_MODE), HW)
+Quote_Urts_Libs := -lsgx_urts_sim -lsgx_uae_service_sim
+else
+Quote_Urts_Libs := -lsgx_urts -lsgx_uae_service
+endif
+```
+
+### Tests run
+
+Checked that the local SDK really contains the simulation libraries:
+
+```bash
+ls /home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk/lib64 | rg "sgx_(urts|urts_sim|uae_service|uae_service_sim|trts|trts_sim|tservice|tservice_sim)"
+```
+
+Result:
+
+```text
+libsgx_trts.a
+libsgx_trts_sim.a
+libsgx_tservice.a
+libsgx_tservice_sim.a
+libsgx_uae_service.so
+libsgx_uae_service_sim.so
+libsgx_urts.so
+libsgx_urts.so.2
+libsgx_urts_sim.so
+```
+
+Then did clean rebuilds in simulation mode.
+
+#### TDQE
+
+```bash
+make -C /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux clean
+make -C /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux \
+     SGX_SDK=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM
+```
+
+Observed link/sign output included:
+
+```text
+... -lsgx_trts_sim ... -lsgx_tservice_sim ...
+<EnclaveConfiguration>
+    ...
+    <HW>0</HW>
+    ...
+</EnclaveConfiguration>
+SIGN =>  libsgx_tdqe.signed.so
+```
+
+#### QGS and TDX wrapper
+
+```bash
+make -C /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs clean
+make -C /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs \
+     SGX_SDK=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM
+```
+
+Observed link output included:
+
+```text
+... libsgx_tdx_logic.so
+... -lsgx_urts_sim -lsgx_uae_service_sim ...
+g++ -o qgs ...
+```
+
+The clean TDX wrapper rebuild also linked successfully with the simulation runtimes:
+
+```text
+g++ ... -lsgx_urts_sim -lsgx_uae_service_sim ... -o libsgx_tdx_logic.so
+LINK =>  libsgx_tdx_logic.so
+```
+
+### Result
+
+The path `TDQE -> tdx_quote -> qgs` now genuinely supports simulation-mode linking.
+
+That does not yet prove the ML-DSA end-to-end flow will work in SIM, but it materially changes the environment story:
+- we are no longer blocked strictly on missing SGX hardware for this path
+- we now have a repo-local way to exercise the SGX-dependent wrapper/QGS path against simulation runtimes
+
+The next step should be to run the local QGS / wrapper probe under `SGX_MODE=SIM` and see whether the previous `sgx_create_enclave` failure disappears or moves deeper into the ML-DSA quote bootstrap.
+
+## Step 36: Diagnose the simulation-mode enclave load failure and fix the runner/runtime assumptions
+
+### What changed
+
+After switching the local `QGS/tee_att` path to `SGX_MODE=SIM`, the direct probe reached the ML-DSA-selected context and failed deeper in `load_qe()` with:
+
+```text
+[load_qe td_ql_logic.cpp:599] Error, call sgx_create_enclave QE fail [load_qe], SGXError:200f.
+```
+
+I traced that failure to two concrete issues:
+
+1. The runtime test runner was not consistently propagating `SGX_MODE=SIM` or simulation runtime libraries to every build/run step.
+2. `load_qe()` expects the signed enclave file name `libsgx_tdqe.signed.so.1`, while the TDQE build output directory only contained `libsgx_tdqe.signed.so`.
+
+### Files changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux/Makefile`
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/id_enclave/linux/Makefile`
+- `/home/alocin-local/tdx-pq-attestation/tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+### Code changed
+
+#### 1. Create versioned signed-enclave symlinks in TDQE
+
+In `ae/tdqe/linux/Makefile` I added a major-version alias for the signed enclave:
+
+```make
+SIGNED_TDQE_NAME := libsgx_$(AENAME)$(if $(FIPS),-fips).signed.so
+SIGNED_TDQE_MAJOR := $(SIGNED_TDQE_NAME).$(call get_major_version,TDQE_VERSION)
+```
+
+and after signing:
+
+```make
+$(SIGNED_TDQE_NAME): $(SONAME) $(TDQE_CONFIG_FILE) $(TDQE_KEY_FILE)
+	@$(SGX_ENCLAVE_SIGNER) sign -key $(TDQE_KEY_FILE) -enclave $< -out $@ -config $(TDQE_CONFIG_FILE)
+	@$(LN) $(SIGNED_TDQE_NAME) $(SIGNED_TDQE_MAJOR)
+	@echo "SIGN =>  $@"
+```
+
+cleanup also removes the versioned alias:
+
+```make
+	@$(RM) *.signed.so
+	@$(RM) *.signed.so.*
+```
+
+#### 2. Apply the same fix to ID_ENCLAVE
+
+In `ae/id_enclave/linux/Makefile` I added the matching signed-enclave alias:
+
+```make
+SIGNED_IDE_NAME := libsgx_$(AENAME)$(if $(FIPS),-fips).signed.so
+SIGNED_IDE_MAJOR := $(SIGNED_IDE_NAME).$(call get_major_version,IDE_VERSION)
+```
+
+and after signing:
+
+```make
+$(SIGNED_IDE_NAME): $(SONAME) $(IDE_CONFIG_FILE) $(IDE_KEY_FILE)
+	@$(SGX_ENCLAVE_SIGNER) sign -key $(IDE_KEY_FILE) -enclave $< -out $@ -config $(IDE_CONFIG_FILE)
+	@$(LN) $(SIGNED_IDE_NAME) $(SIGNED_IDE_MAJOR)
+```
+
+#### 3. Make the direct ML-DSA runner actually respect `SGX_MODE=SIM`
+
+In `tdx_tests/direct/run_mldsa_tdx_only_tests.sh` I added:
+
+```bash
+SGX_MODE_VALUE="${SGX_MODE:-HW}"
+```
+
+and a helper to guarantee the signed-enclave major alias exists even on incremental builds where `make` does not rerun the signer:
+
+```bash
+ensure_signed_enclave_major_link() {
+  local signed_path="$1"
+  local major_path="$2"
+  if [[ -f "$signed_path" && ! -e "$major_path" ]]; then
+    ln -sf "$(basename "$signed_path")" "$major_path"
+  fi
+}
+```
+
+The TDQE build step now uses the requested mode and guarantees the alias:
+
+```bash
+make -C "$TDQE_LINUX_DIR" SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+ensure_signed_enclave_major_link \
+  "$TDQE_LINUX_DIR/libsgx_tdqe.signed.so" \
+  "$TDQE_LINUX_DIR/libsgx_tdqe.signed.so.1"
+```
+
+The runner also now propagates `SGX_MODE` into the wrapper and QGS builds:
+
+```bash
+make -C "$TDX_QUOTE_LINUX_DIR" SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+make -C "$QGS_DIR" SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+```
+
+and chooses the correct runtime library in SIM:
+
+```bash
+URTS_LINK_LIB="-lsgx_urts"
+
+if [[ "$SGX_MODE_VALUE" == "SIM" ]]; then
+  URTS_LIB_DIR="$LOCAL_SGX_SDK/lib64"
+  URTS_LINK_LIB="-lsgx_urts_sim"
+elif [[ -f "$SYSTEM_URTS_DIR/libsgx_urts.so" ]]; then
+  URTS_LIB_DIR="$SYSTEM_URTS_DIR"
+fi
+```
+
+That value is used both for the wrapper algorithm-selection test link and for the direct probe runtime `LD_LIBRARY_PATH`.
+
+### Tests run
+
+Validated runner syntax:
+
+```bash
+bash -n /home/alocin-local/tdx-pq-attestation/tdx_tests/direct/run_mldsa_tdx_only_tests.sh
+```
+
+Result: passed.
+
+Verified the root cause in code and runtime artifacts:
+
+```bash
+sed -n '543,640p' /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp
+ls -l /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux
+```
+
+This showed:
+- `load_qe()` calls `sgx_create_enclave(...)`
+- `TDQE_ENCLAVE_NAME` is `libsgx_tdqe.signed.so.1`
+- the directory only had `libsgx_tdqe.signed.so`
+
+Verified that incremental `make` alone does not create the missing alias:
+
+```bash
+make -C /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux \
+     SGX_SDK=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM
+ls -l /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux/libsgx_tdqe.signed.so*
+```
+
+Observed result before rerunning the full probe:
+
+```text
+make: Nothing to be done for 'all'.
+-rw-rw-r-- ... libsgx_tdqe.signed.so
+```
+
+That confirmed the need for the runner-side alias creation as well.
+
+I also tried to rebuild `id_enclave` in SIM mode:
+
+```bash
+make -C /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/id_enclave/linux \
+     SGX_SDK=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM
+```
+
+This currently fails in the local SDK environment with:
+
+```text
+/usr/bin/ld: cannot find -lsgx_trts_sim: No such file or directory
+/usr/bin/ld: cannot find -lsgx_tservice_sim: No such file or directory
+```
+
+### Result
+
+The immediate `SGXError:200f` diagnosis is now concrete:
+- it was consistent with the QE loader looking for `libsgx_tdqe.signed.so.1`
+- the runner and build artifacts were not guaranteeing that file existed
+- the simulation-mode runner also had incomplete `_sim` propagation
+
+The next probe should no longer fail for the same trivial file-name/runtime-library reasons. If it still fails, the failure will be deeper in enclave loading or in the ML-DSA bootstrap itself.
+
+## Step 37: Pass the real TDQE signed-enclave path into QGS instead of relying on the wrapper library directory
+
+### What changed
+
+After the previous fix, the simulation-mode probe still failed with:
+
+```text
+[load_qe td_ql_logic.cpp:599] Error, call sgx_create_enclave QE fail [load_qe], SGXError:200f.
+```
+
+The next diagnosis showed that `tee_att_create_context()` was still being called by `QGS` with `p_qe_path == NULL`.
+
+That matters because in `td_ql_logic.cpp`, `get_qe_path()` behaves like this:
+- if `tdqe_path` is set in the context, use it directly
+- otherwise derive a path relative to the binary/library that called into the wrapper
+
+For local `QGS` this fallback is wrong for TDQE loading, because the wrapper library lives under:
+
+```text
+QuoteGeneration/quote_wrapper/tdx_quote/linux
+```
+
+while the actual signed TDQE enclave lives under:
+
+```text
+ae/tdqe/linux
+```
+
+So the remaining `200f` was still consistent with “wrong file path”, even after the `.signed.so.1` alias existed.
+
+### Files changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs/qgs_ql_logic.cpp`
+- `/home/alocin-local/tdx-pq-attestation/tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+### Code changed
+
+#### 1. Teach QGS to accept an explicit TDQE file path from the environment
+
+In `qgs_ql_logic.cpp` I added:
+
+```cpp
+static const char *get_qgs_tdqe_path()
+{
+    const char *configured_path = std::getenv("QGS_TDQE_PATH");
+    if (configured_path != NULL && configured_path[0] != '\0') {
+        return configured_path;
+    }
+    return NULL;
+}
+```
+
+and changed all local context creation sites from:
+
+```cpp
+tee_att_create_context(..., NULL, &p_ctx);
+```
+
+to:
+
+```cpp
+tee_att_create_context(..., get_qgs_tdqe_path(), &p_ctx);
+```
+
+This applies both to:
+- the initial default context creation
+- the algorithm-aware replacement context for ML-DSA
+
+#### 2. Export the correct TDQE path from the direct ML-DSA test runner
+
+In `run_mldsa_tdx_only_tests.sh` I added:
+
+```bash
+QGS_TDQE_PATH="${QGS_TDQE_PATH:-$TDQE_LINUX_DIR/libsgx_tdqe.signed.so.1}"
+```
+
+and passed it when launching QGS:
+
+```bash
+QGS_SOCKET_PATH="$QGS_SOCKET_PATH" \
+QGS_TDQE_PATH="$QGS_TDQE_PATH" \
+LD_LIBRARY_PATH="$QGS_LD_LIBRARY_PATH:${LD_LIBRARY_PATH:-}" \
+  "$QGS_DIR/qgs" --no-daemon --debug "-n=$QGS_NUM_THREADS" >"$QGS_LOG_PATH" 2>&1 &
+```
+
+That means the local `QGS` now points the wrapper directly at the real TDQE signed-enclave file instead of relying on the fallback path logic.
+
+### Tests run
+
+Validated the runner syntax again:
+
+```bash
+bash -n /home/alocin-local/tdx-pq-attestation/tdx_tests/direct/run_mldsa_tdx_only_tests.sh
+```
+
+Result: passed.
+
+Rebuilt local `QGS` in simulation mode after the new path wiring:
+
+```bash
+make -C /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs \
+     SGX_SDK=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM
+```
+
+Observed final link line included the simulation runtimes:
+
+```text
+g++ -o qgs ... -lsgx_urts_sim -lsgx_uae_service_sim ...
+```
+
+### Result
+
+The remaining `sgx_create_enclave(...)=200f` path is no longer forced to rely on the wrapper library directory to locate the TDQE enclave.
+
+The next probe will tell us whether the enclave now loads correctly, or whether there is another deeper simulation-mode issue beyond simple file location.
+
+## Step 38: Remove the remaining hardware-runtime mismatch in `pce_wrapper` for simulation mode
+
+### What changed
+
+After the explicit `QGS_TDQE_PATH` fix, the simulation-mode probe no longer failed with a plain path-lookup issue. Instead, `QGS` reached:
+
+```text
+GET_QUOTE_REQ: selected uuid=e86c046e... algorithm-aware context ready
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+```
+
+and then the `QGS` process died with `SIGILL`.
+
+That pointed to a runtime mismatch inside the local user-space stack rather than a simple ML-DSA selection bug. I checked the local linkage and found that `pce_wrapper` was still hardcoded to the hardware SGX runtime even under `SGX_MODE=SIM`.
+
+### Files changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/pce_wrapper/linux/Makefile`
+- `/home/alocin-local/tdx-pq-attestation/tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+### Code changed
+
+#### 1. Make `pce_wrapper` respect `SGX_MODE`
+
+In `QuoteGeneration/pce_wrapper/linux/Makefile`, the old code was:
+
+```make
+Link_Flags := $(SGX_COMMON_CFLAGS) -L$(ROOT_DIR)/build/linux -L$(SGX_SDK)/lib64 -lsgx_urts -lpthread -ldl
+```
+
+I changed it to:
+
+```make
+ifneq ($(SGX_MODE), HW)
+PCE_URTS_LIBS := -lsgx_urts_sim
+else
+PCE_URTS_LIBS := -lsgx_urts
+endif
+Link_Flags := $(SGX_COMMON_CFLAGS) -L$(ROOT_DIR)/build/linux -L$(SGX_SDK)/lib64 $(PCE_URTS_LIBS) -lpthread -ldl
+```
+
+That removes the last obvious hardware-only runtime dependency from the local wrapper stack in simulation mode.
+
+#### 2. Build `pce_wrapper` explicitly in the direct ML-DSA runner
+
+The runner previously relied on indirect rebuilds. I added an explicit step so the local test path is reproducible:
+
+```bash
+echo "[INFO] Building repo-local PCE wrapper..."
+make -C "$PCE_WRAPPER_LINUX_DIR" SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+```
+
+This now runs before the `tdx_quote` and `qgs` builds.
+
+### Tests run
+
+Rebuilt `pce_wrapper` in simulation mode:
+
+```bash
+make -C /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/pce_wrapper/linux clean
+make -C /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/pce_wrapper/linux \
+     SGX_SDK=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM
+ldd /home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/pce_wrapper/linux/libsgx_pce_logic.so
+```
+
+Observed new link line:
+
+```text
+... -lsgx_urts_sim ...
+```
+
+and `ldd` showed:
+
+```text
+libsgx_urts_sim.so => not found
+```
+
+which is expected without the explicit `LD_LIBRARY_PATH`, but it importantly confirmed that the binary now depends on the simulation runtime instead of the hardware runtime.
+
+### Result
+
+The local wrapper stack is now more internally consistent in `SGX_MODE=SIM`:
+- `qgs` uses `_sim`
+- `tdx_quote` uses `_sim`
+- `pce_wrapper` now also uses `_sim`
+
+This removes another strong candidate for the `SIGILL` observed during ML-DSA bootstrap under simulation mode.
+
+## Step 39: Add a minimal TDQE simulation loader probe to separate SGX simulation runtime failures from ML-DSA logic
+
+### What changed
+
+Even after aligning the local wrapper stack to `SGX_MODE=SIM`, the `QGS` process still died with `SIGILL` right after:
+
+```text
+GET_QUOTE_REQ: selected uuid=e86c046e... algorithm-aware context ready
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+```
+
+At that point the most useful next isolation step was to determine whether the failure is:
+- in the ML-DSA quote bootstrap logic, or
+- already in the plain `sgx_create_enclave(...)` call used to load the TDQE enclave under the simulation runtime
+
+### Files changed
+
+- `/home/alocin-local/tdx-pq-attestation/tdx_tests/tdqe/test_tdqe_sim_loader.cpp`
+- `/home/alocin-local/tdx-pq-attestation/tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+### Code changed
+
+#### 1. New minimal TDQE loader probe
+
+I added `tdx_tests/tdqe/test_tdqe_sim_loader.cpp`, a tiny host-side test that does only:
+
+```cpp
+sgx_create_enclave(enclave_path, 0, &token, &updated, &eid, &misc);
+```
+
+and prints the resulting SGX status code.
+
+This intentionally bypasses:
+- `QGS`
+- ML-DSA selection
+- quote generation
+- blob handling
+
+so that we can tell whether the host can even load `libsgx_tdqe.signed.so.1` through `libsgx_urts_sim`.
+
+#### 2. Wire the new probe into the direct ML-DSA runner
+
+In `run_mldsa_tdx_only_tests.sh` I added:
+
+```bash
+TDQE_SIM_LOADER_BIN="$BIN_DIR/test_tdqe_sim_loader"
+```
+
+then compile it with the same runtime library family selected by `SGX_MODE`:
+
+```bash
+g++ -std=c++14 -O2 -Wall -Wextra -Werror \
+  -I"$LOCAL_SGX_SDK/include" \
+  "$TESTS_DIR/tdqe/test_tdqe_sim_loader.cpp" \
+  -L"$URTS_LIB_DIR" \
+  -Wl,-rpath,"$URTS_LIB_DIR" \
+  "$URTS_LINK_LIB" -lpthread -ldl \
+  -o "$TDQE_SIM_LOADER_BIN"
+```
+
+and run it automatically before `QGS` when `SGX_MODE=SIM`:
+
+```bash
+if [[ "$SGX_MODE_VALUE" == "SIM" ]]; then
+  echo "[INFO] Running TDQE simulation loader probe..."
+  LD_LIBRARY_PATH="$URTS_LIB_DIR:${LD_LIBRARY_PATH:-}" \
+    "$TDQE_SIM_LOADER_BIN" "$QGS_TDQE_PATH"
+fi
+```
+
+### Result
+
+The next `SIM` run will tell us immediately whether:
+- the host can load the TDQE enclave with `sgx_urts_sim`, or
+- the simulation runtime itself is already the failing layer
+
+That sharply separates “runtime simulation is broken on this machine” from “ML-DSA logic is broken in the repo code”.
+
+## Step 40: Add a direct `tee_att_init_quote()` ML-DSA probe to bypass QGS and isolate the crash layer
+
+### What changed
+
+The simulation-mode run continued far enough to show that:
+- `QGS` accepts the ML-DSA request
+- the algorithm-aware context is created correctly
+- the crash happens immediately after:
+
+```text
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+```
+
+At that point the right next isolation step is to remove `QGS` itself from the equation and call the wrapper directly.
+
+### Files changed
+
+- `/home/alocin-local/tdx-pq-attestation/tdx_tests/wrapper/test_tdx_mldsa_init_quote_probe.cpp`
+- `/home/alocin-local/tdx-pq-attestation/tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+### Code changed
+
+#### 1. New direct wrapper probe
+
+I added `tdx_tests/wrapper/test_tdx_mldsa_init_quote_probe.cpp`.
+
+It does only:
+
+1. build an explicit ML-DSA `tee_att_att_key_id_t`
+2. call:
+
+```cpp
+tee_att_create_context(&att_key_id, tdqe_path, &ctx);
+```
+
+3. call:
+
+```cpp
+tee_att_init_quote(ctx, &qe_target_info, false, &pub_key_id_size, (uint8_t*)&pub_key_id);
+```
+
+4. print the returned status code
+
+This removes:
+- `QGS`
+- socket transport
+- request parsing
+- thread-pool scheduling
+
+from the failing path.
+
+#### 2. Run it automatically in the `SIM` ML-DSA test flow
+
+In `run_mldsa_tdx_only_tests.sh` I added:
+
+```bash
+WRAPPER_INIT_QUOTE_PROBE_BIN="$BIN_DIR/test_tdx_mldsa_init_quote_probe"
+```
+
+then compile it against the same wrapper/runtime selection:
+
+```bash
+g++ ... \
+  "$TESTS_DIR/wrapper/test_tdx_mldsa_init_quote_probe.cpp" \
+  -L"$TDX_QUOTE_LINUX_DIR" \
+  -L"$PCE_WRAPPER_LINUX_DIR" \
+  -L"$URTS_LIB_DIR" \
+  ... \
+  -lsgx_tdx_logic "$URTS_LINK_LIB" -lpthread -ldl \
+  -o "$WRAPPER_INIT_QUOTE_PROBE_BIN"
+```
+
+and in `SGX_MODE=SIM` run it before the `QGS` path:
+
+```bash
+LD_LIBRARY_PATH="$TDX_QUOTE_LINUX_DIR:$PCE_WRAPPER_LINUX_DIR:$URTS_LIB_DIR:${LD_LIBRARY_PATH:-}" \
+  "$WRAPPER_INIT_QUOTE_PROBE_BIN" "$QGS_TDQE_PATH"
+```
+
+### Result
+
+The next simulation-mode run will answer a very specific question:
+
+- if this new probe crashes too, the problem is inside `tee_att_init_quote()` / wrapper / TDQE simulation runtime
+- if it succeeds and only `QGS` crashes, then the remaining issue is in `QGS`-side orchestration
+
+### Follow-up correction
+
+The first draft of `test_tdx_mldsa_init_quote_probe.cpp` used two symbols that are not part of the public wrapper headers:
+- `g_tdqe_mrsigner`
+- an implicit declaration path for `ref_sha256_hash_t`
+
+I corrected that test by:
+- including `user_types.h` explicitly for `ref_sha256_hash_t`
+- embedding the TDQE `mrsigner` bytes locally in the test instead of relying on the non-exported global from `td_ql_wrapper.cpp`
+
+This keeps the probe self-contained and linkable against the public wrapper surface.
+
+I also had to adjust the runner compile flags for this new probe to include the internal common headers:
+
+```bash
+-I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/common/inc/internal"
+-I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/common/inc/internal/linux"
+```
+
+because `user_types.h` includes `se_trace.h`.
+
+### Probe result
+
+The follow-up `SIM` run produced the decisive split:
+
+```text
+[INFO] Running TDQE simulation loader probe...
+[test] loading enclave: .../ae/tdqe/linux/libsgx_tdqe.signed.so.1
+[test] sgx_create_enclave returned: 0x0000
+[test] enclave load/unload completed
+```
+
+so the host can load the TDQE enclave successfully with `sgx_urts_sim`.
+
+But the next direct wrapper probe failed like this:
+
+```text
+[INFO] Running wrapper ML-DSA init_quote probe...
+[test] creating ML-DSA context with TDQE path: .../libsgx_tdqe.signed.so.1
+[test] tee_att_create_context ret=0x0 ctx=...
+Illegal instruction (core dumped)
+```
+
+This is the key result:
+- the crash is **not** in `QGS`
+- the crash is **not** in basic `sgx_create_enclave(...)`
+- the crash happens inside the wrapper path entered by `tee_att_init_quote()` for ML-DSA under `SGX_MODE=SIM`
+
+That narrows the next debugging target to the first operations inside `tee_att_init_quote()` / `trusted_tdx_only_init_quote()` rather than transport, server logic, or raw enclave loading.
+
+## Step 41: Add fine-grained bootstrap markers inside `trusted_tdx_only_init_quote()`
+
+### What changed
+
+Once the direct wrapper probe showed:
+- `tee_att_create_context()` succeeds
+- `sgx_create_enclave()` for the TDQE succeeds in `SIM`
+- but `tee_att_init_quote()` still dies with `SIGILL`
+
+the next useful step was to instrument the first critical calls inside the ML-DSA trusted bootstrap.
+
+### File changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp`
+
+### Code changed
+
+Inside `tee_att_config_t::trusted_tdx_only_init_quote(...)` I added unbuffered `stderr` markers before and after the main steps:
+
+- function entry
+- `load_qe()`
+- target-info setup
+- blob mutex lock
+- `read_persistent_data(...)`
+- `verify_blob(...)`
+- `gen_att_key(...)`
+- `load_id_enclave_get_id(...)`
+- `store_cert_data(...)`
+- final `verify_blob(...)`
+
+Representative examples:
+
+```cpp
+fprintf(stderr, "[tdx-quote-debug] trusted_tdx_only_init_quote about to load_qe\n");
+fflush(stderr);
+```
+
+```cpp
+fprintf(stderr, "[tdx-quote-debug] trusted_tdx_only_init_quote gen_att_key sgx=0x%x tdqe=0x%x\n",
+        sgx_status,
+        tdqe_error);
+fflush(stderr);
+```
+
+### Result
+
+The next `SIM` run should now tell us exactly which bootstrap step is the last one reached before `SIGILL`.
+
+That will distinguish between:
+- a crash before any persistent-data/blob path
+- a crash in `verify_blob(...)`
+- a crash in `gen_att_key(...)`
+- a crash later in `store_cert_data(...)`
+
+## Step 42: Add enclave-side `verify_blob()` markers to isolate whether the crash is in unseal or report creation
+
+### What changed
+
+The instrumented wrapper run narrowed the `SIGILL` to this sequence:
+
+```text
+[tdx-quote-debug] trusted_tdx_only_init_quote read_persistent_data ret=0x1100e
+[tdx-quote-debug] trusted_tdx_only_init_quote about to verify_blob
+Illegal instruction
+```
+
+So the next boundary to instrument was the TDQE-side helper that actually performs blob verification.
+
+### File changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp`
+
+### Code changed
+
+The first intent was to add enclave-side logging around:
+- function entry
+- computed sealed-blob lengths
+- `sgx_unseal_data(...)` for both ECDSA and ML-DSA branches
+- `sgx_create_report(...)` after successful unseal
+
+However, direct stdio-style printing was brittle in this enclave build, and switching to `SE_TRACE(...)` introduced a new unresolved dependency on `se_trace_internal` at link time.
+
+The non-invasive fix was to replace those prints with a lightweight internal stage counter:
+
+```cpp
+static volatile uint32_t g_tdqe_debug_stage = 0;
+```
+
+and then advance it at the key checkpoints:
+
+```cpp
+g_tdqe_debug_stage = 100; // enter verify_blob_data_any_internal
+g_tdqe_debug_stage = 101; // lengths computed
+g_tdqe_debug_stage = 120; // before sgx_unseal_data on ML-DSA blob
+g_tdqe_debug_stage = 121; // after sgx_unseal_data on ML-DSA blob
+g_tdqe_debug_stage = 130; // before sgx_create_report
+g_tdqe_debug_stage = 131; // after sgx_create_report
+```
+
+### Result
+
+The next run should tell us whether the `SIGILL` happens:
+- before or during `sgx_unseal_data(...)`, or
+- after unseal, at `sgx_create_report(...)`
+
+### Follow-up correction
+
+The previous logging-based attempts (`fprintf`, `printf`, `SE_TRACE`) were all rolled back because they either did not compile cleanly in this enclave translation unit or introduced a new link-time dependency.
+
+The current state is the stage-counter instrumentation only, which keeps the TDQE build linkable.
+
+## Step 43: Fix the ML-DSA trusted bootstrap bug that verified an uninitialized blob when no persistent blob existed
+
+### What changed
+
+The latest simulation-mode run produced this key sequence:
+
+```text
+[tdx-quote-debug] trusted_tdx_only_init_quote read_persistent_data ret=0x1100e
+[tdx-quote-debug] trusted_tdx_only_init_quote about to verify_blob
+Illegal instruction
+```
+
+That exposed a real logic bug in the trusted ML-DSA bootstrap path.
+
+### File changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp`
+
+### Bug
+
+When `read_persistent_data()` failed because the ML-DSA blob was not present yet, the code did this:
+
+```cpp
+if (TEE_ATT_SUCCESS != refqt_ret) {
+    SE_TRACE(... "Falling back to in-memory cache");
+    refqt_ret = TEE_ATT_SUCCESS;
+}
+```
+
+and then continued straight into:
+
+```cpp
+sgx_status = verify_blob(..., (uint8_t*)m_ecdsa_blob, ...);
+```
+
+That means it attempted to verify an uninitialized in-memory blob on the first run instead of generating a fresh trusted local key.
+
+### Fix
+
+Now the missing-blob case immediately switches to key generation:
+
+```cpp
+if (TEE_ATT_SUCCESS != refqt_ret) {
+    SE_TRACE(SE_TRACE_WARNING, "ML-DSA blob does not exist in persistent storage. Generating a new trusted local key.\n");
+    refqt_ret = TEE_ATT_SUCCESS;
+    gen_new_key = true;
+    break;
+}
+```
+
+### Result
+
+This is not just extra tracing. It is a real functional bug fix in the ML-DSA trusted bootstrap path and is a strong candidate for the `SIGILL` observed on first-run `SIM` execution.
+
+## 2026-04-11: Added enclave-to-host stage OCALLs for ML-DSA crash isolation
+
+### Files changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/tdqe.edl`
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp`
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp`
+
+### Change
+
+Added a minimal `ocall_debug_message(const char *msg)` path from TDQE to the untrusted wrapper and wired the existing ML-DSA stage markers through it.
+
+The enclave now emits readable `[tdqe-debug] ...` messages before and after the critical substeps in:
+
+- `verify_blob_data_any_internal(...)`
+- the ML-DSA branch of `gen_att_key(...)`
+
+and the untrusted side prints those markers to `stderr` from `td_ql_logic.cpp`.
+
+### Purpose
+
+The wrapper-side trace had already narrowed the `SIM` crash to the ML-DSA `gen_att_key(...)` path. The new OCALL messages let the next run show the exact last enclave substep reached before the `SIGILL`, without relying on enclave `printf`/`SE_TRACE` linkage.
+
+### Follow-up
+
+The first textual markers were still too late in the ML-DSA path. Additional early messages were added at:
+
+- `gen_att_key: enter`
+- `gen_att_key mldsa: branch selected`
+- `gen_att_key mldsa: before/after authdata copy`
+- `get_att_key_based_from_seal_key_mldsa(...)` entry
+- before/after seal-key seed derivation
+- before/after `tdqe_mldsa65_keygen(...)`
+
+so the next run can distinguish ECALL-transition failure from seed-derivation failure from ML-DSA keygen failure.
+
+### Additional bridge tracing
+
+Because no TDQE-side message was appearing before the `SIGILL`, extra debug prints were also added around the ECALL bridge:
+
+- untrusted side in `tdx_quote/linux/tdqe_u.c` before and after `sgx_ecall(..., gen_att_key, ...)`
+- trusted stub side in `ae/tdqe/linux/tdqe_t.c` before pointer checks, after buffer copies, and immediately before the real `gen_att_key(...)` body call
+
+This will let the next run distinguish:
+
+- crash before `sgx_ecall`
+- crash inside the trusted marshalling stub
+- crash only after control reaches the real `gen_att_key(...)` implementation
+
+## 2026-04-11: Temporarily removed randomized ciphertext buffer from gen_att_key prologue
+
+### File changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp`
+
+### Change
+
+In `gen_att_key(...)`, the temporary ECDSA ciphertext buffer was switched from:
+
+- `randomly_placed_object<custom_alignment_aligned<...>>`
+
+to a plain local stack object:
+
+- `ref_ciphertext_ecdsa_data_sdk_t ciphertext_data = {};`
+
+with `pciphertext_data` pointing to that simple buffer.
+
+### Purpose
+
+The first TDQE-side debug print in `gen_att_key(...)` was not appearing at all, while the trusted ECALL stub was reaching the call site successfully. That strongly suggested the crash was happening in the prologue before the first explicit debug marker, and the randomized/aligned helper object was the first non-trivial construct in the function body.
+
+This is a diagnostic change to verify whether the `SIGILL` is caused by that prologue object construction.
+
+## 2026-04-11: Split gen_att_key into entry wrapper and implementation helper
+
+### File changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp`
+
+### Change
+
+`gen_att_key(...)` was split into:
+
+- `gen_att_key(...)`: minimal exported wrapper that only emits `gen_att_key wrapper: enter`
+- `gen_att_key_impl(...)`: the full original body
+
+### Purpose
+
+This isolates whether the `SIGILL` happens:
+
+- in the prologue/entry of the exported enclave function itself
+- or only after control reaches the real implementation body
+
+## 2026-04-11: Extracted ML-DSA gen_att_key path into a dedicated helper
+
+### File changed
+
+- `/home/alocin-local/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp`
+
+### Change
+
+The ML-DSA branch of `gen_att_key_impl(...)` was moved into a dedicated helper:
+
+- `gen_att_key_mldsa_impl(...)`
+
+The top-level `gen_att_key_impl(...)` now keeps the shared validation and ECDSA path, while the large ML-DSA local buffers and logic live in the dedicated helper.
+
+### Purpose
+
+This is the safest structural way to reduce the stack frame and prologue complexity of `gen_att_key_impl(...)` without changing the trust boundary, crypto ownership, or the overall attestation flow.
+
+### Follow-up
+
+`gen_att_key_impl(...)` was then reduced further to a near-minimal dispatch wrapper:
+
+- shared validation stays in `gen_att_key_impl(...)`
+- ECDSA logic moved to `gen_att_key_ecdsa_impl(...)`
+- ML-DSA logic stays in `gen_att_key_mldsa_impl(...)`
+
+and the ML-DSA helper was updated to manage its own SHA handle when called without an external one.
+
+### Additional tracing
+
+After the split, the crash moved far enough that `gen_att_key impl: enter` became visible. Extra textual markers were then added after each early shared validation step in `gen_att_key_impl(...)` so the next run can pinpoint which of the first common checks (platform capability, enclave-pointer checks, target attributes, authdata checks, or helper dispatch) is the last one reached.
+
+### Additional narrowing
+
+That tracing then isolated the crash to the very first platform capability check inside `gen_att_key_impl(...)`, namely `is_verify_report2_available()`. Textual markers were added inside that helper before and after:
+
+- local dummy report initialization
+- each `report_type` field assignment
+- the call to `sgx_verify_report2(...)`
+
+so the next run can determine whether the `SIGILL` happens in basic struct setup or specifically inside the `sgx_verify_report2` leaf.
+
+### SIM-only bypass
+
+The trace then showed the `SIGILL` occurs specifically at `sgx_verify_report2(...)` in simulation mode. To keep using `SIM` as a diagnostic environment for the ML-DSA flow, `is_verify_report2_available()` now returns `true` under `SE_SIM` with an explicit debug message:
+
+- `is_verify_report2_available: SE_SIM bypass -> true`
+
+This bypass is intentionally limited to simulation builds and is not a production-path change.
+
+### Build fix
+
+The first attempt still executed the real `sgx_verify_report2(...)` path because the TDQE enclave build was receiving `SGX_MODE=SIM` but not the `SE_SIM` preprocessor define. The TDQE Linux makefile now adds:
+
+- `DEFINES += -DSE_SIM` when `SGX_MODE != HW`
+
+so the simulation-only bypass actually becomes active in enclave builds.
+
+### Runner fix
+
+The SIM test runner was also updated to run `clean` on the TDQE, PCE wrapper, TDX quote wrapper, and QGS before rebuilding in `SGX_MODE=SIM`. Without that, `make` could incorrectly reuse old objects and hide changes to simulation-only compile-time guards.
+
+## 2026-04-11: ML-DSA TDQE path now reaches successful keygen/report/seal in SIM
+
+### Result observed
+
+After the `SE_SIM` bypass became active, the TDQE ML-DSA path progressed successfully through:
+
+- ML-DSA key derivation
+- `tdqe_mldsa65_keygen(...)`
+- SHA-256 key-id derivation
+- `sgx_create_report(...)`
+- `sgx_seal_data(...)`
+
+and returned:
+
+- `trusted_tdx_only_init_quote gen_att_key sgx=0x0 tdqe=0x0`
+
+This confirms the trusted ML-DSA key-generation and sealing path itself is working in simulation.
+
+### New blocker
+
+The next failure moved to:
+
+- `load_id_enclave_get_id ret=0x200f`
+
+which indicates the wrapper could not load the ID enclave file.
+
+### Fix
+
+Two follow-up fixes were applied:
+
+- the SIM runner now builds `ae/id_enclave/linux` and creates `libsgx_id_enclave.signed.so.1`
+- `tee_att_create_context(...)` now derives `ide_path` automatically from the provided `tdqe_path`, replacing the basename with `libsgx_id_enclave.signed.so.1`
+
+so the wrapper can load the sibling ID enclave from the same repo-local enclave directory.
+
+### SIM link fix for ID enclave
+
+The local SDK only provides `libsgx_trts_sim.a` and `libsgx_tservice_sim.a` in `lib64`, not in `lib64/cve_2020_0551_load`. The ID enclave makefile previously forced:
+
+- `MITIGATION-CVE-2020-0551 := LOAD`
+
+unconditionally, which pushed simulation builds to the wrong trusted-library directory and caused link failures.
+
+The makefile now enables that mitigation only for `SGX_MODE=HW`, so `SIM` builds link against the correct `lib64` simulation libraries.
+
+### Additional ID-enclave loading trace
+
+After the ID enclave began building successfully, the wrapper still returned `0x200f` from `load_id_enclave_get_id(...)`. Extra debug prints were added around `load_id_enclave(...)` to show:
+
+- the exact resolved `id_enclave_path`
+- `access(..., R_OK)` and `access(..., X_OK)` on that path
+- the raw `sgx_create_enclave(...)` status code
+
+so the next run can distinguish path-resolution issues from loader/runtime issues on the actual signed enclave file.
+
+### Root cause found
+
+The added path trace showed the wrapper was resolving:
+
+- `/.../ae/tdqe/linux/libsgx_id_enclave.signed.so.1`
+
+while the actual file exists at:
+
+- `/.../ae/id_enclave/linux/libsgx_id_enclave.signed.so.1`
+
+So the remaining `0x200f` was not a loader mystery; it was a bad derived path. The context-path setup now derives `ide_path` from the provided TDQE path by switching the component directory from `tdqe` to `id_enclave` and then appending `/linux/libsgx_id_enclave.signed.so.1`.
+
+## 2026-04-11: Added final-stage gen_quote tracing
+
+### Context
+
+After fixing the ID enclave path, the local SIM flow progressed through:
+
+- trusted ML-DSA `gen_att_key`
+- `store_cert_data`
+- final `verify_blob`
+- `tee_att_init_quote`
+- `tee_att_get_quote_size`
+- entry into `tee_att_get_quote`
+
+### Change
+
+Added textual debug markers at the start of the TDQE `gen_quote(...)` body and after each early common precondition step:
+
+- report2 availability
+- randomized ciphertext buffer setup
+- local buffer zeroing
+- required pointer checks
+- algorithm and blob-size checks
+- certification-data validation
+- enclave-buffer checks
+- quote version determination
+
+### Purpose
+
+This isolates whether the remaining failure in the ML-DSA quote path is in the `gen_quote(...)` prologue, the common parameter validation, or only later in the quote-construction logic.
+
+### Follow-up
+
+Once the `gen_quote(...)` entry and early prechecks were confirmed, additional markers were added deeper in the quote-construction flow:
+
+- before/after `sgx_verify_report2(...)`
+- before/after each SHA-384 hash over the TD report structures
+- before/after `verify_blob_data_any_internal(...)`
+- after quote-size/sign-buffer setup
+- before/after `sgx_create_report(...)` for QE report data
+- before/after `tdqe_mldsa65_sign(...)`
+- before/after `tdqe_mldsa65_verify(...)`
+- after certification-data population
+
+so the next run can isolate the first failing step of the final ML-DSA quote assembly.
+
+### SIM-only gen_quote bypass
+
+The added tracing then showed the remaining `get_quote` failure was specifically at:
+
+- `sgx_verify_report2(&p_td_report->report_mac_struct)`
+
+inside `gen_quote(...)`.
+
+To keep the simulation environment useful for end-to-end ML-DSA debugging, that call is now also bypassed under `SE_SIM`, with an explicit marker:
+
+- `gen_quote: SE_SIM bypass sgx_verify_report2`
+
+This is intentionally scoped to simulation builds only.
+
+## Step N: Tightened the direct ML-DSA probe and reduced residual debug noise
+
+### Files
+- `tdx_tests/direct/test_tdx_direct_mldsa_probe.cpp`
+- `confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp`
+- `confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp`
+
+### What changed
+- The direct ML-DSA probe is now strict:
+  - it fails if the ML-DSA attestation key id is not advertised
+  - it fails if the selected attestation key id is all-zero
+  - it fails if the selected attestation key id is not the ML-DSA default UUID
+  - it fails if the quote header does not report `SGX_QL_ALG_MLDSA_65`
+- The enclave-side debug callback now suppresses the one-off investigation markers and keeps only the explicit `SE_SIM bypass` messages.
+- The wrapper-side `fprintf(...)` probes used to localize `init_quote` and `get_quote` failures were removed now that the path is understood.
+
+### Why this was needed
+- The probe should now behave as a real regression test for the repo-local ML-DSA direct path instead of merely printing what happened.
+- The earlier instrumentation had served its purpose and was producing large logs that obscured the actual test result.
+
+### Tests run
+- Not re-run from the tool after this cleanup step.
+- The immediately preceding run had already demonstrated:
+  - `tee_att_init_quote ret=0x0`
+  - direct selected ML-DSA attestation key id
+  - quote header `att_key_type=5`
+  - final message that the direct path was exposing ML-DSA quotes
+
+## Step N+1: Added an ML-DSA quote verification support probe
+
+### Files
+- `tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp`
+- `tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+### What changed
+- Added a new verifier-side support probe that:
+  - generates a real ML-DSA quote through the wrapper path
+  - confirms the generated quote header reports `SGX_QL_ALG_MLDSA_65`
+  - calls `tee_qv_get_collateral(...)`
+  - calls `tdx_qv_verify_quote(...)`
+  - classifies the result into:
+    - supported
+    - format/certification-data unsupported
+    - parser accepted the quote but verification could not complete because collateral/runtime support was missing
+- Updated the ML-DSA direct runner to:
+  - build QCNL/QPL/QuoteVerification when the local SGXSSL package is available
+  - compile the new verification probe
+  - run it before the direct QGS probe
+  - report `UNSUPPORTED` or `PARTIAL` without misreporting them as successful verification
+
+### Why this was needed
+- Up to this point the repository had strong evidence that ML-DSA quote generation worked in the repo-local path, but not whether the verification stack recognized those quotes.
+- Source inspection showed no existing ML-DSA-specific handling in `QuoteVerification/QVL`, so a runtime support probe was needed instead of assuming verifier compatibility.
+
+### Tests run
+- Not re-run from the tool after adding this probe.
+
+## Step N+2: Identified the current verifier-side ML-DSA rejection points
+
+### Files inspected
+- `confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/QuoteConstants.h`
+- `confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/Quote.cpp`
+- `confidential-computing.tee.dcap-pq/ae/QvE/qve/qve.cpp`
+
+### What was confirmed
+- The current QVL parser still allows only one attestation key type:
+
+```c++
+const std::array<uint16_t, 1> ALLOWED_ATTESTATION_KEY_TYPES = {{ ECDSA_256_WITH_P256_CURVE }};
+```
+
+- `Quote.cpp` still validates v4/v5 quote auth-data through the ECDSA-only path and rejects unsupported attestation key types before any ML-DSA-specific parsing could happen.
+- `qve.cpp` still extracts the QE certification chain through the legacy path that expects the known certification data flow and returns `SGX_QL_QUOTE_CERTIFICATION_DATA_UNSUPPORTED` when that expectation is not met.
+
+### Why this matters
+- The generation side is no longer the blocker.
+- The verifier stack is currently blocked first by:
+  1. attestation key type allowlist
+  2. ECDSA-specific auth-data parsing
+  3. certification-data extraction assumptions in QvE
+
+### Tests run
+- Source inspection only.
+- The runtime support probe had already reported:
+  - `verifier does not support ML-DSA quote format/certification data yet`
+## 2026-04-11 - Verifier-side ML-DSA work and current blocker
+
+- Added verifier-side ML-DSA parsing and signature verification scaffolding in QVL:
+  - `QuoteConstants.h`: added `MLDSA_65`, signature/public-key byte lengths, and allowed attestation key type.
+  - `QuoteStructures.{h,cpp}`: added ML-DSA quote auth-data structures and parsing support.
+  - `Quote.{h,cpp}`: added ML-DSA auth-data handling plus generic accessors for attestation-key bytes and quote signature bytes.
+  - `QuoteVerifier.cpp`: wired ML-DSA quote-signature verification via `tdqe_mldsa65_verify(...)` while preserving the ECDSA-only PCK/QE-report verification path.
+- Extended `QuoteVerification/dcap_quoteverify/linux/Makefile` so quoteverify builds include:
+  - `ae/tdqe/tdqe_mldsa_adapter.c`
+  - `ae/pq/mldsa-native/mldsa/mldsa_native.c`
+  - corresponding include paths under `ae/tdqe`, `ae/pq/...`, and QVL commons.
+- Added `tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp`:
+  - generates a local ML-DSA quote,
+  - checks quote header/key type,
+  - probes `tee_qv_get_collateral(...)` and `tdx_qv_verify_quote(...)`,
+  - classifies verifier behavior as supported / unsupported / partial.
+- Fixed trusted TDX-only ML-DSA blob initialization in `td_ql_logic.cpp`:
+  - aligned `m_raw_pce_isvsvn` sentinel handling for the trusted path,
+  - populated ML-DSA blob `cert_pce_info` and `raw_pce_info` consistently so later quote generation/verifier probes no longer fail on raw-PCE mismatch.
+- Started aligning ML-DSA quote generation with the ECDSA collateral-aware path:
+  - `mldsa_get_quote_size(...)` and `mldsa_get_quote(...)` now attempt `get_platform_quote_cert_data(...)`,
+  - if successful they prepare a `PCK_CERT_CHAIN`-backed certification-data path,
+  - otherwise they are intended to fall back to the existing local-only certification-data path.
+- Current status:
+  - the raw-PCE mismatch is fixed,
+  - the verifier probe now reaches `get_platform_quote_cert_data(...)`,
+  - `mldsa_get_quote_size(...)` now degrades correctly to the local-only certification-data path when the platform collateral API returns `0xe019` (`TEE_NETWORK_ERROR`),
+  - the isolated verifier probe now proves the next blocker is not quote parsing:
+    - `Quote::parse()` and `validate()` succeed on the generated ML-DSA quote,
+    - `tee_qv_get_collateral(...)` extracts certification data `size=404`, `type=3`,
+    - the verifier then returns `SGX_QL_QUOTE_CERTIFICATION_DATA_UNSUPPORTED (0xe01c)`.
+- Current verifier conclusion:
+  - ML-DSA quote generation works in the repo-local `SIM` path,
+  - QVL can parse and validate the ML-DSA quote structure,
+  - the remaining unsupported point is certification-data type handling in the verifier collateral path:
+    - the current generated quote still carries local-only certification data `type=3`,
+    - the verifier collateral path expects the supported PCK-chain certification data type and rejects the local-only type as unsupported.

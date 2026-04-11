@@ -9,28 +9,41 @@ Added a new connection, now [1]
 handle_read: status [system:0]
 handle_read:[system:0Received 1068 bytes.]
 process legecy request [1068] bytes!.
-unpack message successfully in thread [7a3f5332e740]
+unpack message successfully in thread [7b37f5cfe740]
 [qgs-debug] get_resp enter req_size=1064
 [qgs-debug] get_resp req_type=0
 call tee_att_create_context
 [qgs-debug] about to call tee_att_create_context
-[qgs-debug] tee_att_create_context ret=0x0 ctx=0x7a3f4c000b70
-create context in thread[7a3f52bff6c0]
+[qgs-debug] tee_att_create_context ret=0x0 ctx=0x7b37f0000b70
+create context in thread[7b37f4fff6c0]
 GET_QUOTE_REQ: report_size=1024 id_list_size=16
 [qgs-debug] ensure_context requested algorithm_id=5
 [qgs-debug] ensure_context current algorithm_id=2
 About to delete ctx in cleanup
 [qgs-debug] ensure_context about to create selected context algorithm_id=5
-[qgs-debug] ensure_context create_context ret=0x0 ctx=0x7a3f4c000b70
+[qgs-debug] ensure_context create_context ret=0x0 ctx=0x7b37f0000b70
 [qgs-debug] ensure_context_for_quote_request ret=0x0
 GET_QUOTE_REQ: selected uuid=e86c046e... algorithm-aware context ready
 [qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
-[load_qe td_ql_logic.cpp:599] Error, call sgx_create_enclave QE fail [load_qe], SGXError:0001.
-[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x11001 hash_size=32
-GET_QUOTE_REQ selected-context tee_att_init_quote return 0x11001
-Please use the correct uRTS library from PSW package.
+[tdqe-debug] is_verify_report2_available: SE_SIM bypass -> true
+[tdqe-debug] is_verify_report2_available: SE_SIM bypass -> true
+[tdqe-debug] is_verify_report2_available: SE_SIM bypass -> true
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+GET_QUOTE_REQ: calling tee_att_get_quote_size
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:2493] [tdx-quote-debug] mldsa_get_quote_size: quote_size=7102 (default certification data path only).
+tee_att_get_quote_size return Success, size=7102
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=7102
+GET_QUOTE_REQ: calling tee_att_get_quote
+[qgs-debug] about to call tee_att_get_quote
+[tdqe-debug] is_verify_report2_available: SE_SIM bypass -> true
+[tdqe-debug] is_verify_report2_available: SE_SIM bypass -> true
+[tdqe-debug] gen_quote: SE_SIM bypass sgx_verify_report2
+[qgs-debug] tee_att_get_quote ret=0x0
+tee_att_get_quote return Success
+GET_QUOTE_REQ: generating success response size=7102
 Return from get_resp
-resp_size is 0
+About to write response in thread [7b37f4fff6c0]
 About to shutdown and close socket
 erased a connection, now [0]
 About to close acceptor

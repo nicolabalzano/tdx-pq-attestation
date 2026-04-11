@@ -9,20 +9,44 @@ TDX_ATTEST_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGenerat
 TDX_QUOTE_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/linux"
 QGS_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs"
 PCE_WRAPPER_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/pce_wrapper/linux"
+QVL_INCLUDE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc"
+QV_INCLUDE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/inc"
+QCNL_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/qcnl/linux"
+QPL_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/qpl/linux"
+QV_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/linux"
+QG_BUILD_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/build/linux"
+QV_BUILD_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/build/linux"
 TDQE_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/tdqe/linux"
+ID_ENCLAVE_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/id_enclave/linux"
 LOCAL_SGX_SDK="$TESTS_DIR/sgxsdk"
+LOCAL_PREBUILT_OPENSSL_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/prebuilt/openssl"
+LOCAL_SGXSSL_PACKAGE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/sgxssl/Linux/package"
+LOCAL_QCNL_CONF="$TESTS_DIR/sgx_default_qcnl_local_test.conf"
 BIN_DIR="$TESTS_DIR/bin"
+SGX_MODE_VALUE="${SGX_MODE:-HW}"
 
 TDQE_MLDSA_ADAPTER_BIN="$BIN_DIR/test_tdqe_mldsa_adapter"
 QUOTE_HEADERS_BIN="$BIN_DIR/test_quote_headers_mldsa"
 TDQE_LAYOUT_BIN="$BIN_DIR/test_tdqe_quote_layout_mldsa"
+TDQE_SIM_LOADER_BIN="$BIN_DIR/test_tdqe_sim_loader"
 WRAPPER_ALGORITHMS_BIN="$BIN_DIR/test_tdx_wrapper_algorithms"
+WRAPPER_INIT_QUOTE_PROBE_BIN="$BIN_DIR/test_tdx_mldsa_init_quote_probe"
+MLDSA_VERIFY_PROBE_BIN="$BIN_DIR/test_tdx_mldsa_quote_verify_probe"
 TDX_DIRECT_PROBE_BIN="$BIN_DIR/test_tdx_direct_mldsa_probe"
 QGS_SOCKET_PATH="${QGS_SOCKET_PATH:-$BIN_DIR/qgs.socket}"
 QGS_LOG_PATH="${QGS_LOG_PATH:-$BIN_DIR/qgs.log}"
 DIRECT_PROBE_TIMEOUT_SECONDS="${DIRECT_PROBE_TIMEOUT_SECONDS:-20}"
 QGS_NUM_THREADS="${QGS_NUM_THREADS:-1}"
+QGS_TDQE_PATH="${QGS_TDQE_PATH:-$TDQE_LINUX_DIR/libsgx_tdqe.signed.so.1}"
 QGS_PID=""
+
+ensure_signed_enclave_major_link() {
+  local signed_path="$1"
+  local major_path="$2"
+  if [[ -f "$signed_path" && ! -e "$major_path" ]]; then
+    ln -sf "$(basename "$signed_path")" "$major_path"
+  fi
+}
 
 print_qgs_unavailable_hint() {
   if [[ -f "$QGS_LOG_PATH" ]] && \
@@ -36,11 +60,16 @@ print_qgs_unavailable_hint() {
 SYSTEM_URTS_DIR="/lib/x86_64-linux-gnu"
 URTS_LIB_DIR="$LOCAL_SGX_SDK/lib64"
 TDX_GUEST_DEV=""
-QGS_LD_LIBRARY_PATH="$QGS_DIR:$TDX_QUOTE_LINUX_DIR:$PCE_WRAPPER_LINUX_DIR:$URTS_LIB_DIR"
+URTS_LINK_LIB="-lsgx_urts"
 
-if [[ -f "$SYSTEM_URTS_DIR/libsgx_urts.so" ]]; then
+if [[ "$SGX_MODE_VALUE" == "SIM" ]]; then
+  URTS_LIB_DIR="$LOCAL_SGX_SDK/lib64"
+  URTS_LINK_LIB="-lsgx_urts_sim"
+elif [[ -f "$SYSTEM_URTS_DIR/libsgx_urts.so" ]]; then
   URTS_LIB_DIR="$SYSTEM_URTS_DIR"
 fi
+
+QGS_LD_LIBRARY_PATH="$QGS_DIR:$TDX_QUOTE_LINUX_DIR:$PCE_WRAPPER_LINUX_DIR:$URTS_LIB_DIR"
 
 for dev in /dev/tdx_guest /dev/tdx-guest /dev/tdx*; do
   if [[ -e "$dev" ]]; then
@@ -60,17 +89,68 @@ cleanup() {
 
 trap cleanup EXIT
 
+if [[ "$SGX_MODE_VALUE" == "SIM" ]]; then
+  echo "[INFO] Cleaning repo-local TDQE for a deterministic SIM rebuild..."
+  make -C "$TDQE_LINUX_DIR" clean SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+  echo "[INFO] Cleaning repo-local ID enclave for a deterministic SIM rebuild..."
+  make -C "$ID_ENCLAVE_LINUX_DIR" clean SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+  echo "[INFO] Cleaning repo-local PCE wrapper for a deterministic SIM rebuild..."
+  make -C "$PCE_WRAPPER_LINUX_DIR" clean SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+  echo "[INFO] Cleaning repo-local TDX quote wrapper for a deterministic SIM rebuild..."
+  make -C "$TDX_QUOTE_LINUX_DIR" clean SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+  echo "[INFO] Cleaning repo-local QGS for a deterministic SIM rebuild..."
+  make -C "$QGS_DIR" clean SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+fi
+
 echo "[INFO] Building repo-local TDQE..."
-make -C "$TDQE_LINUX_DIR" SGX_SDK="$LOCAL_SGX_SDK"
+make -C "$TDQE_LINUX_DIR" SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+ensure_signed_enclave_major_link \
+  "$TDQE_LINUX_DIR/libsgx_tdqe.signed.so" \
+  "$TDQE_LINUX_DIR/libsgx_tdqe.signed.so.1"
+
+echo "[INFO] Building repo-local ID enclave..."
+make -C "$ID_ENCLAVE_LINUX_DIR" SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
+ensure_signed_enclave_major_link \
+  "$ID_ENCLAVE_LINUX_DIR/libsgx_id_enclave.signed.so" \
+  "$ID_ENCLAVE_LINUX_DIR/libsgx_id_enclave.signed.so.1"
+
+echo "[INFO] Building repo-local PCE wrapper..."
+make -C "$PCE_WRAPPER_LINUX_DIR" SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
 
 echo "[INFO] Building repo-local TDX quote wrapper..."
-make -C "$TDX_QUOTE_LINUX_DIR" SGX_SDK="$LOCAL_SGX_SDK"
+make -C "$TDX_QUOTE_LINUX_DIR" SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
 
 echo "[INFO] Building repo-local libtdx_attest..."
 make -C "$TDX_ATTEST_LINUX_DIR"
 
+if [[ -d "$LOCAL_SGX_SDK" ]]; then
+  export SGX_SDK="$LOCAL_SGX_SDK"
+fi
+
+export QCNL_CONF_PATH="$LOCAL_QCNL_CONF"
+
+if [[ ! -d "$LOCAL_PREBUILT_OPENSSL_DIR/inc" || ! -d "$LOCAL_PREBUILT_OPENSSL_DIR/lib/linux64" ]]; then
+  echo "[INFO] Preparing repo-local OpenSSL compatibility paths for DCAP builds..."
+  mkdir -p "$LOCAL_PREBUILT_OPENSSL_DIR/lib"
+  ln -sfn /usr/include "$LOCAL_PREBUILT_OPENSSL_DIR/inc"
+  ln -sfn /usr/lib/x86_64-linux-gnu "$LOCAL_PREBUILT_OPENSSL_DIR/lib/linux64"
+fi
+
+if [[ ! -f "$LOCAL_SGXSSL_PACKAGE_DIR/include/openssl/opensslconf.h" ]]; then
+  echo "[SKIP] Missing repo-local SGXSSL package at:"
+  echo "       $LOCAL_SGXSSL_PACKAGE_DIR"
+  echo "[SKIP] ML-DSA quote verification probe will be skipped."
+  SKIP_MLDSA_VERIFY_PROBE=1
+else
+  SKIP_MLDSA_VERIFY_PROBE=0
+  echo "[INFO] Building repo-local QCNL/QPL/QuoteVerification libraries..."
+  make -C "$QCNL_LINUX_DIR"
+  make -C "$QPL_LINUX_DIR"
+  make -C "$QV_LINUX_DIR"
+fi
+
 echo "[INFO] Building repo-local QGS..."
-make -C "$QGS_DIR" SGX_SDK="$LOCAL_SGX_SDK"
+make -C "$QGS_DIR" SGX_SDK="$LOCAL_SGX_SDK" SGX_MODE="$SGX_MODE_VALUE"
 
 echo "[INFO] Compiling TDQE ML-DSA adapter test..."
 gcc -std=c11 \
@@ -102,6 +182,15 @@ g++ -std=c++14 -O2 -Wall -Wextra -Werror \
   "$TESTS_DIR/tdqe/test_tdqe_quote_layout_mldsa.cpp" \
   -o "$TDQE_LAYOUT_BIN"
 
+echo "[INFO] Compiling TDQE simulation loader probe..."
+g++ -std=c++14 -O2 -Wall -Wextra -Werror \
+  -I"$LOCAL_SGX_SDK/include" \
+  "$TESTS_DIR/tdqe/test_tdqe_sim_loader.cpp" \
+  -L"$URTS_LIB_DIR" \
+  -Wl,-rpath,"$URTS_LIB_DIR" \
+  "$URTS_LINK_LIB" -lpthread -ldl \
+  -o "$TDQE_SIM_LOADER_BIN"
+
 echo "[INFO] Compiling wrapper ML-DSA algorithm-selection test..."
 g++ -std=c++14 -O2 -Wall -Wextra -Werror \
   -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/inc" \
@@ -117,8 +206,57 @@ g++ -std=c++14 -O2 -Wall -Wextra -Werror \
   -Wl,-rpath,"$TDX_QUOTE_LINUX_DIR" \
   -Wl,-rpath,"$PCE_WRAPPER_LINUX_DIR" \
   -Wl,-rpath,"$URTS_LIB_DIR" \
-  -lsgx_tdx_logic -lsgx_urts -lpthread -ldl \
+  -lsgx_tdx_logic "$URTS_LINK_LIB" -lpthread -ldl \
   -o "$WRAPPER_ALGORITHMS_BIN"
+
+echo "[INFO] Compiling wrapper ML-DSA init_quote probe..."
+g++ -std=c++14 -O2 -Wall -Wextra -Werror \
+  -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/inc" \
+  -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc" \
+  -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/common/inc/internal" \
+  -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/common/inc/internal/linux" \
+  -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper" \
+  -I"$LOCAL_SGX_SDK/include" \
+  "$TESTS_DIR/wrapper/test_tdx_mldsa_init_quote_probe.cpp" \
+  -L"$TDX_QUOTE_LINUX_DIR" \
+  -L"$PCE_WRAPPER_LINUX_DIR" \
+  -L"$URTS_LIB_DIR" \
+  -Wl,-rpath,"$TDX_QUOTE_LINUX_DIR" \
+  -Wl,-rpath,"$PCE_WRAPPER_LINUX_DIR" \
+  -Wl,-rpath,"$URTS_LIB_DIR" \
+  -lsgx_tdx_logic "$URTS_LINK_LIB" -lpthread -ldl \
+  -o "$WRAPPER_INIT_QUOTE_PROBE_BIN"
+
+if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
+  echo "[INFO] Compiling ML-DSA quote verification support probe..."
+  g++ -std=c++14 -O2 -Wall -Wextra -Werror \
+    -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper" \
+    -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest" \
+    -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/inc" \
+    -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc" \
+    -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/common/inc/internal" \
+    -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/common/inc/internal/linux" \
+    -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/tdqe" \
+    -I"$QVL_INCLUDE_DIR" \
+    -I"$QV_INCLUDE_DIR" \
+    -I"$LOCAL_SGX_SDK/include" \
+    "$TESTS_DIR/verifier/test_tdx_mldsa_quote_verify_probe.cpp" \
+    -L"$TDX_QUOTE_LINUX_DIR" \
+    -L"$TDX_ATTEST_LINUX_DIR" \
+    -L"$PCE_WRAPPER_LINUX_DIR" \
+    -L"$URTS_LIB_DIR" \
+    -L"$QV_BUILD_LINUX_DIR" \
+    -L"$QG_BUILD_LINUX_DIR" \
+    -Wl,-rpath,"$TDX_QUOTE_LINUX_DIR" \
+    -Wl,-rpath,"$TDX_ATTEST_LINUX_DIR" \
+    -Wl,-rpath,"$PCE_WRAPPER_LINUX_DIR" \
+    -Wl,-rpath,"$URTS_LIB_DIR" \
+    -Wl,-rpath,"$QV_BUILD_LINUX_DIR" \
+    -Wl,-rpath,"$QG_BUILD_LINUX_DIR" \
+    -lsgx_tdx_logic -ltdx_attest -l:libsgx_dcap_quoteverify.so -l:libdcap_quoteprov.so -l:libsgx_default_qcnl_wrapper.so \
+    "$URTS_LINK_LIB" -lcurl -lpthread -ldl \
+    -o "$MLDSA_VERIFY_PROBE_BIN"
+fi
 
 echo "[INFO] Compiling direct TDX ML-DSA capability probe..."
 g++ -std=c++14 -O2 -Wall -Wextra -Werror \
@@ -141,9 +279,45 @@ echo "[INFO] Running quote header ML-DSA layout test..."
 echo "[INFO] Running TDQE ML-DSA quote layout test..."
 "$TDQE_LAYOUT_BIN"
 
+if [[ "$SGX_MODE_VALUE" == "SIM" ]]; then
+  echo "[INFO] Running TDQE simulation loader probe..."
+  LD_LIBRARY_PATH="$URTS_LIB_DIR:${LD_LIBRARY_PATH:-}" \
+    "$TDQE_SIM_LOADER_BIN" "$QGS_TDQE_PATH"
+
+  echo "[INFO] Running wrapper ML-DSA init_quote probe..."
+  LD_LIBRARY_PATH="$TDX_QUOTE_LINUX_DIR:$PCE_WRAPPER_LINUX_DIR:$URTS_LIB_DIR:${LD_LIBRARY_PATH:-}" \
+    "$WRAPPER_INIT_QUOTE_PROBE_BIN" "$QGS_TDQE_PATH"
+fi
+
 echo "[INFO] Running wrapper ML-DSA algorithm-selection test..."
 LD_LIBRARY_PATH="$TDX_QUOTE_LINUX_DIR:$PCE_WRAPPER_LINUX_DIR:$URTS_LIB_DIR:${LD_LIBRARY_PATH:-}" \
   "$WRAPPER_ALGORITHMS_BIN"
+
+if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
+  echo "[INFO] Running ML-DSA quote verification support probe..."
+  set +e
+  TEST_TDQE_PATH="$QGS_TDQE_PATH" \
+  LD_LIBRARY_PATH="$TDX_ATTEST_LINUX_DIR:$TDX_QUOTE_LINUX_DIR:$PCE_WRAPPER_LINUX_DIR:$URTS_LIB_DIR:$QV_BUILD_LINUX_DIR:$QG_BUILD_LINUX_DIR:${LD_LIBRARY_PATH:-}" \
+    "$MLDSA_VERIFY_PROBE_BIN"
+  verify_probe_status=$?
+  set -e
+
+  case "$verify_probe_status" in
+    0)
+      echo "[INFO] ML-DSA quote verification probe succeeded."
+      ;;
+    2)
+      echo "[UNSUPPORTED] The current verifier stack does not support ML-DSA quote format/certification data yet."
+      ;;
+    3)
+      echo "[PARTIAL] The verifier stack accepted the ML-DSA quote format but could not complete verification due to collateral/runtime limits."
+      ;;
+    *)
+      echo "[ERROR] ML-DSA quote verification probe failed with status $verify_probe_status"
+      exit "$verify_probe_status"
+      ;;
+  esac
+fi
 
 if [[ -z "$TDX_GUEST_DEV" ]]; then
   echo "[SKIP] No TDX guest device found; skipping the direct TDX ML-DSA capability probe."
@@ -160,6 +334,7 @@ rm -f "$QGS_SOCKET_PATH" "$QGS_LOG_PATH"
 
 echo "[INFO] Starting repo-local QGS on $QGS_SOCKET_PATH ..."
 QGS_SOCKET_PATH="$QGS_SOCKET_PATH" \
+QGS_TDQE_PATH="$QGS_TDQE_PATH" \
 LD_LIBRARY_PATH="$QGS_LD_LIBRARY_PATH:${LD_LIBRARY_PATH:-}" \
   "$QGS_DIR/qgs" --no-daemon --debug "-n=$QGS_NUM_THREADS" >"$QGS_LOG_PATH" 2>&1 &
 QGS_PID=$!
@@ -174,7 +349,7 @@ fi
 echo "[INFO] Running direct TDX ML-DSA capability probe..."
 TDX_ATTEST_FORCE_LOCAL_QGS=1 \
 TDX_ATTEST_LOCAL_QGS_SOCKET="$QGS_SOCKET_PATH" \
-LD_LIBRARY_PATH="$TDX_ATTEST_LINUX_DIR:${LD_LIBRARY_PATH:-}" \
+LD_LIBRARY_PATH="$TDX_ATTEST_LINUX_DIR:$URTS_LIB_DIR:${LD_LIBRARY_PATH:-}" \
   timeout "$DIRECT_PROBE_TIMEOUT_SECONDS" "$TDX_DIRECT_PROBE_BIN" || {
     probe_status=$?
     echo "[ERROR] Direct TDX ML-DSA capability probe failed with status $probe_status"

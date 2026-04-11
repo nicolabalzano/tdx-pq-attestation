@@ -7,12 +7,6 @@
 #include "sgx_quote_4.h"
 #include "sgx_quote_5.h"
 
-static bool is_intel_tdqe_ecdsa_uuid(const tdx_uuid_t& att_key_id)
-{
-    static const uint8_t kIntelTdqeEcdsaAttestationId[TDX_UUID_SIZE] = TDX_SGX_ECDSA_ATTESTATION_ID;
-    return std::memcmp(att_key_id.d, kIntelTdqeEcdsaAttestationId, sizeof(kIntelTdqeEcdsaAttestationId)) == 0;
-}
-
 static bool is_intel_tdqe_mldsa_uuid(const tdx_uuid_t& att_key_id)
 {
     static const uint8_t kIntelTdqeMldsaAttestationId[TDX_UUID_SIZE] = TDX_SGX_MLDSA_65_ATTESTATION_ID;
@@ -77,7 +71,8 @@ int main()
     }
 
     if (!found_mldsa_uuid) {
-        std::printf("[test] direct TDX attestation API does not advertise an ML-DSA attestation key id yet.\n");
+        std::printf("[test] direct TDX attestation API does not advertise the ML-DSA attestation key id.\n");
+        return 1;
     }
 
     tdx_report_data_t report_data = {};
@@ -123,16 +118,23 @@ int main()
 
     if (is_all_zero_uuid(selected_att_key_id)) {
         std::printf("[test] direct TDX attestation service returned an all-zero selected att key id.\n");
-        std::printf("[test] the request reached the service, but the service did not report a valid selected attestation key id.\n");
-    } else if (is_intel_tdqe_ecdsa_uuid(selected_att_key_id) &&
-        quote_header->att_key_type == SGX_QL_ALG_ECDSA_P256) {
-        std::printf("[test] direct TDX attestation path is currently ECDSA-only on this build/runtime.\n");
-        std::printf("[test] ML-DSA direct quote selection is not yet exposed through libtdx_attest.\n");
-    } else if (quote_header->att_key_type == SGX_QL_ALG_MLDSA_65) {
-        std::printf("[test] direct TDX attestation path is exposing ML-DSA quotes.\n");
-    } else {
-        std::printf("[test] direct TDX attestation path returned a non-default/unknown attestation profile.\n");
+        tdx_att_free_quote(quote);
+        return 1;
     }
+
+    if (!is_intel_tdqe_mldsa_uuid(selected_att_key_id)) {
+        std::printf("[test] direct TDX attestation path selected a non-ML-DSA attestation key id.\n");
+        tdx_att_free_quote(quote);
+        return 1;
+    }
+
+    if (quote_header->att_key_type != SGX_QL_ALG_MLDSA_65) {
+        std::printf("[test] direct quote header did not report ML-DSA attestation type.\n");
+        tdx_att_free_quote(quote);
+        return 1;
+    }
+
+    std::printf("[test] direct TDX attestation path is exposing ML-DSA quotes.\n");
 
     tdx_att_free_quote(quote);
     return 0;
