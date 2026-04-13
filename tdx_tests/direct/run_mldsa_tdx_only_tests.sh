@@ -24,6 +24,7 @@ LOCAL_SGXSSL_PACKAGE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVer
 LOCAL_QCNL_CONF="$TESTS_DIR/sgx_default_qcnl_local_test.conf"
 BIN_DIR="$TESTS_DIR/bin"
 SGX_MODE_VALUE="${SGX_MODE:-HW}"
+PCCS_SERVICE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/pccs/service"
 
 TDQE_MLDSA_ADAPTER_BIN="$BIN_DIR/test_tdqe_mldsa_adapter"
 QUOTE_HEADERS_BIN="$BIN_DIR/test_quote_headers_mldsa"
@@ -39,6 +40,13 @@ DIRECT_PROBE_TIMEOUT_SECONDS="${DIRECT_PROBE_TIMEOUT_SECONDS:-20}"
 QGS_NUM_THREADS="${QGS_NUM_THREADS:-1}"
 QGS_TDQE_PATH="${QGS_TDQE_PATH:-$TDQE_LINUX_DIR/libsgx_tdqe.signed.so.1}"
 QGS_PID=""
+PCCS_PID=""
+PCCS_LOG_PATH="${PCCS_LOG_PATH:-$BIN_DIR/pccs.log}"
+LOCAL_PCCS_ENABLE="${LOCAL_PCCS_ENABLE:-1}"
+LOCAL_PCCS_PORT="${LOCAL_PCCS_PORT:-8081}"
+LOCAL_PCCS_ADMIN_TOKEN="${LOCAL_PCCS_ADMIN_TOKEN:-mldsa-local-admin-token}"
+LOCAL_PCCS_USER_TOKEN="${LOCAL_PCCS_USER_TOKEN:-mldsa-local-user-token}"
+LOCAL_PCCS_PLATFORM_COLLATERAL_JSON="${LOCAL_PCCS_PLATFORM_COLLATERAL_JSON:-}"
 
 ensure_signed_enclave_major_link() {
   local signed_path="$1"
@@ -54,6 +62,93 @@ print_qgs_unavailable_hint() {
     echo "[UNAVAILABLE] The forced local QGS / tee_att path is unavailable in this environment."
     echo "[UNAVAILABLE] This machine exposes TDX guest attestation, but the wrapper/QGS bootstrap still requires the SGX PCE/PSW interface."
     echo "[UNAVAILABLE] On a tdx_guest-only system, this ML-DSA direct-wrapper path cannot complete end-to-end."
+  fi
+}
+
+sha512_hex() {
+  printf '%s' "$1" | sha512sum | awk '{print $1}'
+}
+
+ensure_local_pccs_tls() {
+  local ssl_dir="$PCCS_SERVICE_DIR/ssl_key"
+  mkdir -p "$ssl_dir"
+  if [[ -f "$ssl_dir/private.pem" && -f "$ssl_dir/file.crt" ]]; then
+    return 0
+  fi
+
+  echo "[INFO] Generating self-signed PCCS TLS keypair..."
+  openssl genrsa -out "$ssl_dir/private.pem" 2048 >/dev/null 2>&1
+  openssl req -new -key "$ssl_dir/private.pem" -out "$ssl_dir/csr.pem" \
+    -subj "/CN=localhost" >/dev/null 2>&1
+  openssl x509 -req -days 365 -in "$ssl_dir/csr.pem" \
+    -signkey "$ssl_dir/private.pem" -out "$ssl_dir/file.crt" >/dev/null 2>&1
+}
+
+start_local_pccs() {
+  if [[ "$LOCAL_PCCS_ENABLE" != "1" ]]; then
+    echo "[INFO] Local PCCS bootstrap disabled."
+    return 0
+  fi
+
+  if [[ ! -d "$PCCS_SERVICE_DIR/node_modules" ]]; then
+    echo "[ERROR] PCCS dependencies are missing: $PCCS_SERVICE_DIR/node_modules"
+    echo "[ERROR] Run 'npm ci' in $PCCS_SERVICE_DIR or disable local PCCS bootstrap."
+    return 1
+  fi
+
+  ensure_local_pccs_tls
+
+  local admin_hash
+  local user_hash
+  admin_hash="$(sha512_hex "$LOCAL_PCCS_ADMIN_TOKEN")"
+  user_hash="$(sha512_hex "$LOCAL_PCCS_USER_TOKEN")"
+
+  rm -f "$PCCS_LOG_PATH"
+  echo "[INFO] Starting local PCCS on https://localhost:$LOCAL_PCCS_PORT ..."
+  (
+    cd "$PCCS_SERVICE_DIR"
+    NODE_ENV=production \
+    NODE_CONFIG="{\"HTTPS_PORT\":$LOCAL_PCCS_PORT,\"hosts\":\"127.0.0.1\",\"CachingFillMode\":\"OFFLINE\",\"AdminTokenHash\":\"$admin_hash\",\"UserTokenHash\":\"$user_hash\",\"LogLevel\":\"debug\"}" \
+      node pccs_server.js
+  ) >"$PCCS_LOG_PATH" 2>&1 &
+  PCCS_PID=$!
+
+  for _ in $(seq 1 30); do
+    if curl -ks "https://localhost:$LOCAL_PCCS_PORT/" >/dev/null 2>&1; then
+      break
+    fi
+    sleep 1
+  done
+
+  if ! kill -0 "$PCCS_PID" 2>/dev/null; then
+    echo "[ERROR] Local PCCS failed to start. Log follows:"
+    sed -n '1,200p' "$PCCS_LOG_PATH" || true
+    return 1
+  fi
+
+  if ! curl -ks "https://localhost:$LOCAL_PCCS_PORT/" >/dev/null 2>&1; then
+    echo "[ERROR] Local PCCS did not become reachable on https://localhost:$LOCAL_PCCS_PORT"
+    sed -n '1,200p' "$PCCS_LOG_PATH" || true
+    return 1
+  fi
+
+  if [[ -n "$LOCAL_PCCS_PLATFORM_COLLATERAL_JSON" ]]; then
+    if [[ ! -f "$LOCAL_PCCS_PLATFORM_COLLATERAL_JSON" ]]; then
+      echo "[ERROR] LOCAL_PCCS_PLATFORM_COLLATERAL_JSON does not exist:"
+      echo "        $LOCAL_PCCS_PLATFORM_COLLATERAL_JSON"
+      return 1
+    fi
+
+    echo "[INFO] Importing local PCCS platform collateral from:"
+    echo "       $LOCAL_PCCS_PLATFORM_COLLATERAL_JSON"
+    curl -ksS \
+      -X PUT \
+      -H "admin-token: $LOCAL_PCCS_ADMIN_TOKEN" \
+      -H "Content-Type: application/json" \
+      --data @"$LOCAL_PCCS_PLATFORM_COLLATERAL_JSON" \
+      "https://localhost:$LOCAL_PCCS_PORT/sgx/certification/v4/platformcollateral" >/dev/null
+  else
+    echo "[INFO] No LOCAL_PCCS_PLATFORM_COLLATERAL_JSON provided; PCCS will stay empty."
   fi
 }
 
@@ -84,6 +179,10 @@ cleanup() {
   if [[ -n "$QGS_PID" ]] && kill -0 "$QGS_PID" 2>/dev/null; then
     kill "$QGS_PID" 2>/dev/null || true
     wait "$QGS_PID" 2>/dev/null || true
+  fi
+  if [[ -n "$PCCS_PID" ]] && kill -0 "$PCCS_PID" 2>/dev/null; then
+    kill "$PCCS_PID" 2>/dev/null || true
+    wait "$PCCS_PID" 2>/dev/null || true
   fi
 }
 
@@ -128,6 +227,9 @@ if [[ -d "$LOCAL_SGX_SDK" ]]; then
 fi
 
 export QCNL_CONF_PATH="$LOCAL_QCNL_CONF"
+if [[ "$SGX_MODE_VALUE" == "SIM" ]]; then
+  export TDX_MLDSA_LOCAL_PCCS_EMPTY_FALLBACK="${TDX_MLDSA_LOCAL_PCCS_EMPTY_FALLBACK:-1}"
+fi
 
 if [[ ! -d "$LOCAL_PREBUILT_OPENSSL_DIR/inc" || ! -d "$LOCAL_PREBUILT_OPENSSL_DIR/lib/linux64" ]]; then
   echo "[INFO] Preparing repo-local OpenSSL compatibility paths for DCAP builds..."
@@ -241,6 +343,8 @@ if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
     -I"$QV_INCLUDE_DIR" \
     -I"$LOCAL_SGX_SDK/include" \
     "$TESTS_DIR/verifier/test_tdx_mldsa_quote_verify_probe.cpp" \
+    "$TDQE_LINUX_DIR/tdqe_mldsa_adapter.o" \
+    "$TDQE_LINUX_DIR/mldsa_native.o" \
     -L"$TDX_QUOTE_LINUX_DIR" \
     -L"$TDX_ATTEST_LINUX_DIR" \
     -L"$PCE_WRAPPER_LINUX_DIR" \
@@ -254,7 +358,7 @@ if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
     -Wl,-rpath,"$QV_BUILD_LINUX_DIR" \
     -Wl,-rpath,"$QG_BUILD_LINUX_DIR" \
     -lsgx_tdx_logic -ltdx_attest -l:libsgx_dcap_quoteverify.so -l:libdcap_quoteprov.so -l:libsgx_default_qcnl_wrapper.so \
-    "$URTS_LINK_LIB" -lcurl -lpthread -ldl \
+    "$URTS_LINK_LIB" -lcrypto -lcurl -lpthread -ldl \
     -o "$MLDSA_VERIFY_PROBE_BIN"
 fi
 
@@ -290,10 +394,15 @@ if [[ "$SGX_MODE_VALUE" == "SIM" ]]; then
 fi
 
 echo "[INFO] Running wrapper ML-DSA algorithm-selection test..."
+if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" && "$SGX_MODE_VALUE" == "SIM" ]]; then
+  start_local_pccs
+fi
+
+TEST_TDQE_PATH="$QGS_TDQE_PATH" \
 LD_LIBRARY_PATH="$TDX_QUOTE_LINUX_DIR:$PCE_WRAPPER_LINUX_DIR:$URTS_LIB_DIR:${LD_LIBRARY_PATH:-}" \
   "$WRAPPER_ALGORITHMS_BIN"
 
-if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
+if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" && "$SGX_MODE_VALUE" == "SIM" ]]; then
   echo "[INFO] Running ML-DSA quote verification support probe..."
   set +e
   TEST_TDQE_PATH="$QGS_TDQE_PATH" \
@@ -304,7 +413,7 @@ if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
 
   case "$verify_probe_status" in
     0)
-      echo "[INFO] ML-DSA quote verification probe succeeded."
+      echo "[INFO] ML-DSA quote verification probe succeeded in the current setup."
       ;;
     2)
       echo "[UNSUPPORTED] The current verifier stack does not support ML-DSA quote format/certification data yet."
@@ -317,6 +426,8 @@ if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
       exit "$verify_probe_status"
       ;;
   esac
+elif [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
+  echo "[INFO] Skipping ML-DSA local verifier probe outside SGX simulation mode."
 fi
 
 if [[ -z "$TDX_GUEST_DEV" ]]; then

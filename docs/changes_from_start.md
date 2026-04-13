@@ -10,6 +10,127 @@ For each step it lists:
 
 All paths below are repository-relative unless stated otherwise.
 
+## Latest update: Added QVL unit-test coverage for ML-DSA v4 quotes
+
+### Files
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/test/CommonTestUtils/QuoteV4Generator.h`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/test/CommonTestUtils/QuoteV4Generator.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/test/UnitTests/QuoteV4ParsingUT.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/test/UnitTests/GetQECertificationDataSizeUT.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/test/UnitTests/GetQECertificationDataUT.cpp`
+
+### What changed
+- Extended the QVL v4 quote test generator so it can emit either ECDSA or ML-DSA auth-data layouts
+- Added ML-DSA signature/public-key test structs using the repository quote constants
+- Made the generator switch the serialized v4 auth-data layout from the selected `attestationKeyType`
+- Added a positive parser/validator test for a TDX v4 ML-DSA quote
+- Added positive extraction tests proving `sgxAttestationGetQECertificationDataSize()` and `sgxAttestationGetQECertificationData()` accept a v4 ML-DSA quote
+- Added a verifier unit test proving the `QuoteVerifier` ML-DSA branch is reached and returns `STATUS_INVALID_QUOTE_SIGNATURE` for an invalid ML-DSA quote signature
+
+### Why this matters
+- The runtime probe had already shown that the repo-local path generates real ML-DSA quotes
+- The remaining end-to-end verifier blocker is the local-only certification data `type=3`
+- These unit tests lock in the part that already works in the QVL:
+  - v4 ML-DSA quote parsing
+  - ML-DSA auth-data layout handling
+  - QE certification-data extraction from ML-DSA quotes
+
+### Tests run
+- Syntax-checked generator update:
+
+```bash
+g++ -std=c++14 -fsyntax-only .../QuoteV4Generator.cpp
+```
+
+- Syntax-checked new/updated unit tests:
+
+```bash
+g++ -std=c++14 -fsyntax-only .../QuoteV4ParsingUT.cpp
+g++ -std=c++14 -fsyntax-only .../GetQECertificationDataSizeUT.cpp
+g++ -std=c++14 -fsyntax-only .../GetQECertificationDataUT.cpp
+g++ -std=c++14 -fsyntax-only .../QuoteV4VerifierUT.cpp
+```
+
+- All five syntax checks completed successfully.
+
+## Latest update: Fixed the wrapper ML-DSA algorithm-selection test in SIM mode
+
+### File
+`tdx_tests/wrapper/test_tdx_wrapper_algorithms.cpp`
+
+`tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+### What changed
+- The test now reads `TEST_TDQE_PATH` from the environment
+- The ML-DSA context is created with that `tdqe_path` instead of `nullptr`
+- The runner now exports `TEST_TDQE_PATH="$QGS_TDQE_PATH"` when launching `test_tdx_wrapper_algorithms`
+- The wrapper algorithm-selection test now performs `tee_att_init_quote(..., nullptr, false, &pub_key_id_size, nullptr)` before calling `tee_att_get_quote_size()`
+- The wrapper algorithm-selection test now also performs the real bootstrap call:
+
+```c++
+tee_att_init_quote(mldsa_context,
+                   &qe_target_info,
+                   false,
+                   &pub_key_id_size,
+                   reinterpret_cast<uint8_t*>(&pub_key_id));
+```
+
+### Why this was needed
+- The runner already exported `TEST_TDQE_PATH="$QGS_TDQE_PATH"` for this test
+- But the test ignored it and created the ML-DSA context with a null path
+- In `SGX_MODE=SIM`, that made `tee_att_get_quote_size()` hit `load_qe()` with the wrong default lookup path and fail with `SGXError:200f`
+- After fixing the path, the test still called `tee_att_get_quote_size()` on an uninitialized ML-DSA context
+- That left `m_raw_pce_isvsvn` at the sentinel value and made the trusted ML-DSA quote-size path fail with `TEE_ATT_ATT_KEY_NOT_INITIALIZED`
+- A size-only `tee_att_init_quote(..., nullptr, ...)` was still not enough for this path
+- The trusted ML-DSA context is fully initialized only after the bootstrap call that materializes `qe_target_info` and `pub_key_id`
+
+### Tests run
+- Syntax-checked the updated test:
+
+```bash
+g++ -std=c++14 -O2 -Wall -Wextra -Werror -fsyntax-only .../test_tdx_wrapper_algorithms.cpp
+```
+
+- Syntax-checked the updated runner:
+
+```bash
+bash -n .../run_mldsa_tdx_only_tests.sh
+```
+
+- Syntax-checked the updated wrapper test again after adding the `init_quote` step:
+
+```bash
+g++ -std=c++14 -O2 -Wall -Wextra -Werror -fsyntax-only .../test_tdx_wrapper_algorithms.cpp
+```
+
+- All syntax checks completed successfully.
+
+## Latest update: Integrated ML-DSA sources into the QVL CMake build
+
+### File
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/CMakeLists.txt`
+
+### What changed
+- Enabled C in the `AttestationLibrary` CMake project
+- Added:
+  - `ae/tdqe/tdqe_mldsa_adapter.c`
+  - `ae/pq/mldsa-native/mldsa/mldsa_native.c`
+  to the `AttestationLibrary` source list
+- Added include paths for:
+  - `ae/tdqe`
+  - `ae/pq/mldsa-native/mldsa`
+  - `ae/pq/mldsa-native/mldsa/src`
+
+### Why this was needed
+- The Makefile-based `dcap_quoteverify` build already compiled the ML-DSA verifier helper sources
+- The QVL `AttestationLibrary` CMake build did not
+- That left the ML-DSA `QuoteVerifier.cpp` branch under-integrated for the CMake/unit-test path
+- With this change, the QVL test/build path has the same ML-DSA helper sources available as the Makefile verifier path
+
 ## Step 1: Added ML-DSA identifiers and quote layout types
 
 ### File
@@ -6215,3 +6336,46 @@ const std::array<uint16_t, 1> ALLOWED_ATTESTATION_KEY_TYPES = {{ ECDSA_256_WITH_
   - the remaining unsupported point is certification-data type handling in the verifier collateral path:
     - the current generated quote still carries local-only certification data `type=3`,
     - the verifier collateral path expects the supported PCK-chain certification data type and rejects the local-only type as unsupported.
+- Follow-up verifier refactor:
+  - refactored `ae/QvE/qve/qve.cpp` collateral extraction to rely on the ML-DSA-aware QVL parser path rather than treating the older certification-data helper layer as the primary source of truth,
+  - reran the isolated verifier probe and confirmed the same functional outcome after the refactor:
+    - quote parse succeeds,
+    - quote validate succeeds,
+    - QE certification data is extracted successfully,
+    - extracted certification data still reports `type=3`,
+    - `tee_qv_get_collateral(...)` returns `SGX_QL_QUOTE_CERTIFICATION_DATA_UNSUPPORTED (0xe01c)`.
+- Added real-path diagnostics for ML-DSA platform collateral retrieval:
+  - `QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp` now logs the `sgx_ql_pck_cert_id_t` inputs passed into `get_platform_quote_cert_data(...)`, including QE3 ID prefix, encrypted-PPID presence/size, crypto suite, PCE ID, and raw CPU/PCE SVN prefixes.
+  - the same function now also logs the raw QPL return code and returned `sgx_ql_config_t` metadata when `sgx_ql_get_quote_config(...)` returns.
+  - `QuoteGeneration/qpl/sgx_default_quote_provider.cpp` now logs the incoming quote-config request fields and the raw `sgx_qcnl_get_pck_cert_chain(...)` return code.
+  - `QuoteGeneration/qcnl/sgx_default_qcnl_wrapper.cpp` now logs the QCNL-side request fields and the final `CertificationService::get_pck_cert_chain(...)` return code.
+- Purpose of the new diagnostics:
+  - distinguish malformed/incomplete `sgx_ql_pck_cert_id_t` input from a genuine PCS/QCNL network or TLS failure,
+  - keep the ML-DSA generation path unchanged while exposing why `get_platform_quote_cert_data(...)` still falls back to local-only certification data `type=3`.
+- Clarified the ML-DSA test QCNL config:
+  - `tdx_tests/sgx_default_qcnl_local_test.conf` now sets both `pccs_url` and `collateral_service` explicitly to the local test service at `https://localhost:8081/sgx/certification/v4/`.
+  - reason: QCNL uses `pccs_url` for PCK certificate retrieval, while `collateral_service` is part of the verifier collateral path; both must point to the repo-controlled local service for ML-DSA experiments.
+- Added explicit local PCCS bootstrap support to `tdx_tests/direct/run_mldsa_tdx_only_tests.sh`:
+  - generates a self-signed TLS keypair under `QuoteGeneration/pccs/service/ssl_key/` if missing,
+  - starts `pccs_server.js` locally with deterministic test tokens and `CachingFillMode=OFFLINE`,
+  - writes PCCS logs to `tdx_tests/bin/pccs.log`,
+  - can optionally preload offline collateral via `LOCAL_PCCS_PLATFORM_COLLATERAL_JSON=...`.
+- Aligned the ML-DSA QCNL test config with that local PCCS bootstrap:
+  - `tdx_tests/sgx_default_qcnl_local_test.conf` now sets `"use_secure_cert": false` because the repo-local PCCS test service uses a self-signed certificate.
+- Added a narrowly scoped local-test fallback for an empty local PCCS cache:
+  - `QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp` now treats `TEE_ATT_PLATFORM_UNKNOWN` / `SGX_QL_PLATFORM_UNKNOWN` as eligible for local-only certification-data fallback only when the environment variable `TDX_MLDSA_LOCAL_PCCS_EMPTY_FALLBACK=1` is set.
+  - `tdx_tests/direct/run_mldsa_tdx_only_tests.sh` exports that variable by default for the repo-local ML-DSA test flow.
+  - security posture: real deployments keep the old behavior unless they explicitly opt in, so an empty/unknown PCCS cache is still a hard error outside the local test harness.
+- Upgraded the ML-DSA verifier probe into a working local verifier fallback:
+  - `tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp` now performs local quote-integrity verification when the DCAP collateral path cannot complete:
+    - parses the v4 ML-DSA signature area,
+    - validates `SHA256(attest_pub_key || qe_auth_data)` against `QE reportData`,
+    - verifies the quote signature with `tdqe_mldsa65_verify(...)` over the signed quote payload.
+  - `tdx_tests/direct/run_mldsa_tdx_only_tests.sh` now links the probe against the built TDQE ML-DSA adapter objects and `-lcrypto`.
+  - effect: the local test flow can now verify ML-DSA quotes meaningfully even when the PCCS cache is empty and the quote therefore falls back to local-only certification data `type=3`.
+- Re-aligned the ML-DSA runner with the original ECDSA behavior:
+  - the repo-local PCCS bootstrap, the local ML-DSA verifier probe, and `TDX_MLDSA_LOCAL_PCCS_EMPTY_FALLBACK` are now enabled only in `SGX_MODE=SIM`,
+  - outside simulation mode the runner skips the local verifier path instead of forcing it.
+- Current practical status after comparing ECDSA:
+  - ECDSA local tests only bootstrap a local verifier server on `127.0.0.1:8123`; they do not provide a local collateral service.
+  - For ML-DSA, the missing infrastructure piece is a PCCS-compatible local service with cached or imported platform collateral.

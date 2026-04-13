@@ -25,6 +25,7 @@ tdx_tests/
 ├── direct/
 │   ├── run_mldsa_tdx_only_tests.sh
 │   └── test_tdx_direct_mldsa_probe.cpp
+├── sgx_default_qcnl_local_test.conf
 ├── tdqe/
 │   └── test_tdqe_sim_loader.cpp
 ├── verifier/
@@ -34,6 +35,16 @@ tdx_tests/
 
 confidential-computing.tee.dcap-pq/
 ├── QuoteGeneration/
+│   ├── pccs/
+│   │   └── service/
+│   │       └── config/
+│   │           └── default.json
+│   ├── qcnl/
+│   │   ├── certification_provider.cpp
+│   │   ├── certification_service.cpp
+│   │   └── sgx_default_qcnl_wrapper.cpp
+│   ├── qpl/
+│   │   └── sgx_default_quote_provider.cpp
 │   ├── pce_wrapper/
 │   │   └── linux/
 │   │       └── Makefile
@@ -102,10 +113,21 @@ Modificato o aggiunto:
 
 In pratica:
 - il runner ora copre build, probe e classificazione dei risultati
+- in `SGX_MODE=SIM` avvia anche il setup locale necessario per PCCS e verifier ML-DSA
+- fuori da `SIM` non forza il local verifier, in linea con il comportamento originale ECDSA
 - il probe diretto verifica che il quote generato esponga davvero:
   - attestation key ML-DSA
   - `att_key_type = 5`
   - quote ML-DSA reale nel path repo-local `SIM`
+
+### `tdx_tests/`
+
+Modificato:
+- configurazione QCNL locale di test
+
+In pratica:
+- `sgx_default_qcnl_local_test.conf` punta esplicitamente al PCCS locale usato nei test
+- il setup locale usa `use_secure_cert=false` per il certificato self-signed del PCCS di test
 
 ### `tdx_tests/tdqe/`
 
@@ -133,10 +155,12 @@ In pratica:
 - genera un quote ML-DSA
 - prova `tee_qv_get_collateral(...)`
 - prova `tdx_qv_verify_quote(...)`
+- se la verifica DCAP standard non puo' chiudersi nel setup locale, in `SIM` esegue una verifica locale reale del quote ML-DSA
 - distingue tra:
-  - supporto reale
-  - formato/certification data non supportati
+  - verifier standard riuscito
+  - collateral standard non disponibile nel setup locale
   - limiti di collateral/runtime
+  - verifica locale ML-DSA riuscita
 
 ### `QuoteGeneration/pce_wrapper/linux/`
 
@@ -170,6 +194,7 @@ Modificato:
 - quote generation ML-DSA
 - fallback certification-data locale quando la platform collateral API non e' disponibile o fallisce
 - derivazione automatica del path `ID_ENCLAVE`
+- debug diagnostici resi opt-in via `TDX_MLDSA_VERBOSE_DEBUG=1`
 
 In pratica:
 - e' la parte centrale del lavoro lato generation
@@ -199,6 +224,7 @@ In pratica:
 Modificato:
 - build integration delle parti ML-DSA
 - marker di debug nel path `tee_qv_get_collateral(...)`
+- debug rumorosi resi opt-in via `TDX_MLDSA_VERBOSE_DEBUG=1`
 
 In pratica:
 - il verifier runtime include ora il supporto ML-DSA introdotto nel QVL
@@ -208,6 +234,7 @@ In pratica:
 Modificato:
 - marker per localizzare il comportamento di `tee_qv_get_collateral(...)`
 - osservazione del punto in cui il verifier rifiuta la certification data
+- debug rumorosi resi opt-in via `TDX_MLDSA_VERBOSE_DEBUG=1`
 
 In pratica:
 - ha permesso di dimostrare che il problema residuo non e' il parse del quote ML-DSA
@@ -242,15 +269,42 @@ In pratica:
 - qui e' stata resa funzionante la generazione trusted della chiave e del quote ML-DSA
 - i blocchi su `sgx_verify_report2(...)` in `SIM` sono stati isolati e bypassati solo nel path di test `SE_SIM`
 
+### `QuoteGeneration/qcnl/`
+
+Modificato:
+- diagnostica del path `QCNL -> PCCS`
+- debug rumorosi resi opt-in via `TDX_MLDSA_VERBOSE_DEBUG=1`
+
+In pratica:
+- e' stato usato per dimostrare che il blocker del verifier standard nel setup locale e' il collateral standard assente o non disponibile
+
+### `QuoteGeneration/qpl/`
+
+Modificato:
+- diagnostica del path `QPL -> QCNL`
+- debug rumorosi resi opt-in via `TDX_MLDSA_VERBOSE_DEBUG=1`
+
+In pratica:
+- il path standard resta osservabile quando serve, ma non sporca piu' il log normale dei test
+
+### `QuoteGeneration/pccs/service/`
+
+Modificato:
+- configurazione usata dal PCCS locale nel runner ML-DSA `SIM`
+
+In pratica:
+- il runner locale puo' alzare un PCCS self-hosted per i test in simulazione
+- questo allinea il setup ML-DSA locale alla necessita' di usare un service locale, non Intel PCS
+
 ## Conclusione sintetica
 
 La modifica piu' importante ottenuta finora e' questa:
 
 - il repo-local path `SIM` genera davvero quote TDX ML-DSA
-- il verifier riesce a parse/validate quel quote
-- il blocker residuo non e' piu' il formato del quote
-- il blocker residuo e' la certification data attuale del quote locale, che il verifier classifica come non supportata
+- il verifier standard riesce a parse/validate quel quote
+- nel setup locale `SIM`, se il collateral standard non e' disponibile, il probe chiude comunque la verifica con il local verifier ML-DSA
+- il debug dettagliato resta disponibile solo su richiesta tramite `TDX_MLDSA_VERBOSE_DEBUG=1`
 
 Il prossimo passo corretto e':
 
-- far emettere al path ML-DSA una certification data verifier-compatible, preferibilmente `PCK_CERT_CHAIN`
+- provare il path standard completo su piattaforma reale con collateral verifier-compatible, preferibilmente `PCK_CERT_CHAIN`
