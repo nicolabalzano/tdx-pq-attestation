@@ -266,7 +266,8 @@ gcc -std=c11 \
   "$TESTS_DIR/tdqe/test_tdqe_mldsa_adapter.c" \
   "$TESTS_DIR/tdqe/test_randombytes_stub.c" \
   "$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/tdqe/tdqe_mldsa_adapter.c" \
-  "$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/pq/mldsa-native/mldsa/mldsa_native.c" \
+  "$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/pq/mldsa-native/mldsa/mldsa_native_65.c" \
+  "$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/pq/mldsa-native/mldsa/mldsa_native_87.c" \
   -o "$TDQE_MLDSA_ADAPTER_BIN"
 
 echo "[INFO] Compiling quote header ML-DSA layout test..."
@@ -344,7 +345,8 @@ if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
     -I"$LOCAL_SGX_SDK/include" \
     "$TESTS_DIR/verifier/test_tdx_mldsa_quote_verify_probe.cpp" \
     "$TDQE_LINUX_DIR/tdqe_mldsa_adapter.o" \
-    "$TDQE_LINUX_DIR/mldsa_native.o" \
+    "$TDQE_LINUX_DIR/mldsa_native_65.o" \
+    "$TDQE_LINUX_DIR/mldsa_native_87.o" \
     -L"$TDX_QUOTE_LINUX_DIR" \
     -L"$TDX_ATTEST_LINUX_DIR" \
     -L"$PCE_WRAPPER_LINUX_DIR" \

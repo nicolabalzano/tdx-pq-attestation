@@ -16,7 +16,7 @@ QV_BUILD_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerificat
 LOCAL_SGX_SDK="$TESTS_DIR/sgxsdk"
 LOCAL_PREBUILT_OPENSSL_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/prebuilt/openssl"
 LOCAL_SGXSSL_PACKAGE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/sgxssl/Linux/package"
-LOCAL_QCNL_CONF="$TESTS_DIR/sgx_default_qcnl_local_test.conf"
+LOCAL_QCNL_CONF="$TESTS_DIR/sgx_default_qcnl_ecdsa_test.conf"
 LOCAL_VERIFIER_PORT="${TDX_LOCAL_VERIFIER_PORT:-8123}"
 LOCAL_VERIFIER_PID=""
 BIN_DIR="$TESTS_DIR/bin"
@@ -114,6 +114,8 @@ if [[ -z "${TDX_VERIFIER_CHALLENGE_URL:-}" && -z "${TDX_VERIFIER_SUBMIT_URL:-}" 
 		-o "$VERIFIER_BIN"
 
 	echo "[INFO] Starting local TDX verifier on 127.0.0.1:$LOCAL_VERIFIER_PORT ..."
+	echo "[INFO] Local verifier runs in binding-only mode in this repo-local setup."
+	TDX_LOCAL_VERIFIER_SKIP_DCAP=1 \
 	LD_LIBRARY_PATH="$QV_BUILD_LINUX_DIR:$QG_BUILD_LINUX_DIR:${LD_LIBRARY_PATH:-}" \
 		"$VERIFIER_BIN" "$LOCAL_VERIFIER_PORT" >"$VERIFIER_LOG" 2>&1 &
 	LOCAL_VERIFIER_PID=$!

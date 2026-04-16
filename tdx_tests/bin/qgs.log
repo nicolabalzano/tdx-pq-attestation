@@ -9,19 +9,19 @@ Added a new connection, now [1]
 handle_read: status [system:0]
 handle_read:[system:0Received 1068 bytes.]
 process legecy request [1068] bytes!.
-unpack message successfully in thread [73a3c8f16740]
+unpack message successfully in thread [727b0e67e740]
 [qgs-debug] get_resp enter req_size=1064
 [qgs-debug] get_resp req_type=0
 call tee_att_create_context
 [qgs-debug] about to call tee_att_create_context
-[qgs-debug] tee_att_create_context ret=0x0 ctx=0x73a3c0000b70
-create context in thread[73a3c81ff6c0]
+[qgs-debug] tee_att_create_context ret=0x0 ctx=0x727b08000b70
+create context in thread[727b0d9ff6c0]
 GET_QUOTE_REQ: report_size=1024 id_list_size=16
 [qgs-debug] ensure_context requested algorithm_id=5
 [qgs-debug] ensure_context current algorithm_id=2
 About to delete ctx in cleanup
 [qgs-debug] ensure_context about to create selected context algorithm_id=5
-[qgs-debug] ensure_context create_context ret=0x0 ctx=0x73a3c0000b70
+[qgs-debug] ensure_context create_context ret=0x0 ctx=0x727b08000b70
 [qgs-debug] ensure_context_for_quote_request ret=0x0
 GET_QUOTE_REQ: selected uuid=e86c046e... algorithm-aware context ready
 [qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
@@ -31,21 +31,21 @@ GET_QUOTE_REQ: selected uuid=e86c046e... algorithm-aware context ready
 [qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
 GET_QUOTE_REQ: calling tee_att_get_quote_size
 [qgs-debug] about to call tee_att_get_quote_size
-[get_platform_quote_cert_data td_ql_logic.cpp:435] Error returned from the p_sgx_get_quote_config API. 0xe047
-[mldsa_get_quote_size td_ql_logic.cpp:2665] [tdx-quote-debug] mldsa_get_quote_size: quote_size=7102 (default certification data path).
+[get_platform_quote_cert_data td_ql_logic.cpp:522] Error returned from the p_sgx_get_quote_config API. 0xe047
+[mldsa_get_quote_size td_ql_logic.cpp:2782] [tdx-quote-debug] mldsa_get_quote_size: quote_size=7102 (default certification data path).
 tee_att_get_quote_size return Success, size=7102
 [qgs-debug] tee_att_get_quote_size ret=0x0 size=7102
 GET_QUOTE_REQ: calling tee_att_get_quote
 [qgs-debug] about to call tee_att_get_quote
 [tdqe-debug] is_verify_report2_available: SE_SIM bypass -> true
-[get_platform_quote_cert_data td_ql_logic.cpp:435] Error returned from the p_sgx_get_quote_config API. 0xe047
+[get_platform_quote_cert_data td_ql_logic.cpp:522] Error returned from the p_sgx_get_quote_config API. 0xe047
 [tdqe-debug] is_verify_report2_available: SE_SIM bypass -> true
 [tdqe-debug] gen_quote: SE_SIM bypass sgx_verify_report2
 [qgs-debug] tee_att_get_quote ret=0x0
 tee_att_get_quote return Success
 GET_QUOTE_REQ: generating success response size=7102
 Return from get_resp
-About to write response in thread [73a3c81ff6c0]
+About to write response in thread [727b0d9ff6c0]
 About to shutdown and close socket
 erased a connection, now [0]
 About to close acceptor

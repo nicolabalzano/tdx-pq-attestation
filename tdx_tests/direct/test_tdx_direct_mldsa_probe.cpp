@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <vector>
 
@@ -7,10 +8,27 @@
 #include "sgx_quote_4.h"
 #include "sgx_quote_5.h"
 
-static bool is_intel_tdqe_mldsa_uuid(const tdx_uuid_t& att_key_id)
+struct mldsa_variant_t {
+    const uint8_t *uuid_bytes;
+    uint32_t algorithm_id;
+    const char *label;
+};
+
+static mldsa_variant_t get_requested_variant()
 {
-    static const uint8_t kIntelTdqeMldsaAttestationId[TDX_UUID_SIZE] = TDX_SGX_MLDSA_65_ATTESTATION_ID;
-    return std::memcmp(att_key_id.d, kIntelTdqeMldsaAttestationId, sizeof(kIntelTdqeMldsaAttestationId)) == 0;
+    const char *value = std::getenv("TEST_MLDSA_ALG");
+    if (value != nullptr && std::strcmp(value, "87") == 0) {
+        static const uint8_t kMldsa87AttestationId[TDX_UUID_SIZE] = TDX_SGX_MLDSA_87_ATTESTATION_ID;
+        return {kMldsa87AttestationId, SGX_QL_ALG_MLDSA_87, "ML-DSA-87"};
+    }
+
+    static const uint8_t kMldsa65AttestationId[TDX_UUID_SIZE] = TDX_SGX_MLDSA_65_ATTESTATION_ID;
+    return {kMldsa65AttestationId, SGX_QL_ALG_MLDSA_65, "ML-DSA-65"};
+}
+
+static bool is_requested_mldsa_uuid(const tdx_uuid_t& att_key_id, const mldsa_variant_t& variant)
+{
+    return std::memcmp(att_key_id.d, variant.uuid_bytes, TDX_UUID_SIZE) == 0;
 }
 
 static bool is_all_zero_uuid(const tdx_uuid_t& att_key_id)
@@ -30,6 +48,7 @@ static void print_uuid(const char *label, const tdx_uuid_t& value)
 
 int main()
 {
+    const mldsa_variant_t variant = get_requested_variant();
     uint32_t supported_id_count = 0;
     tdx_attest_error_t attest_ret = tdx_att_get_supported_att_key_ids(nullptr, &supported_id_count);
     if (attest_ret != TDX_ATTEST_SUCCESS) {
@@ -60,7 +79,7 @@ int main()
     bool found_mldsa_uuid = false;
 
     for (uint32_t i = 0; i < supported_id_count; ++i) {
-        if (is_intel_tdqe_mldsa_uuid(supported_ids[i])) {
+        if (is_requested_mldsa_uuid(supported_ids[i], variant)) {
             requested_mldsa_id = supported_ids[i];
             requested_id_list = &requested_mldsa_id;
             requested_id_count = 1;
@@ -71,7 +90,7 @@ int main()
     }
 
     if (!found_mldsa_uuid) {
-        std::printf("[test] direct TDX attestation API does not advertise the ML-DSA attestation key id.\n");
+        std::printf("[test] direct TDX attestation API does not advertise the requested %s attestation key id.\n", variant.label);
         return 1;
     }
 
@@ -122,19 +141,19 @@ int main()
         return 1;
     }
 
-    if (!is_intel_tdqe_mldsa_uuid(selected_att_key_id)) {
-        std::printf("[test] direct TDX attestation path selected a non-ML-DSA attestation key id.\n");
+    if (!is_requested_mldsa_uuid(selected_att_key_id, variant)) {
+        std::printf("[test] direct TDX attestation path selected a non-requested ML-DSA attestation key id.\n");
         tdx_att_free_quote(quote);
         return 1;
     }
 
-    if (quote_header->att_key_type != SGX_QL_ALG_MLDSA_65) {
-        std::printf("[test] direct quote header did not report ML-DSA attestation type.\n");
+    if (quote_header->att_key_type != variant.algorithm_id) {
+        std::printf("[test] direct quote header did not report the requested %s attestation type.\n", variant.label);
         tdx_att_free_quote(quote);
         return 1;
     }
 
-    std::printf("[test] direct TDX attestation path is exposing ML-DSA quotes.\n");
+    std::printf("[test] direct TDX attestation path is exposing %s quotes.\n", variant.label);
 
     tdx_att_free_quote(quote);
     return 0;

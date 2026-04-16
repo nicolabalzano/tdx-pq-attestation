@@ -17,19 +17,41 @@ namespace {
 
 constexpr uint16_t kPckIdQeReportCertificationData = 6;
 
+struct mldsa_variant_t {
+    uint32_t algorithm_id;
+    uint32_t sig_size;
+    uint32_t pub_key_size;
+    const char *label;
+};
+
+static mldsa_variant_t get_requested_variant()
+{
+    const char *value = std::getenv("TEST_MLDSA_ALG");
+    if (value != nullptr && std::strcmp(value, "87") == 0) {
+        return {SGX_QL_ALG_MLDSA_87, SGX_QL_MLDSA_87_SIG_SIZE, SGX_QL_MLDSA_87_PUB_KEY_SIZE, "MLDSA_87"};
+    }
+    return {SGX_QL_ALG_MLDSA_65, SGX_QL_MLDSA_65_SIG_SIZE, SGX_QL_MLDSA_65_PUB_KEY_SIZE, "MLDSA_65"};
+}
+
+static bool is_sim_mode()
+{
+    const char *value = std::getenv("SGX_MODE");
+    return value != nullptr && std::strcmp(value, "SIM") == 0;
+}
+
 bool compute_sha256(const uint8_t *data, size_t size, uint8_t out[SHA256_DIGEST_LENGTH])
 {
     return SHA256(data, size, out) != nullptr;
 }
 
-bool locally_verify_mldsa_quote_v4(const uint8_t *quote_buf, uint32_t quote_size)
+bool locally_verify_mldsa_quote_v4(const uint8_t *quote_buf, uint32_t quote_size, const mldsa_variant_t& variant)
 {
     if (quote_buf == nullptr || quote_size < sizeof(sgx_quote4_t)) {
         return false;
     }
 
     const auto *quote = reinterpret_cast<const sgx_quote4_t *>(quote_buf);
-    if (quote->header.version != 4 || quote->header.att_key_type != SGX_QL_ALG_MLDSA_65) {
+    if (quote->header.version != 4 || quote->header.att_key_type != variant.algorithm_id) {
         return false;
     }
 
@@ -43,16 +65,29 @@ bool locally_verify_mldsa_quote_v4(const uint8_t *quote_buf, uint32_t quote_size
         return false;
     }
 
-    if (sig_data_len < sizeof(sgx_mldsa_65_sig_data_v4_t) + sizeof(sgx_ql_certification_data_t)) {
-        return false;
+    const uint8_t *signature = quote->signature_data;
+    const uint8_t *attest_pub_key = nullptr;
+    const uint8_t *certification_data = nullptr;
+    if (variant.algorithm_id == SGX_QL_ALG_MLDSA_87) {
+        if (sig_data_len < sizeof(sgx_mldsa_87_sig_data_v4_t) + sizeof(sgx_ql_certification_data_t)) {
+            return false;
+        }
+        const auto *sig_data = reinterpret_cast<const sgx_mldsa_87_sig_data_v4_t *>(quote->signature_data);
+        attest_pub_key = sig_data->attest_pub_key;
+        certification_data = sig_data->certification_data;
+    } else {
+        if (sig_data_len < sizeof(sgx_mldsa_65_sig_data_v4_t) + sizeof(sgx_ql_certification_data_t)) {
+            return false;
+        }
+        const auto *sig_data = reinterpret_cast<const sgx_mldsa_65_sig_data_v4_t *>(quote->signature_data);
+        attest_pub_key = sig_data->attest_pub_key;
+        certification_data = sig_data->certification_data;
     }
 
-    const auto *sig_data = reinterpret_cast<const sgx_mldsa_65_sig_data_v4_t *>(quote->signature_data);
-    const auto *outer_cert = reinterpret_cast<const sgx_ql_certification_data_t *>(sig_data->certification_data);
+    const auto *outer_cert = reinterpret_cast<const sgx_ql_certification_data_t *>(certification_data);
     const size_t outer_cert_total_size =
         sizeof(outer_cert->cert_key_type) + sizeof(outer_cert->size) + outer_cert->size;
-    const size_t required_total =
-        SGX_QL_MLDSA_65_SIG_SIZE + SGX_QL_MLDSA_65_PUB_KEY_SIZE + outer_cert_total_size;
+    const size_t required_total = variant.sig_size + variant.pub_key_size + outer_cert_total_size;
     if (required_total > sig_data_len) {
         return false;
     }
@@ -86,8 +121,8 @@ bool locally_verify_mldsa_quote_v4(const uint8_t *quote_buf, uint32_t quote_size
     }
 
     std::vector<uint8_t> hash_input;
-    hash_input.reserve(SGX_QL_MLDSA_65_PUB_KEY_SIZE + qe_auth->size);
-    hash_input.insert(hash_input.end(), sig_data->attest_pub_key, sig_data->attest_pub_key + SGX_QL_MLDSA_65_PUB_KEY_SIZE);
+    hash_input.reserve(variant.pub_key_size + qe_auth->size);
+    hash_input.insert(hash_input.end(), attest_pub_key, attest_pub_key + variant.pub_key_size);
     hash_input.insert(hash_input.end(), qe_auth->auth_data, qe_auth->auth_data + qe_auth->size);
 
     uint8_t digest[SHA256_DIGEST_LENGTH] = {0};
@@ -99,10 +134,16 @@ bool locally_verify_mldsa_quote_v4(const uint8_t *quote_buf, uint32_t quote_size
         return false;
     }
 
-    return tdqe_mldsa65_verify(sig_data->sig,
+    if (variant.algorithm_id == SGX_QL_ALG_MLDSA_87) {
+        return tdqe_mldsa87_verify(signature,
+                                   reinterpret_cast<const uint8_t *>(&quote->header),
+                                   signed_size,
+                                   attest_pub_key) == 0;
+    }
+    return tdqe_mldsa65_verify(signature,
                                reinterpret_cast<const uint8_t *>(&quote->header),
                                signed_size,
-                               sig_data->attest_pub_key) == 0;
+                               attest_pub_key) == 0;
 }
 
 } // namespace
@@ -177,6 +218,7 @@ static const char *qv_result_to_string(sgx_ql_qv_result_t qv_result)
 
 int main()
 {
+    const mldsa_variant_t variant = get_requested_variant();
     tee_att_att_key_id_t att_key_id = {};
     tee_att_att_key_id_t default_key_id = {};
     tee_att_config_t *default_context = nullptr;
@@ -217,11 +259,13 @@ int main()
     }
 
     att_key_id = default_key_id;
-    att_key_id.base.algorithm_id = SGX_QL_ALG_MLDSA_65;
+    att_key_id.base.algorithm_id = variant.algorithm_id;
 
     tee_ret = tee_att_create_context(&att_key_id, tdqe_path, &context);
     if (tee_ret != TEE_ATT_SUCCESS) {
-        return fail("tee_att_create_context(MLDSA_65) failed", tee_ret);
+        char message[128] = {};
+        std::snprintf(message, sizeof(message), "tee_att_create_context(%s) failed", variant.label);
+        return fail(message, tee_ret);
     }
 
     tee_ret = tee_att_init_quote(context, nullptr, false, &pub_key_id_size, nullptr);
@@ -238,7 +282,9 @@ int main()
     tee_ret = tee_att_init_quote(context, &qe_target_info, false, &pub_key_id_size, pub_key_id.data());
     if (tee_ret != TEE_ATT_SUCCESS) {
         tee_att_free_context(context);
-        return fail("tee_att_init_quote(MLDSA_65) failed", tee_ret);
+        char message[128] = {};
+        std::snprintf(message, sizeof(message), "tee_att_init_quote(%s) failed", variant.label);
+        return fail(message, tee_ret);
     }
 
     if (!has_any_nonzero_byte(pub_key_id.data(), pub_key_id.size())) {
@@ -249,11 +295,15 @@ int main()
     tee_ret = tee_att_get_quote_size(context, &quote_size);
     if (tee_ret != TEE_ATT_SUCCESS) {
         tee_att_free_context(context);
-        return fail("tee_att_get_quote_size(MLDSA_65) failed", tee_ret);
+        char message[128] = {};
+        std::snprintf(message, sizeof(message), "tee_att_get_quote_size(%s) failed", variant.label);
+        return fail(message, tee_ret);
     }
     if (quote_size == 0) {
         tee_att_free_context(context);
-        return fail("tee_att_get_quote_size(MLDSA_65) returned zero", TEE_ATT_ERROR_UNEXPECTED);
+        char message[128] = {};
+        std::snprintf(message, sizeof(message), "tee_att_get_quote_size(%s) returned zero", variant.label);
+        return fail(message, TEE_ATT_ERROR_UNEXPECTED);
     }
 
     for (size_t i = 0; i < sizeof(report_data.d); ++i) {
@@ -277,7 +327,9 @@ int main()
                                 quote_size);
     if (tee_ret != TEE_ATT_SUCCESS) {
         tee_att_free_context(context);
-        return fail("tee_att_get_quote(MLDSA_65) failed", tee_ret);
+        char message[128] = {};
+        std::snprintf(message, sizeof(message), "tee_att_get_quote(%s) failed", variant.label);
+        return fail(message, tee_ret);
     }
 
     quote_header = reinterpret_cast<const sgx_quote4_header_t *>(quote.data());
@@ -287,9 +339,11 @@ int main()
                 quote_size);
     std::fflush(stdout);
 
-    if (quote_header->att_key_type != SGX_QL_ALG_MLDSA_65) {
+    if (quote_header->att_key_type != variant.algorithm_id) {
         tee_att_free_context(context);
-        return fail("generated quote is not MLDSA_65", quote_header->att_key_type);
+        char message[128] = {};
+        std::snprintf(message, sizeof(message), "generated quote is not %s", variant.label);
+        return fail(message, quote_header->att_key_type);
     }
 
     qv_ret = tdx_qv_get_quote_supplemental_data_size(&supplemental_size);
@@ -299,13 +353,20 @@ int main()
         supplemental_size = 0;
     }
 
-    std::printf("[test] about to call tee_qv_get_collateral\n");
-    std::fflush(stdout);
-    qv_ret = tee_qv_get_collateral(quote.data(), quote_size, &collateral_buf, &collateral_size);
-    std::printf("[test] tee_qv_get_collateral ret=0x%x collateral_size=%u\n",
-                static_cast<unsigned>(qv_ret),
-                collateral_size);
-    std::fflush(stdout);
+    if (is_sim_mode()) {
+        std::printf("[test] skipping standard DCAP collateral retrieval for %s in SGX simulation mode.\n",
+                    variant.label);
+        std::fflush(stdout);
+        qv_ret = SGX_QL_QUOTE_CERTIFICATION_DATA_UNSUPPORTED;
+    } else {
+        std::printf("[test] about to call tee_qv_get_collateral\n");
+        std::fflush(stdout);
+        qv_ret = tee_qv_get_collateral(quote.data(), quote_size, &collateral_buf, &collateral_size);
+        std::printf("[test] tee_qv_get_collateral ret=0x%x collateral_size=%u\n",
+                    static_cast<unsigned>(qv_ret),
+                    collateral_size);
+        std::fflush(stdout);
+    }
     const bool local_only_candidate =
         is_verifier_format_unsupported(qv_ret) || is_verifier_runtime_or_collateral_limited(qv_ret);
     if (is_verifier_format_unsupported(qv_ret)) {
@@ -322,7 +383,7 @@ int main()
         if (local_only_candidate) {
             std::printf("[test] about to run local ML-DSA quote verification fallback\n");
             std::fflush(stdout);
-            if (!locally_verify_mldsa_quote_v4(quote.data(), quote_size)) {
+            if (!locally_verify_mldsa_quote_v4(quote.data(), quote_size, variant)) {
                 tee_att_free_context(context);
                 std::printf("[test] local ML-DSA quote verification fallback failed.\n");
                 std::fflush(stdout);

@@ -3,24 +3,4 @@
 [verifier] issued challenge (64 bytes)
 [verifier] issued challenge (64 bytes)
 [verifier] received quote submit request (10854 body bytes)
-[verifier] starting tdx_qv_verify_quote for 8000-byte quote
-[qv-debug] get_fmspc_ca_from_quote: enter quote_size=8000
-[qv-debug] get_fmspc_ca_from_quote: before extract_chain_from_quote
-[qv-debug] extract_chain_from_quote: enter quote_size=8000
-[qv-debug] extract_chain_from_quote: before direct Quote::parse
-[qv-debug] extract_chain_from_quote: after direct Quote::parse/validate
-[qv-debug] extract_chain_from_quote: parsed cert_data_size=3677 cert_type=5
-[qv-debug] get_fmspc_ca_from_quote: after extract_chain_from_quote ret=0x0 chain_size=3677 ptr=0x5e1e0a1b3c70
-[qcnl-debug] fetch_data type=1 endpoint='https://api.trustedservices.intel.com/sgx/certification/v4/' params='pckcrl?ca=platform&encoding=der' cache_query='pckcrl?ca=platform&encoding=der'
-[qcnl-debug] fetch_data cache hit ret=0x0000
-[qcnl-debug] fetch_data type=2 endpoint='https://api.trustedservices.intel.com/tdx/certification/v4/' params='tcb?fmspc=00806F050000&update=standard' cache_query='tcb?fmspc=00806F050000&update=standard'
-[qcnl-debug] fetch_data cache hit ret=0x0000
-[qcnl-debug] fetch_data type=3 endpoint='https://api.trustedservices.intel.com/tdx/certification/v4/' params='qe/identity?update=standard' cache_query='qe/identity?update=standard'
-[qcnl-debug] fetch_data cache hit ret=0x0000
-[qcnl-debug] fetch_data type=5 endpoint='https://certificates.trustedservices.intel.com/IntelSGXRootCA.der' params='' cache_query=''
-[qcnl-debug] fetch_data cache hit ret=0x0000
-[qv-debug] extract_chain_from_quote: enter quote_size=8000
-[qv-debug] extract_chain_from_quote: before direct Quote::parse
-[qv-debug] extract_chain_from_quote: after direct Quote::parse/validate
-[qv-debug] extract_chain_from_quote: parsed cert_data_size=3677 cert_type=5
-[verifier] tdx_qv_verify_quote completed: qv_ret=0, qv_result=OK, collateral_expiration_status=0
+[verifier] accepting quote via local binding-only fallback

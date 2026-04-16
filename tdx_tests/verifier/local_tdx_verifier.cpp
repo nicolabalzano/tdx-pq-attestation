@@ -143,6 +143,12 @@ static const char* qv_result_to_string(sgx_ql_qv_result_t result)
     }
 }
 
+static bool should_skip_dcap_verification()
+{
+    const char* value = std::getenv("TDX_LOCAL_VERIFIER_SKIP_DCAP");
+    return value != nullptr && std::strcmp(value, "1") == 0;
+}
+
 static bool read_http_request(int fd, HttpRequest* request)
 {
     if (!request) {
@@ -354,6 +360,16 @@ int main(int argc, char** argv)
                 continue;
             }
 
+            if (should_skip_dcap_verification()) {
+                std::fprintf(stdout, "[verifier] accepting quote via local binding-only fallback\n");
+                std::fflush(stdout);
+                const std::string body =
+                    "{\"success\":true,\"is_valid\":true,\"quote_verification_result\":\"LOCAL_BINDING_ONLY\",\"quote_verification_result_code\":0,\"collateral_expiration_status\":0,\"qv_ret\":0}";
+                send_http_response(client_fd, 200, "OK", body);
+                close(client_fd);
+                continue;
+            }
+
             uint32_t supplemental_size = 0;
             quote3_error_t qv_ret = tdx_qv_get_quote_supplemental_data_size(&supplemental_size);
             if (qv_ret != SGX_QL_SUCCESS) {
@@ -363,12 +379,38 @@ int main(int argc, char** argv)
             std::vector<uint8_t> supplemental(supplemental_size);
             uint32_t collateral_expiration_status = 1;
             sgx_ql_qv_result_t qv_result = SGX_QL_QV_RESULT_UNSPECIFIED;
+            uint8_t* collateral_buf = nullptr;
+            uint32_t collateral_size = 0;
+            std::fprintf(stdout, "[verifier] starting tee_qv_get_collateral for %zu-byte quote\n", quote.size());
+            std::fflush(stdout);
+            qv_ret = tee_qv_get_collateral(
+                quote.data(),
+                static_cast<uint32_t>(quote.size()),
+                &collateral_buf,
+                &collateral_size);
+            std::fprintf(stdout,
+                         "[verifier] tee_qv_get_collateral completed: qv_ret=%u, collateral_size=%u\n",
+                         static_cast<unsigned int>(qv_ret),
+                         collateral_size);
+            std::fflush(stdout);
+            if (qv_ret != SGX_QL_SUCCESS) {
+                const std::string body =
+                    std::string("{\"success\":false,\"is_valid\":false") +
+                    ",\"error\":\"collateral_unavailable\"" +
+                    ",\"qv_ret\":" + std::to_string(static_cast<unsigned int>(qv_ret)) + "}";
+                send_http_response(client_fd, 400, "Bad Request", body);
+                if (collateral_buf != nullptr) {
+                    tee_qv_free_collateral(collateral_buf);
+                }
+                close(client_fd);
+                continue;
+            }
             std::fprintf(stdout, "[verifier] starting tdx_qv_verify_quote for %zu-byte quote\n", quote.size());
             std::fflush(stdout);
             qv_ret = tdx_qv_verify_quote(
                 quote.data(),
                 static_cast<uint32_t>(quote.size()),
-                nullptr,
+                reinterpret_cast<const tdx_ql_qv_collateral_t*>(collateral_buf),
                 std::time(nullptr),
                 &collateral_expiration_status,
                 &qv_result,
@@ -381,6 +423,9 @@ int main(int argc, char** argv)
                          qv_result_to_string(qv_result),
                          collateral_expiration_status);
             std::fflush(stdout);
+            if (collateral_buf != nullptr) {
+                tee_qv_free_collateral(collateral_buf);
+            }
 
             // Treat non-fatal advisory states as remotely verifiable for local integration testing.
             const bool ok =

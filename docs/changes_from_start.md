@@ -10,6 +10,113 @@ For each step it lists:
 
 All paths below are repository-relative unless stated otherwise.
 
+## Latest update: Implemented ML-DSA-87 across attestation and verification
+
+### Files
+`confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc/sgx_quote_3.h`
+
+`confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc/sgx_quote_4.h`
+
+`confidential-computing.tee.dcap-pq/ae/pq/mldsa-native/mldsa/mldsa_native_87.c`
+
+`confidential-computing.tee.dcap-pq/ae/tdqe/tdqe_mldsa_adapter.h`
+
+`confidential-computing.tee.dcap-pq/ae/tdqe/tdqe_mldsa_adapter.c`
+
+`confidential-computing.tee.dcap-pq/ae/tdqe/linux/Makefile`
+
+`confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.h`
+
+`confidential-computing.tee.dcap-pq/ae/tdqe/quoting_enclave_tdqe.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest/tdx_attest.h`
+
+`confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest/tdx_attest.c`
+
+`confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_wrapper.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs/qgs_ql_logic.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/QuoteConstants.h`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/QuoteStructures.h`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/QuoteStructures.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/Quote.h`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/Quote.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/QuoteVerifier.cpp`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/linux/Makefile`
+
+`tdx_tests/direct/test_tdx_direct_mldsa_probe.cpp`
+
+`tdx_tests/wrapper/test_tdx_wrapper_algorithms.cpp`
+
+`tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp`
+
+### What changed
+- Added a second ML-DSA attestation algorithm id and quote-layout support for `ML-DSA-87`, while leaving the existing `ML-DSA-65` path intact
+- Added a dedicated `mldsa_native_87.c` backend wrapper and kept the TDQE adapter parameterized over `65` and `87` instead of duplicating the signing logic
+- Extended the trusted TDQE blob types, blob-size selection, seal/unseal validation, certification-data storage, and quote-generation logic so `ML-DSA-87` uses its own blob layout and key material sizes
+- Extended the public TDX attestation API, default attestation-key selection, and QGS selection logic so `ML-DSA-87` can be requested explicitly
+- Extended the host quote-wrapper logic so trusted TDX-only bootstrap, blob recertification, and new-key certification build the correct plaintext for `ML-DSA-65` or `ML-DSA-87` through a shared helper instead of separate copy-paste branches
+- Extended the QVL parser and verifier so quote v4 auth-data parsing, quote structure storage, and signature verification now accept `ML-DSA-87`
+- Removed a duplicate `mldsa_native_87.o` build rule from `dcap_quoteverify` and aligned the `TDQE` build so the 87 backend is built from the dedicated wrapper source instead of recompiling `mldsa_native.c` with mismatched flags
+- Parameterized the existing ML-DSA direct, wrapper, and verifier probes so they can exercise `65` or `87` through `TEST_MLDSA_ALG=87` without adding duplicate test files
+
+### Why this matters
+- The repository now has one shared ML-DSA implementation path with two parameter sets instead of a hardcoded `65`-only path
+- `ML-DSA-87` is wired through both attestation and verification, not just exposed at the API level
+- The `ML-DSA-65` flow remains unchanged in behavior and continues to use its existing blob format and signature layout
+- The main remaining limitation in this workspace is not missing `ML-DSA-87` code, but stale root-owned build artifacts from previous privileged runs that prevent some full relinks
+
+### Validation actually performed
+- Full verifier build completed successfully with the repo-local SGX SDK:
+
+```bash
+env SGX_SDK=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM \
+  make -C confidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/linux
+```
+
+- Recompiled the new TDQE-side 87 objects successfully:
+
+```bash
+env SGX_SDK=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM \
+  make -C confidential-computing.tee.dcap-pq/ae/tdqe/linux \
+  mldsa_native_87.o tdqe_mldsa_adapter.o quoting_enclave_tdqe.o
+```
+
+- Isolated compile of the host wrapper implementation succeeded:
+
+```bash
+env SGX_SDK=/home/alocin-local/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM \
+  g++ -std=c++14 ... -c confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp \
+  -o /tmp/td_ql_logic.check.o
+```
+
+- Syntax checks that completed successfully:
+
+```bash
+g++ -std=c++14 -fsyntax-only .../tdx_tests/direct/test_tdx_direct_mldsa_probe.cpp
+g++ -std=c++14 -fsyntax-only .../tdx_tests/wrapper/test_tdx_wrapper_algorithms.cpp
+g++ -std=c++14 -fsyntax-only .../tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp
+g++ -std=c++14 -fsyntax-only .../QuoteGeneration/quote_wrapper/qgs/qgs_ql_logic.cpp
+g++ -std=c++14 -fsyntax-only .../QuoteGeneration/quote_wrapper/tdx_quote/td_ql_wrapper.cpp
+gcc -std=c11 -fsyntax-only .../QuoteGeneration/quote_wrapper/tdx_attest/tdx_attest.c
+```
+
+### Local build-tree limitation still present
+- Some full local relinks are still blocked by stale root-owned artifacts left by earlier privileged runs:
+  - `confidential-computing.tee.dcap-pq/ae/tdqe/linux/out.map`
+  - `confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/linux/tdqe_u.d`
+  - `confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs/qgs_ql_logic.d`
+- Those files prevented a fully clean rebuild of some local targets, but they did not reveal further `ML-DSA-87` code errors once the changed source files were compiled in isolation or through unaffected targets
+
 ## Latest update: Added QVL unit-test coverage for ML-DSA v4 quotes
 
 ### Files
