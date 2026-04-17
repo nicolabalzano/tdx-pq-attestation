@@ -10,3 +10,137 @@ Dan Boneh & Victor Shoup "A Graduate Course in Applied Cryptography" (LWE e MLWE
 FIPS 204 con pseudocodice dettagliato per KeyGen, Sign, Verify (Dilithium)      -
  https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.pdf       
 
+cosa sto simulando 
+  - il TDQE come enclave SGX simulata
+  - il sealing/unsealing del blob delle chiavi
+  - la generazione e firma del quote dentro il TDQE simulato
+  - alcuni controlli SGX richiesti dal quote flow, con bypass espliciti come sgx_verify_report2
+  - la verifica locale del quote nel verifier di test
+
+FLOW generazione e verifica del quote
+
+1. Il test prepara report_data a 64 byte.
+    In tdx_tests/common/utils.cpp load_report_data_for_attestation(...) prova prima a ottenerlo dal
+    verifier locale o da env; se non trova nulla usa il fallback demo fisso. Questo è l’unico pezzo
+    che può essere statico nei test.
+2. Il chiamante invoca tdx_att_get_report(...) oppure direttamente tdx_att_get_quote(...).
+    Le entrypoint sono in confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest/
+    tdx_attest.c.
+3. tdx_att_get_report(...) apre il device TDX e costruisce una tdx_report_req.
+    In get_tdx_report(...) copia i 64 byte di report_data in req.reportdata e chiama:
+
+    ioctl(devfd, TDX_CMD_GET_REPORT0, &req)
+
+    Il risultato è il TD report grezzo. Questo report non è hardcoded: viene prodotto a runtime dal
+    device/path di attestazione.
+4. tdx_att_get_quote(...) rifà la stessa cosa: prima ottiene il TD report, poi costruisce il
+    get_quote_blob.
+    Sempre in confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest/
+    tdx_attest.c, generate_get_quote_blob(...) impacchetta il report e l’eventuale lista di att_key_id
+    richiesti.
+5. Il blob viene mandato al quoting path.
+    L’ordine è:
+    - local_qgs_get_quote_payload(...)
+    - vsock_get_quote_payload(...)
+    - configfs_get_quote(...)
+    - tdcall_get_quote_payload(...)
+
+    Nel tuo setup locale il path tipico è local QGS.
+6. QGS inoltra la richiesta al wrapper TDX quote logic.
+    Questo passa da confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs/
+    qgs_ql_logic.cpp e poi a confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/
+    tdx_quote/td_ql_wrapper.cpp, che selezionano algoritmo e chiamano la logica interna in
+    confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp.
+7. td_ql_logic.cpp decide quale attestation key usare.
+    In base all’att_key_id o al default:
+    - ECDSA
+    - ML-DSA-65
+    - ML-DSA-87
+
+    Qui vengono anche scelti:
+    - label del blob persistente
+    - size della firma
+    - layout signature_data
+    - att_key_type del quote header
+8. Se serve, il wrapper inizializza o ricarica il blob persistente della chiave di attestazione.
+    Per ML-DSA il blob è separato, per esempio tdqe_data_mldsa_65.blob o equivalente 87.
+    Il wrapper legge/scrive il blob con read_persistent_data(...) e write_persistent_data(...) in
+    confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp.
+9. Il wrapper entra nel TDQE.
+    Il quoting enclave è implementato in confidential-computing.tee.dcap-pq/ae/tdqe/
+    quoting_enclave_tdqe.cpp.
+    Qui avvengono le operazioni trusted:
+    - generazione chiave se il blob non esiste
+    - unseal del blob se esiste
+    - costruzione del quote
+    - firma del quote
+10. Se la chiave non esiste ancora, il TDQE la genera.
+    Per ML-DSA:
+    - deriva un seed da seal key
+    - chiama tdqe_mldsa65_keygen(...) o tdqe_mldsa87_keygen(...)
+    - salva la privata nel ciphertext del blob
+    - salva pubblica e metadata nel plaintext del blob
+
+    L’adapter è in:
+    - confidential-computing.tee.dcap-pq/ae/tdqe/tdqe_mldsa_adapter.h
+    - confidential-computing.tee.dcap-pq/ae/tdqe/tdqe_mldsa_adapter.c
+11. Il blob viene sigillato.
+    In TDQE, la persistenza usa sgx_seal_data(...) / sgx_unseal_data(...).
+    In SIM questa parte è simulata dalle librerie SGX _sim: la logica è la stessa, ma non stai usando
+    protezione hardware SGX reale.
+12. Il TDQE costruisce il quote.
+    Il quote contiene:
+    - header
+    - body con il contenuto attestato
+    - signature_data
+
+    Per ML-DSA, il signature_data contiene almeno:
+    - firma ML-DSA
+    - attestation public key
+    - QE report / QE auth data
+    - certification data finale
+13. Il TDQE firma il quote con la chiave di attestazione.
+    Per ML-DSA usa la privata unsealed e chiama tdqe_mldsa65_sign(...) o tdqe_mldsa87_sign(...).
+    In molti path fa anche una verify interna con la pubblica per coerenza.
+14. Il wrapper prova a recuperare certification data / collateral metadata.
+    Questo passa da get_platform_quote_cert_data(...) in confidential-computing.tee.dcap-pq/
+    QuoteGeneration/quote_wrapper/tdx_quote/td_ql_logic.cpp, che a sua volta usa QPL/QCNL/PCCS.
+15. Se il collateral standard non è disponibile, il quote può ricadere sul certification data locale
+    di fallback.
+    È quello che hai visto con:
+    - cert_type=3
+    - quote size di fallback
+    - 0xe047 / platform unknown
+
+    In quel caso il quote viene comunque costruito e firmato, ma non porta una certification chain
+    standard completa consumabile dal verifier DCAP.
+16. Il quote torna indietro al chiamante.
+    extract_quote_from_blob_payload(...) estrae i byte finali del quote e li restituisce a
+    tdx_att_get_quote(...), che li passa al test.
+17. Il verifier riceve il quote e lo parsea.
+    Per il path standard, il parse avviene nel QVL:
+    - confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/
+    QuoteVerification/Quote.cpp
+    - confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/
+    QuoteVerification/QuoteStructures.cpp
+    - confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/
+    QuoteVerifier.cpp
+18. Il verifier standard, se usato, prova a recuperare collateral dal quote.
+    Questo passa da:
+    - tee_qv_get_collateral(...)
+    - QCNL/QPL
+    - PCS/PCCS
+
+    Se il quote non ha certification data standard sufficiente, qui il path si ferma.
+19. Nel tuo setup locale SIM, per ML-DSA entra il verifier locale di fallback.
+    In tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp, il fallback fa una verifica a basso
+    livello del quote:
+    - parse del layout v4 ML-DSA
+    - estrazione di public key, firma, QE report, QE auth data
+    - calcolo SHA256(attest_pub_key || qe_auth_data)
+    - confronto con QE reportData
+    - verify della firma ML-DSA del quote
+20. Se questi check passano, il quote viene considerato valido nel setup locale.
+    Quindi nel tuo ambiente attuale hai due livelli di validazione:
+    - parse/flow standard dove disponibile
+    - verify locale crittografica del quote ML-DSA in SIM

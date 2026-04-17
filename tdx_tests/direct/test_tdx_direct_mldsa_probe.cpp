@@ -7,6 +7,7 @@
 #include "tdx_attest/tdx_attest.h"
 #include "sgx_quote_4.h"
 #include "sgx_quote_5.h"
+#include "utils.h"
 
 struct mldsa_variant_t {
     const uint8_t *uuid_bytes;
@@ -44,6 +45,19 @@ static void print_uuid(const char *label, const tdx_uuid_t& value)
         std::printf("%02x", value.d[i]);
     }
     std::printf("\n");
+}
+
+static void print_quote_hex_and_contents(const uint8_t* quote, uint32_t quote_size)
+{
+    if (!quote || quote_size == 0) {
+        return;
+    }
+
+    std::printf("[test] direct quote hex: %s\n", bytes_to_hex(quote, quote_size).c_str());
+    std::printf("[test] direct quote contents: header + TD report/body + attestation signature data");
+    std::printf(" + certification data.\n");
+    std::printf("[test] direct quote contents note: the quote binds the caller-provided report_data");
+    std::printf(" and identifies the attestation key used to sign it.\n");
 }
 
 int main()
@@ -134,6 +148,7 @@ int main()
                 static_cast<unsigned>(quote_header->version),
                 static_cast<unsigned>(quote_header->att_key_type),
                 quote_size);
+    print_quote_hex_and_contents(quote, quote_size);
 
     if (is_all_zero_uuid(selected_att_key_id)) {
         std::printf("[test] direct TDX attestation service returned an all-zero selected att key id.\n");

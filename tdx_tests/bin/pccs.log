@@ -1,22 +1,22 @@
-2026-04-16 18:54:23.154 [debug]: [{"name":"00_db_initialize.up.sql"},{"name":"01_db_version_1.js"},{"name":"02_db_version_2.js"},{"name":"03_db_version_3.js"},{"name":"04_db_version_4.js"},{"name":"05_db_version_5.js"}]
-2026-04-16 18:54:23.167 [debug]: Resolving migration: 00_db_initialize.up.sql, found: 00_db_initialize.up.sql
-2026-04-16 18:54:23.167 [debug]: Resolving migration: 01_db_version_1.js, found: 01_db_version_1.js
-2026-04-16 18:54:23.167 [debug]: Resolving migration: 02_db_version_2.js, found: 02_db_version_2.js
-2026-04-16 18:54:23.168 [debug]: Resolving migration: 03_db_version_3.js, found: 03_db_version_3.js
-2026-04-16 18:54:23.168 [debug]: Resolving migration: 04_db_version_4.js, found: 04_db_version_4.js
-2026-04-16 18:54:23.168 [debug]: Resolving migration: 05_db_version_5.js, found: 05_db_version_5.js
-2026-04-16 18:54:23.234 [info]: HTTPS Server is running on: https://localhost:8081
-2026-04-16 18:54:23.602 [info] [Client Request-ID=e9cc0e2aac304d6c8e68e815e015e909] [URL=/] -> [Status=404]
-2026-04-16 18:54:23.612 [info] [Client Request-ID=3f37d9d7197e4e9ba3986269a896b7df] [URL=/] -> [Status=404]
-2026-04-16 18:54:23.636 [error] [Client Request-ID=6f69e1f525a744b7a4ca630542e6f945] The platform was not found in the cache.
-2026-04-16 18:54:23.638 [info] [Client Request-ID=6f69e1f525a744b7a4ca630542e6f945] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
-2026-04-16 18:54:23.652 [error] [Client Request-ID=8fe7a90afa964a74aa53a2ce2c9a0cad] The platform was not found in the cache.
-2026-04-16 18:54:23.654 [info] [Client Request-ID=8fe7a90afa964a74aa53a2ce2c9a0cad] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
-2026-04-16 18:54:23.676 [error] [Client Request-ID=c448987fcdd440e1b83eca3d6847b2e0] The platform was not found in the cache.
-2026-04-16 18:54:23.677 [info] [Client Request-ID=c448987fcdd440e1b83eca3d6847b2e0] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
-2026-04-16 18:54:23.681 [error] [Client Request-ID=7f9731fb6249423fa8ecae522808fa0d] The platform was not found in the cache.
-2026-04-16 18:54:23.682 [info] [Client Request-ID=7f9731fb6249423fa8ecae522808fa0d] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
-2026-04-16 18:54:24.712 [error] [Client Request-ID=356430ff8d644ecc8586b5dc7787a3e3] The platform was not found in the cache.
-2026-04-16 18:54:24.713 [info] [Client Request-ID=356430ff8d644ecc8586b5dc7787a3e3] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
-2026-04-16 18:54:24.718 [error] [Client Request-ID=ceda8300e71548bcb874b2cb28f95846] The platform was not found in the cache.
-2026-04-16 18:54:24.718 [info] [Client Request-ID=ceda8300e71548bcb874b2cb28f95846] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
+2026-04-17 10:34:32.141 [debug]: [{"name":"00_db_initialize.up.sql"},{"name":"01_db_version_1.js"},{"name":"02_db_version_2.js"},{"name":"03_db_version_3.js"},{"name":"04_db_version_4.js"},{"name":"05_db_version_5.js"}]
+2026-04-17 10:34:32.153 [debug]: Resolving migration: 00_db_initialize.up.sql, found: 00_db_initialize.up.sql
+2026-04-17 10:34:32.153 [debug]: Resolving migration: 01_db_version_1.js, found: 01_db_version_1.js
+2026-04-17 10:34:32.154 [debug]: Resolving migration: 02_db_version_2.js, found: 02_db_version_2.js
+2026-04-17 10:34:32.154 [debug]: Resolving migration: 03_db_version_3.js, found: 03_db_version_3.js
+2026-04-17 10:34:32.154 [debug]: Resolving migration: 04_db_version_4.js, found: 04_db_version_4.js
+2026-04-17 10:34:32.154 [debug]: Resolving migration: 05_db_version_5.js, found: 05_db_version_5.js
+2026-04-17 10:34:32.222 [info]: HTTPS Server is running on: https://localhost:8081
+2026-04-17 10:34:32.605 [info] [Client Request-ID=c34696214e31401bafc2b3a9a5a7a4fb] [URL=/] -> [Status=404]
+2026-04-17 10:34:32.615 [info] [Client Request-ID=0a0cc03e5a0c40f0ab6514e70d537167] [URL=/] -> [Status=404]
+2026-04-17 10:34:32.639 [error] [Client Request-ID=be730e3c2130445f89588b4b6e38e2cc] The platform was not found in the cache.
+2026-04-17 10:34:32.642 [info] [Client Request-ID=be730e3c2130445f89588b4b6e38e2cc] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
+2026-04-17 10:34:32.656 [error] [Client Request-ID=605feb530faa49d5994268e17dfb84c8] The platform was not found in the cache.
+2026-04-17 10:34:32.657 [info] [Client Request-ID=605feb530faa49d5994268e17dfb84c8] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
+2026-04-17 10:34:32.679 [error] [Client Request-ID=6b928b7f383d4f92afdb577a008aa638] The platform was not found in the cache.
+2026-04-17 10:34:32.680 [info] [Client Request-ID=6b928b7f383d4f92afdb577a008aa638] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
+2026-04-17 10:34:32.684 [error] [Client Request-ID=705532a915ef4f7d9d051f66666eed5b] The platform was not found in the cache.
+2026-04-17 10:34:32.685 [info] [Client Request-ID=705532a915ef4f7d9d051f66666eed5b] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
+2026-04-17 10:34:33.718 [error] [Client Request-ID=a5f3b0403d4148a18a85de6f02724260] The platform was not found in the cache.
+2026-04-17 10:34:33.719 [info] [Client Request-ID=a5f3b0403d4148a18a85de6f02724260] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]
+2026-04-17 10:34:33.723 [error] [Client Request-ID=58519ced68a54be9b00975950eae9c71] The platform was not found in the cache.
+2026-04-17 10:34:33.724 [info] [Client Request-ID=58519ced68a54be9b00975950eae9c71] [URL=/sgx/certification/v4/pckcert?qeid=AF754FB4908C2646874485993E7962A6&encrypted_ppid=0000...0000&cpusvn=4820F3376AE6B2F2034D3B7A4B48A778&pcesvn=0000&pceid=0000] -> [Status=461]

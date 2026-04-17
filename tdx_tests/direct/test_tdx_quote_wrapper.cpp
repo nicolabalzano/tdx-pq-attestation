@@ -38,6 +38,19 @@ static void print_attestation_key_id(const tdx_uuid_t& att_key_id)
     }
 }
 
+static void print_quote_hex_and_contents(const uint8_t* quote, uint32_t quote_size)
+{
+    if (!quote || quote_size == 0) {
+        return;
+    }
+
+    std::printf("[test] quote hex: %s\n", bytes_to_hex(quote, quote_size).c_str());
+    std::printf("[test] quote contents: header + TD report/body + attestation signature data");
+    std::printf(" + certification data.\n");
+    std::printf("[test] quote contents note: the quote binds the caller-provided report_data");
+    std::printf(" and identifies the attestation key used to sign it.\n");
+}
+
 int main()
 {
     // Input data that will be cryptographically bound to the TD report.
@@ -85,6 +98,7 @@ int main()
 
     std::printf("[test] quote generated successfully: %u bytes\n", quote_size);
     print_attestation_key_id(selected_att_key_id);
+    print_quote_hex_and_contents(p_quote, quote_size);
     std::string verifier_response;
     if (!submit_quote_to_verifier(p_quote, quote_size, report_data, &verifier_response)) {
         tdx_att_free_quote(p_quote);

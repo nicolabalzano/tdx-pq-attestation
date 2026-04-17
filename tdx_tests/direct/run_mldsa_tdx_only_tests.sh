@@ -65,6 +65,28 @@ print_qgs_unavailable_hint() {
   fi
 }
 
+print_machine_security_summary() {
+  local verifier_mode="$1"
+  echo "[INFO] Machine/attestation summary:"
+  echo "       - SGX mode: $SGX_MODE_VALUE"
+  if [[ -n "$TDX_GUEST_DEV" ]]; then
+    echo "       - TDX device: $TDX_GUEST_DEV"
+  else
+    echo "       - TDX device: not present"
+  fi
+  echo "       - Verifier mode: $verifier_mode"
+  if [[ "$SGX_MODE_VALUE" == "SIM" ]]; then
+    echo "       - Trusted quoting path: simulated SGX TDQE"
+  else
+    echo "       - Trusted quoting path: non-SIM"
+  fi
+  echo "[INFO] For a higher-confidence hardware-backed run, you should see:"
+  echo "       - SGX mode: HW (not SIM)"
+  echo "       - no 'SE_SIM bypass -> true' lines"
+  echo "       - a real TDX guest device (/dev/tdx_guest or equivalent)"
+  echo "       - standard DCAP/collateral verification, not local fallback"
+}
+
 sha512_hex() {
   printf '%s' "$1" | sha512sum | awk '{print $1}'
 }
@@ -369,11 +391,13 @@ g++ -std=c++14 -O2 -Wall -Wextra -Werror \
   -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper" \
   -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest" \
   -I"$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc" \
+  -I"$TESTS_DIR/common" \
   -I"$LOCAL_SGX_SDK/include" \
   "$SCRIPT_DIR/test_tdx_direct_mldsa_probe.cpp" \
+  "$TESTS_DIR/common/utils.cpp" \
   -L"$TDX_ATTEST_LINUX_DIR" \
   -Wl,-rpath,"$TDX_ATTEST_LINUX_DIR" \
-  -ltdx_attest -lpthread -ldl \
+  -ltdx_attest -lcurl -lpthread -ldl \
   -o "$TDX_DIRECT_PROBE_BIN"
 
 echo "[INFO] Running TDQE ML-DSA adapter test..."
@@ -471,3 +495,9 @@ LD_LIBRARY_PATH="$TDX_ATTEST_LINUX_DIR:$URTS_LIB_DIR:${LD_LIBRARY_PATH:-}" \
     tail -n 200 "$QGS_LOG_PATH" || true
     exit "$probe_status"
   }
+
+if [[ "$SGX_MODE_VALUE" == "SIM" ]]; then
+  print_machine_security_summary "local ML-DSA verification fallback"
+else
+  print_machine_security_summary "standard path only"
+fi

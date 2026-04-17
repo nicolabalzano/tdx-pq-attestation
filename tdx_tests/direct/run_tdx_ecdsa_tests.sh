@@ -24,6 +24,19 @@ VERIFIER_BIN="$BIN_DIR/local_tdx_verifier"
 VERIFIER_LOG="$BIN_DIR/local_tdx_verifier.log"
 TEST_APP_BIN="$BIN_DIR/test_app_direct"
 
+print_machine_security_summary() {
+	echo "[INFO] Machine/attestation summary:"
+	echo "       - TDX device: $TDX_GUEST_DEV"
+	echo "       - SGX mode: ${SGX_MODE:-not set}"
+	echo "       - Verifier mode: local binding-only"
+	echo "       - Trusted quoting path: direct TDX device"
+	echo "[INFO] For a higher-confidence hardware-backed run, you should see:"
+	echo "       - no SGX SIM mode"
+	echo "       - a real TDX guest device (/dev/tdx_guest or equivalent)"
+	echo "       - standard DCAP/collateral verification, not local binding-only mode"
+	echo "       - a verifier path that does not rely on repo-local fallback logic"
+}
+
 mkdir -p "$BIN_DIR"
 
 TDX_GUEST_DEV=""
@@ -156,5 +169,7 @@ g++ -std=c++14 -O2 -Wall -Wextra -Werror \
 echo "[INFO] Running test_app_direct (TDX-only)..."
 LD_LIBRARY_PATH="$TDX_ATTEST_LINUX_DIR:$QGS_MSG_LINUX_DIR:$QV_BUILD_LINUX_DIR:$QG_BUILD_LINUX_DIR:${LD_LIBRARY_PATH:-}" \
 	"$TEST_APP_BIN"
+
+print_machine_security_summary
 
 echo "[INFO] Done (TDX-only)."
