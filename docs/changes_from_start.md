@@ -10,6 +10,329 @@ For each step it lists:
 
 All paths below are repository-relative unless stated otherwise.
 
+## Latest update: Added the missing Boost dependency to the guest-side orchestration path
+
+### Files
+`tdx_tests/direct/run_host_tdx_guest_repo_tests.sh`
+
+`docs/new_machine_sgx_tdx_pccs_bringup.md`
+
+`docs/changes_from_start.md`
+
+### What changed
+- Updated the host-side guest runner so the guest dependency install step now includes:
+  - `libboost-all-dev`
+- Updated the new-machine bring-up note to record that the repo-local ML-DSA `QGS` direct-capability path needs Boost headers in the guest
+
+### Why this was needed
+- After `PCCS` and `qgsd` were fixed, `ECDSA` passed in the TDX guest and the remaining `ML-DSA` failure moved forward to a new point
+- The current `ML-DSA` logs showed the actual blocker clearly:
+  - the local verifier fallback in `SIM` succeeded for both `65` and `87`
+  - the failure only happened later when the runner tried to build the repo-local `QGS` for the direct TDX ML-DSA capability probe
+  - that build failed on `boost/asio.hpp: No such file or directory`
+- The host-side guest runner already provisioned the other build dependencies, so this missing package belonged in the same step
+
+### Validation actually performed
+- Re-read the current `ML-DSA` guest logs and confirmed the live failure point:
+
+```bash
+tail -n 120 tdx_tests/direct/logs/mldsa_65.log
+tail -n 120 tdx_tests/direct/logs/mldsa_87.log
+```
+
+## Latest update: Added a separate bring-up note for the new machine SGX/TDX/PCCS path
+
+### Files
+`docs/new_machine_sgx_tdx_pccs_bringup.md`
+
+`docs/changes_from_start.md`
+
+### What changed
+- Added a separate operational note that records the machine bring-up work done after moving to the new bare-metal host:
+  - initial host state and why it was not yet a TDX guest environment
+  - BIOS/firmware prerequisites that had to be enabled
+  - Canonical Ubuntu 24.04 TDX host setup path
+  - host validation commands for `virt/tdx` and `/sys/module/kvm_intel/parameters/tdx`
+  - host attestation setup with `qgsd` and `pccs`
+  - local `pccs-configure` choices
+  - Intel PCS subscription key requirement
+  - local `PCKIDRetrievalTool` upload into `PCCS`
+  - guest image creation and guest validation
+  - final repo-specific split between `ML-DSA` `SIM` and direct `ECDSA` `HW`
+
+### Why this was needed
+- The machine bring-up sequence had become spread across shell history, runtime logs, and troubleshooting notes
+- The repository already had repo-local setup notes, but not a single document that captured the full host-to-guest bring-up path on the new machine
+- The TDX host enablement, `PCCS` population, and guest attestation path were all necessary to understand why direct `ECDSA` started passing on this machine
+
+### Validation actually performed
+- Re-read the current host-side and guest-side status captured during the machine bring-up:
+
+```bash
+sudo dmesg | grep -i tdx
+cat /sys/module/kvm_intel/parameters/tdx
+sudo systemctl status qgsd --no-pager
+sudo systemctl status pccs --no-pager
+```
+
+## Latest update: Fixed the host-side guest runner for real TDX guest execution
+
+### Files
+`tdx_tests/direct/run_host_tdx_guest_repo_tests.sh`
+
+`docs/changes_from_start.md`
+
+### What changed
+- Updated the host-side TDX guest runner so it no longer injects the repo-local SGX SDK `LD_LIBRARY_PATH` into the guest when it launches the `HW` flows:
+  - removed the outer `LD_LIBRARY_PATH=$guest_repo/tdx_tests/sgxsdk/lib64` override from the guest-side `run_mldsa_tdx_only_tests.sh` invocation
+  - removed the same outer override from the guest-side `run_tdx_ecdsa_tests.sh` invocation
+- Realigned the host-side guest runner with the repo's intended test contract:
+  - `ML-DSA` now defaults to `SGX_MODE=SIM` inside the guest
+  - `ECDSA` now defaults to `SGX_MODE=HW` inside the guest
+  - both modes are overrideable through `TDXTEST_MLDSA_SGX_MODE` and `TDXTEST_ECDSA_SGX_MODE`
+- Added automatic host-side attestation diagnostics on failure:
+  - tails `journalctl -u qgsd -b 0`
+  - tails `journalctl -u pccs -b 0`
+  - prints them in the failing runner output before exit
+
+### Why this was needed
+- The first real TDX guest run exposed that the host-side wrapper was still forcing the repo-local SDK `uRTS` into `SGX_MODE=HW`
+- The ML-DSA logs in the guest were explicit:
+  - `Please use the correct uRTS library from PSW package.`
+  - `tee_att_init_quote(MLDSA_65) bootstrap failed: 0x11001`
+- In `HW` mode that outer override was counterproductive because the guest-side runner already contains its own logic to prefer the system PSW `uRTS`
+- The next successful `ECDSA` run also clarified that the remaining `ML-DSA` failure was not the original host attestation issue anymore:
+  - `ECDSA` direct quote generation passed in `HW` once `PCCS` and `qgsd` were healthy
+  - the repo's documented expectation remained `ML-DSA` in local `SIM`, not the forced `HW` wrapper path
+  - the host-side guest runner now reflects that split instead of forcing `ML-DSA` into a path that the repo-local QGS bootstrap still does not handle reliably on a TDX guest
+- The same execution also showed that `tdx_att_get_quote() -> 0x4` by itself was not enough to explain the direct ECDSA failure; the useful signal lives in the host `qgsd` and `pccs` logs
+- Printing those host logs automatically makes the next failure actionable without an extra manual debug round
+
+### Validation actually performed
+- Syntax-checked the updated host-side runner successfully:
+
+```bash
+bash -n tdx_tests/direct/run_host_tdx_guest_repo_tests.sh
+```
+
+- Re-read the current guest-side logs after the failed TDX guest run:
+
+```bash
+tail -n 60 tdx_tests/direct/logs/mldsa_65.log
+tail -n 60 tdx_tests/direct/logs/mldsa_87.log
+tail -n 60 tdx_tests/direct/logs/ecdsa.log
+```
+
+## Latest update: Added a host-side TDX guest orchestration script for the repo tests
+
+### Files
+`tdx_tests/direct/run_host_tdx_guest_repo_tests.sh`
+
+`docs/changes_from_start.md`
+
+### What changed
+- Added a new host-side shell entry point under `tdx_tests/direct/` that automates the full bare-metal-host-to-guest flow for this repo:
+  - verifies that the host `kvm_intel` TDX switch is actually active
+  - reuses the Canonical 24.04 guest tooling in `~/tdx/guest-tools`
+  - creates the default Ubuntu 24.04 TDX guest image if it is missing
+  - starts the guest with `run_td`
+  - waits for SSH on the forwarded guest port
+  - installs the guest build/runtime packages needed by the repo-local runners
+  - copies the current repo snapshot into the guest
+  - cleans stale guest-side build artifacts and dependency files before rebuilding, so copied `.d` files do not keep pointing at absolute host paths such as `/home/ubuntu/...`
+  - repairs the copied repo-local SGX SDK symlink for `libsgx_urts.so.2`, which otherwise stayed bound to the old absolute path from the previous machine
+  - writes `/etc/tdx-attest.conf` inside the guest with `port = 4050` so the repo-local `libtdx_attest` can use the QEMU-provided vsock quote-generation path
+  - fails early when the host `qgsd` service is missing or inactive, because the direct TDX quote path cannot succeed without a working host quote-generation service
+  - no longer treats the Canonical `check-registration.sh` result as a hard blocker by default, because that script only reflects the MPA path and does not cover the `PCKIDRetrievalTool` workflow
+  - can optionally run `PCKIDRetrievalTool` against the local `PCCS` before guest boot when given the plain `TDXTEST_PCCS_USER_TOKEN`
+  - resolves `~/tdx/guest-tools` against `SUDO_USER` when the script is launched with `sudo`, so it no longer falls back incorrectly to `/root/tdx/guest-tools`
+  - excludes local `PCCS` TLS/cache artifacts from the repo tarball copy step, so root-owned files like `ssl_key/private.pem` no longer break guest synchronization
+  - removes the accidental hardcoded default for `TDXTEST_PCCS_USER_TOKEN`; it is empty unless the caller provides it explicitly
+  - runs the direct ML-DSA flow for `TEST_MLDSA_ALG=65`
+  - runs the direct ML-DSA flow for `TEST_MLDSA_ALG=87`
+  - runs the direct ECDSA flow
+  - stores per-run host-side logs in `tdx_tests/direct/logs/`
+- Kept the script configurable through environment variables instead of hardcoding a single image path or guest size:
+  - `TDX_TOOLS_DIR`
+  - `TDX_GUEST_IMAGE_PATH`
+  - `TDX_GUEST_VCPUS`
+  - `TDX_GUEST_MEM`
+  - `TDXTEST_MLDSA_ALGS`
+  - `TDXTEST_RUN_ECDSA`
+  - `TDXTEST_STOP_GUEST_ON_EXIT`
+  - and the other knobs exposed by the script help output
+- Made the script install `sshpass` on the host automatically if it is the only missing piece for non-interactive guest SSH and SCP
+- Deliberately targeted the direct guest path with `SGX_MODE=HW` so the script does not silently fall back to the repo-local `SIM` mode that was only meant for the non-TDX machine bring-up phase
+
+### Why this was needed
+- The machine is now correctly configured as a TDX host, but the repo tests still need to run inside a TDX guest, not on the host itself
+- The repetitive steps were operational rather than code-debugging work:
+  - create guest image
+  - boot guest
+  - wait for SSH
+  - move the repo into the guest
+  - run the three test flows in order
+- Without a dedicated script, that flow is slow to repeat and easy to skew across runs
+- The first real guest execution exposed another portability issue:
+  - copied `.d` dependency files from a previous host-side build still referenced `/home/ubuntu/tdx-pq-attestation/...`
+  - guest-side `make` then failed with `No rule to make target ... sgx_edger8r.h` and `sgx_key.h`
+  - the host-side orchestrator now removes those stale build products before starting the repo-local rebuild inside the guest
+- The next real guest execution exposed two environment-specific runtime failures:
+  - the copied SGX SDK contained a broken absolute symlink `libsgx_urts.so.2 -> /home/alocin-local/...`
+  - the host did not yet have the Canonical attestation host stack installed or `qgsd` active, so direct quote generation failed with `tdx_att_get_quote() -> 0x8`
+- The orchestrator now fixes the first case automatically and fails early with a concrete host-side prerequisite error for the second case
+- After `qgsd` was brought up, the next failure clarified the remaining host issue:
+  - guest-to-host vsock connectivity on port `4050` worked
+  - `qgsd` then failed internally with `No certificate data for this platform` and the host `pccs` log returned `401` from Intel PCS
+  - `~/tdx/attestation/check-registration.sh` also reported `platform not registered`
+- The later host investigation showed a nuance that mattered:
+  - `check-registration.sh` is MPA-specific
+  - `PCKIDRetrievalTool` can still be the relevant path for a given setup and can generate/upload `pckid_retrieval.csv` even when the MPA check stays `NOK`
+- The orchestrator was adjusted to reflect that distinction instead of hard-failing on the MPA-only signal by default
+- The next host-side execution exposed two runner issues unrelated to attestation logic:
+  - when launched with `sudo`, the script looked for Canonical guest tools under `/root/tdx/guest-tools`
+  - the repo copy step tried to archive root-owned local `PCCS` TLS material under `QuoteGeneration/pccs/service/ssl_key`
+- Both were fixed in the runner so `sudo ./tdx_tests/direct/run_host_tdx_guest_repo_tests.sh` uses the original user's `~/tdx` tree and skips those non-source local artifacts
+
+### Validation actually performed
+- Syntax-checked the new orchestration script successfully:
+
+```bash
+bash -n tdx_tests/direct/run_host_tdx_guest_repo_tests.sh
+```
+
+- Verified the host assumptions that the script relies on:
+
+```bash
+cat /sys/module/kvm_intel/parameters/tdx
+cat /proc/cmdline
+```
+
+- Verified the Canonical 24.04 guest tools and TDX-enabled packages are present on this machine:
+
+```bash
+~/tdx/guest-tools/run_td --help
+~/tdx/guest-tools/tdvirsh --help
+dpkg -l | rg 'qemu-system-x86|libvirt-daemon-system|libvirt-clients|ovmf'
+```
+
+## Latest update: Realigned the repo-local ML-DSA runners on a machine without `/dev/tdx*`
+
+### Files
+`confidential-computing.tee.dcap-pq/ae/pq/mldsa-native/mldsa/mldsa_native_65.c`
+
+`confidential-computing.tee.dcap-pq/ae/pq/mldsa-native/mldsa/mldsa_native_87.c`
+
+`confidential-computing.tee.dcap-pq/ae/tdqe/tdqe_mldsa_adapter.c`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/CMakeLists.txt`
+
+`tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+`tdx_tests/direct/run_tdx_ecdsa_tests.sh`
+
+### What changed
+- Added the missing multilevel ML-DSA wrapper sources:
+  - `mldsa_native_65.c`
+  - `mldsa_native_87.c`
+- Wired the wrappers so:
+  - `65` exports the shared base namespace and `PQCP_MLDSA_NATIVE_MLDSA65_*`
+  - `87` exports `PQCP_MLDSA_NATIVE_MLDSA87_*` and reuses the shared base symbols
+- Added the missing `ML-DSA-65` forward declarations in `tdqe_mldsa_adapter.c` so the TDQE-side adapter links cleanly against the new wrapper split
+- Extended the QVL `AttestationLibrary` CMake build to compile the repo-local ML-DSA helper sources that were already used by the Makefile verifier path
+- Fixed the ML-DSA runner so it now:
+  - bootstraps `QuoteVerification/sgxssl/Linux/package/lib64/libsgx_usgxssl.a` when only the SGXSSL headers are present
+  - compiles the host-side `randombytes` stub as a C object and links it into the verifier probe
+  - links the wrapper and verifier probes explicitly against `libsgx_pce_logic`
+  - creates the missing `.so.1` links for repo-local shared libraries that advertise SONAMEs with major versions
+  - includes `QuoteGeneration/build/linux` in the relevant runtime library paths so repo-local `libdcap_quoteprov.so.1` is found
+  - skips `QGS` build/startup when the direct TDX probe will not run
+  - tolerates missing local `PCCS` `node_modules` when the ML-DSA local fallback is already enabled
+  - skips the ML-DSA verifier probe explicitly when the machine has no `/dev/tdx*`, because that probe still needs `tdx_att_get_report()` even in `SGX_MODE=SIM`
+  - still prints the final machine/attestation summary on `SKIP` paths
+- Fixed the ECDSA runner so it now:
+  - bootstraps the missing SGXSSL untrusted wrapper library the same way
+  - creates `libtdx_attest.so.1` when only `libtdx_attest.so` exists locally
+  - prints the summary even when no TDX device is present
+  - prints `TDX device: not present` instead of an empty field in that case
+
+### Why this was needed
+- On this machine the code and scripts were not in the state described by the previous workspace:
+  - the repo already referenced `mldsa_native_65.c`, but that file did not exist locally
+  - the ML-DSA runners assumed locally available SGXSSL package libraries and versioned shared-library links that were not present
+  - the ML-DSA runner tried to build `QGS` even in `SIM` setups where the direct TDX probe would be skipped anyway
+- The first failures were infrastructure failures, not ML-DSA format failures:
+  - missing `-lsgx_usgxssl`
+  - missing `libsgx_tdx_logic.so.1` / `libsgx_pce_logic.so.1`
+  - unresolved `randombytes`
+  - unnecessary hard failure on missing local `PCCS` JavaScript dependencies
+- After those fixes, the remaining hard limitation on this machine is environmental:
+  - there is no `/dev/tdx*`
+  - the direct TDX path and the verifier probe path that calls `tdx_att_get_report()` cannot complete here
+
+### Validation actually performed
+- Built the missing SGXSSL untrusted wrapper library successfully:
+
+```bash
+make -C confidential-computing.tee.dcap-pq/QuoteVerification/sgxssl/Linux/sgx/libsgx_usgxssl \
+  SGX_SDK=/home/ubuntu/tdx-pq-attestation/tdx_tests/sgxsdk
+```
+
+- Rebuilt the repo-local quote verifier successfully after that bootstrap:
+
+```bash
+make -C confidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/linux \
+  SGX_SDK=/home/ubuntu/tdx-pq-attestation/tdx_tests/sgxsdk
+```
+
+- Verified the new ML-DSA wrapper split and adapter link path:
+
+```bash
+env SGX_SDK=/home/ubuntu/tdx-pq-attestation/tdx_tests/sgxsdk SGX_MODE=SIM \
+  make -C confidential-computing.tee.dcap-pq/ae/tdqe/linux \
+  mldsa_native_65.o mldsa_native_87.o tdqe_mldsa_adapter.o
+```
+
+- Verified the verifier probe link path with the host-side `randombytes` stub:
+
+```bash
+g++ -std=c++14 ... tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp \
+  tdx_tests/bin/test_randombytes_stub.o \
+  confidential-computing.tee.dcap-pq/ae/tdqe/linux/tdqe_mldsa_adapter.o \
+  confidential-computing.tee.dcap-pq/ae/tdqe/linux/mldsa_native_65.o \
+  confidential-computing.tee.dcap-pq/ae/tdqe/linux/mldsa_native_87.o ...
+```
+
+- Ran the repo-local `SIM` runner end to end for `ML-DSA-65` on this machine:
+
+```bash
+env SGX_MODE=SIM TEST_MLDSA_ALG=65 \
+  LD_LIBRARY_PATH=/home/ubuntu/tdx-pq-attestation/tdx_tests/sgxsdk/lib64 \
+  ./tdx_tests/direct/run_mldsa_tdx_only_tests.sh
+```
+
+- That run completed successfully and actually exercised:
+  - TDQE ML-DSA adapter test
+  - quote header/layout tests
+  - TDQE simulation loader probe
+  - wrapper `init_quote` probe
+  - wrapper algorithm-selection probe
+  - quote-size checks for both `7102` and `9060`
+- Ran the ECDSA runner on this machine and confirmed the remaining blocker is simply the missing TDX device:
+
+```bash
+./tdx_tests/direct/run_tdx_ecdsa_tests.sh
+```
+
+### Remaining machine limitation observed
+- The machine still has no `/dev/tdx*`, so these paths are still unavailable here:
+  - direct TDX ECDSA run
+  - direct TDX ML-DSA probe
+  - ML-DSA verifier probe path that needs `tdx_att_get_report()`
+- During verification I also confirmed that the QVL source tree in this checkout still remains effectively ECDSA-only at the parser allowlist level; for example:
+  - `QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/QuoteConstants.h`
+    still sets `ALLOWED_ATTESTATION_KEY_TYPES` to only `ECDSA_256_WITH_P256_CURVE`
+
 ## Latest update: Implemented ML-DSA-87 across attestation and verification
 
 ### Files

@@ -15,6 +15,7 @@ QG_BUILD_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteGeneratio
 QV_BUILD_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/build/linux"
 LOCAL_SGX_SDK="$TESTS_DIR/sgxsdk"
 LOCAL_PREBUILT_OPENSSL_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/prebuilt/openssl"
+LOCAL_SGXSSL_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/sgxssl/Linux"
 LOCAL_SGXSSL_PACKAGE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/sgxssl/Linux/package"
 LOCAL_QCNL_CONF="$TESTS_DIR/sgx_default_qcnl_ecdsa_test.conf"
 LOCAL_VERIFIER_PORT="${TDX_LOCAL_VERIFIER_PORT:-8123}"
@@ -26,7 +27,11 @@ TEST_APP_BIN="$BIN_DIR/test_app_direct"
 
 print_machine_security_summary() {
 	echo "[INFO] Machine/attestation summary:"
-	echo "       - TDX device: $TDX_GUEST_DEV"
+	if [[ -n "$TDX_GUEST_DEV" ]]; then
+		echo "       - TDX device: $TDX_GUEST_DEV"
+	else
+		echo "       - TDX device: not present"
+	fi
 	echo "       - SGX mode: ${SGX_MODE:-not set}"
 	echo "       - Verifier mode: local binding-only"
 	echo "       - Trusted quoting path: direct TDX device"
@@ -35,6 +40,33 @@ print_machine_security_summary() {
 	echo "       - a real TDX guest device (/dev/tdx_guest or equivalent)"
 	echo "       - standard DCAP/collateral verification, not local binding-only mode"
 	echo "       - a verifier path that does not rely on repo-local fallback logic"
+}
+
+ensure_repo_local_sgxssl_untrusted_lib() {
+	local header_path="$LOCAL_SGXSSL_PACKAGE_DIR/include/openssl/opensslconf.h"
+	local untrusted_lib_path="$LOCAL_SGXSSL_PACKAGE_DIR/lib64/libsgx_usgxssl.a"
+
+	if [[ ! -f "$header_path" ]]; then
+		return 1
+	fi
+
+	if [[ -f "$untrusted_lib_path" ]]; then
+		return 0
+	fi
+
+	echo "[INFO] Building missing repo-local SGXSSL untrusted wrapper..."
+	make -C "$LOCAL_SGXSSL_LINUX_DIR/sgx/libsgx_usgxssl" SGX_SDK="$LOCAL_SGX_SDK"
+
+	[[ -f "$untrusted_lib_path" ]]
+}
+
+ensure_major_link() {
+	local real_path="$1"
+	local major_path="$2"
+
+	if [[ -f "$real_path" && ! -e "$major_path" ]]; then
+		ln -sf "$(basename "$real_path")" "$major_path"
+	fi
 }
 
 mkdir -p "$BIN_DIR"
@@ -49,12 +81,14 @@ done
 
 if [[ -z "$TDX_GUEST_DEV" ]]; then
 	echo "[ERROR] Nessun device TDX trovato (/dev/tdx*)."
+	print_machine_security_summary
 	exit 1
 fi
 
 if [[ ! -r "$TDX_GUEST_DEV" || ! -w "$TDX_GUEST_DEV" ]]; then
 	echo "[ERROR] Permessi insufficienti su $TDX_GUEST_DEV ($(ls -l "$TDX_GUEST_DEV"))"
-	echo "[ERROR] Esegui con privilegi elevati (es. sudo -E ./run_tdx_tests.sh)"
+	echo "[ERROR] Esegui con privilegi elevati (es. sudo -E ./run_tdx_ecdsa_tests.sh)"
+	print_machine_security_summary
 	exit 1
 fi
 
@@ -65,6 +99,9 @@ fi
 echo "[INFO] Uso solo TDX (/dev/tdx*), senza flow SGX/quote-wrapper."
 echo "[INFO] Building libtdx_attest..."
 make -C "$TDX_ATTEST_LINUX_DIR"
+ensure_major_link \
+	"$TDX_ATTEST_LINUX_DIR/libtdx_attest.so" \
+	"$TDX_ATTEST_LINUX_DIR/libtdx_attest.so.1"
 
 if [[ -d "$LOCAL_SGX_SDK" ]]; then
 	export SGX_SDK="$LOCAL_SGX_SDK"
@@ -81,11 +118,14 @@ if [[ ! -d "$LOCAL_PREBUILT_OPENSSL_DIR/inc" || ! -d "$LOCAL_PREBUILT_OPENSSL_DI
 	ln -sfn /usr/lib/x86_64-linux-gnu "$LOCAL_PREBUILT_OPENSSL_DIR/lib/linux64"
 fi
 
-if [[ ! -f "$LOCAL_SGXSSL_PACKAGE_DIR/include/openssl/opensslconf.h" ]]; then
+if ! ensure_repo_local_sgxssl_untrusted_lib; then
 	echo "[ERROR] Missing repo-local SGXSSL package at:"
 	echo "        $LOCAL_SGXSSL_PACKAGE_DIR"
+	echo "[ERROR] Expected SGXSSL header/lib pair:"
+	echo "        - include/openssl/opensslconf.h"
+	echo "        - lib64/libsgx_usgxssl.a"
 	echo "[ERROR] QuoteVerification/dcap_quoteverify cannot be built from your checkout without SGXSSL."
-	echo "[ERROR] Build or populate QuoteVerification/sgxssl first, then rerun ./run_tdx_tests.sh."
+	echo "[ERROR] Build or populate QuoteVerification/sgxssl first, then rerun ./run_tdx_ecdsa_tests.sh."
 	exit 1
 fi
 
@@ -162,7 +202,9 @@ g++ -std=c++14 -O2 -Wall -Wextra -Werror \
 	-I/usr/include/x86_64-linux-gnu \
 	"$TESTS_DIR/direct/test_tdx_quote_wrapper.cpp" \
 	"$TESTS_DIR/common/utils.cpp" \
-	-L"$TDX_ATTEST_LINUX_DIR" -ltdx_attest \
+	-L"$TDX_ATTEST_LINUX_DIR" \
+	-Wl,-rpath,"$TDX_ATTEST_LINUX_DIR" \
+	-ltdx_attest \
 	-lcurl -lpthread -ldl \
 	-o "$TEST_APP_BIN"
 

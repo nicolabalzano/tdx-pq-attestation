@@ -1,0 +1,4 @@
+ssl_key/
+tdx_tests/direct/logs/
+tdx_tests/bin/*.o
+tdx_tests/bin/.run_mldsa_tdx_only_tests_sgx_mode
