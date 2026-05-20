@@ -15,6 +15,7 @@ to:
 - TDX guest booting
 - host `qgsd` and `pccs` working
 - direct `ECDSA` quote generation working in the guest
+- direct `ML-DSA-65/87` hardware quotes working in the guest through a host repo-local `QGS`
 
 ## 1. Initial state on the new machine
 
@@ -158,6 +159,116 @@ The production PCS endpoint in that file is:
 ```
 
 So the `ApiKey` had to be a production PCS subscription key.
+
+## 8. TDX guest bring-up
+
+The guest image and guest boot path used on this machine were:
+
+```bash
+cd ~/tdx/guest-tools/image
+sudo ./create-td-image.sh -v 24.04
+
+cd ~/tdx/guest-tools
+./run_td --image ~/tdx/guest-tools/image/tdx-guest-ubuntu-24.04-generic.qcow2 --vcpus 4 --mem 8G
+```
+
+Inside the guest, the check that mattered was:
+
+```bash
+ls -l /dev/tdx_guest
+```
+
+That device had to exist before any direct hardware-backed TDX attestation test could succeed.
+
+## 9. What worked directly with the stock host services
+
+With:
+
+- host `qgsd`
+- host `pccs`
+- valid Intel PCS subscription key
+
+the direct guest `ECDSA` path started working end-to-end on real hardware.
+
+That was the point where the host quote-generation plumbing was proven good enough for:
+
+- guest `/dev/tdx_guest`
+- host `qgsd`
+- host `pccs`
+- direct TDX quote generation
+
+## 10. What did not work for ML-DSA with the stock host qgsd path
+
+`ML-DSA` was different.
+
+Two failed paths mattered:
+
+1. forcing a guest-local repo-local `QGS`
+2. using the stock host `qgsd`
+
+The guest-local repo-local `QGS` path failed because it still tried to bootstrap through the SGX QE/uRTS/PSW interface inside the guest and hit:
+
+- `sgx_create_enclave QE fail`
+- `Please use the correct uRTS library from PSW package.`
+
+The stock host `qgsd` path was better, but it still did not preserve the requested ML-DSA selection correctly in this setup:
+
+- the requested ML-DSA UUID was visible
+- but the returned quote could still come back as `att_key_type=2` (`ECDSA`)
+
+That was enough to show:
+
+- the host TDX quote path was alive
+- but the stock host service path was not sufficient for repo-local ML-DSA hardware testing
+
+## 11. Working ML-DSA hardware solution on this machine
+
+The working solution was:
+
+- keep `ECDSA` on the stock host `qgsd`
+- run the repo-local patched `QGS` on the host for `ML-DSA`
+- expose that host repo-local `QGS` over vsock on port `4051`
+- point the guest ML-DSA hardware flow at that port
+
+This is now automated by:
+
+- `tdx_tests/direct/run_host_tdx_guest_repo_tests.sh`
+
+The key outcome is that the guest is still generating **real hardware-backed TDX quotes**, but the quote-generation service for ML-DSA is the repo-local host `QGS`, not the stock host `qgsd`.
+
+The real hardware results obtained on this machine were:
+
+- `ML-DSA-65`
+  - selected key id `...4f40`
+  - `att_key_type=5`
+  - `quote_size=7102`
+- `ML-DSA-87`
+  - selected key id `...4f41`
+  - `att_key_type=6`
+  - `quote_size=9060`
+
+In both cases:
+
+- `SGX mode: HW`
+- `TDX device: /dev/tdx_guest`
+- `Trusted quoting path: direct TDX device via host repo-local QGS`
+
+## 12. Remaining limitation
+
+The remaining limitation is not quote generation.
+
+The remaining limitation is verification mode:
+
+- the direct hardware ML-DSA quotes are generated successfully
+- the local verifier can validate them cryptographically
+- but standard DCAP collateral verification is still unavailable in the current ML-DSA local setup
+
+So the current machine state is:
+
+- `ECDSA`: direct `HW` quote path working
+- `ML-DSA-65`: direct `HW` quote path working via host repo-local `QGS`
+- `ML-DSA-87`: direct `HW` quote path working via host repo-local `QGS`
+- `ML-DSA` verification: local fallback on the hardware-generated quote, not full standard DCAP collateral verification
 
 After obtaining the Intel PCS key, the flow was:
 

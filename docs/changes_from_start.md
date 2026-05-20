@@ -10,6 +10,250 @@ For each step it lists:
 
 All paths below are repository-relative unless stated otherwise.
 
+## Latest update: ML-DSA-65 and ML-DSA-87 now run on real TDX hardware through a host repo-local QGS
+
+### Files
+`tdx_tests/direct/run_host_tdx_guest_repo_tests.sh`
+
+`tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+`tdx_tests/direct/test_tdx_direct_mldsa_probe.cpp`
+
+`tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp`
+
+### What changed
+- The guest-side ML-DSA `HW` flow no longer depends on the stock host `qgsd` for ML-DSA quote selection
+- The host-side orchestrator can now start the repo-local patched `QGS` on the host and expose it over vsock:
+  - default port `4051`
+  - enabled by default for ML-DSA hardware runs
+  - still leaves the stock host `qgsd` path available for `ECDSA`
+- The guest-side attestation transport is switched per flow:
+  - `ML-DSA HW` -> host repo-local `QGS`
+  - `ECDSA HW` -> host `qgsd`
+- The host-side orchestrator now:
+  - builds the repo-local host quote stack in `HW`
+  - force-cleans stale `SIM` artifacts before rebuilding the host quote libraries
+  - manually signs the host `TDQE` when needed so the host repo-local `QGS` can load it
+  - prints the host repo-local `QGS` log tail on failure
+- The direct ML-DSA verifier probe and direct capability probe now both accept the selected ML-DSA UUID when it is returned correctly and validate the actual quote header type:
+  - `att_key_type = 5` for `ML-DSA-65`
+  - `att_key_type = 6` for `ML-DSA-87`
+- The hardware ML-DSA path still uses the local verifier fallback on the hardware-generated quote because standard DCAP collateral verification is not available yet for this ML-DSA setup
+
+### Why this was needed
+- The stock host `qgsd` path was good enough for direct `ECDSA` hardware quotes, but it was not preserving the requested ML-DSA selection end-to-end in this setup
+- The earlier direct ML-DSA hardware runs showed the requested ML-DSA UUID, but the resulting quote header still came back as `att_key_type=2` (`ECDSA`)
+- The earlier attempt to force a guest-local repo-local `QGS` also failed for a different reason:
+  - it still bootstrapped through the SGX QE/uRTS/PSW path in the guest
+  - that path failed with `sgx_create_enclave QE fail`
+- The practical fix was to move the repo-local patched `QGS` to the host, where the quote-generation stack already works for real TDX guest hardware quotes
+
+### Validation actually performed
+- Verified the updated runners still parse:
+
+```bash
+bash -n tdx_tests/direct/run_mldsa_tdx_only_tests.sh
+bash -n tdx_tests/direct/run_host_tdx_guest_repo_tests.sh
+```
+
+- Rebuilt the host repo-local quote stack in `HW` and verified the rebuilt host libraries no longer linked against `libsgx_urts_sim.so`
+
+- Executed the real TDX guest hardware runs:
+
+```bash
+sudo TDXTEST_MLDSA_ALGS=65 \
+  TDXTEST_RUN_ECDSA=0 \
+  TDXTEST_STOP_GUEST_ON_EXIT=1 \
+  TDX_GUEST_VCPUS=4 \
+  TDX_GUEST_MEM=8G \
+  ./tdx_tests/direct/run_host_tdx_guest_repo_tests.sh
+
+sudo TDXTEST_MLDSA_ALGS=87 \
+  TDXTEST_RUN_ECDSA=0 \
+  TDXTEST_STOP_GUEST_ON_EXIT=1 \
+  TDX_GUEST_VCPUS=4 \
+  TDX_GUEST_MEM=8G \
+  ./tdx_tests/direct/run_host_tdx_guest_repo_tests.sh
+```
+
+- Observed successful hardware ML-DSA results:
+  - `ML-DSA-65`
+    - requested key id `...4f40`
+    - selected key id `...4f40`
+    - `att_key_type=5`
+    - `quote_size=7102`
+  - `ML-DSA-87`
+    - requested key id `...4f41`
+    - selected key id `...4f41`
+    - `att_key_type=6`
+    - `quote_size=9060`
+- In both cases:
+  - `SGX mode: HW`
+  - `TDX device: /dev/tdx_guest`
+  - `Trusted quoting path: direct TDX device via host repo-local QGS`
+  - `local ML-DSA quote verification succeeded`
+
+## Latest update: Stopped forcing the repo-local QGS in the ML-DSA hardware flow
+
+### Files
+`tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+`tdx_tests/direct/run_host_tdx_guest_repo_tests.sh`
+
+### What changed
+- The standalone ML-DSA runner no longer forces:
+  - `TDX_ATTEST_FORCE_LOCAL_QGS=1`
+  - `TDX_ATTEST_LOCAL_QGS_SOCKET=<repo-local socket>`
+  in `HW` mode
+- In `HW`, the runner now uses the default guest transport to the host `qgsd` service
+- The repo-local `QGS` is still used by default in `SIM`
+- Added an explicit override:
+  - `TDXTEST_MLDSA_FORCE_LOCAL_QGS=1`
+  so the repo-local `QGS` path can still be forced intentionally for debugging
+- The host-side guest orchestrator now forwards that override to the guest only when it is explicitly set
+- The final ML-DSA summary now distinguishes:
+  - `simulated SGX TDQE`
+  - `direct TDX device via host qgsd`
+  - `direct TDX device via repo-local QGS` only when the debug override is used
+- The hardware error path now avoids printing stale repo-local `QGS` logs when the run is actually using the host `qgsd`
+
+### Why this was needed
+- The previous hardware run failed in the wrong place:
+  - the runner forced the guest-side ML-DSA `HW` path through the repo-local `QGS`
+  - that `QGS` path still bootstraps through the SGX QE/uRTS/PSW interface
+  - on this guest the log showed:
+    - `sgx_create_enclave QE fail`
+    - `Please use the correct uRTS library from PSW package.`
+- That was not evidence that the host `qgsd` path was broken
+- It was evidence that the runner was still routing the hardware flow through the wrong transport
+- `ECDSA` had already proven that the host `qgsd` and `PCCS` path could generate real hardware-backed quotes successfully on this machine
+
+### Validation actually performed
+- Verified the updated runners still parse:
+
+```bash
+bash -n tdx_tests/direct/run_mldsa_tdx_only_tests.sh
+bash -n tdx_tests/direct/run_host_tdx_guest_repo_tests.sh
+```
+
+- Re-read the failing hardware ML-DSA logs and confirmed the actual blocker was the forced repo-local `QGS` path rather than the host `qgsd` path:
+
+```bash
+tail -n 200 tdx_tests/direct/logs/mldsa_65.log
+```
+
+- The relevant failure lines were:
+  - `tdx_att_get_quote failed: 0x4`
+  - `GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x11001`
+  - `Please use the correct uRTS library from PSW package.`
+
+## Latest update: Switched the guest-side ML-DSA flow from SIM-first to hardware-first
+
+### Files
+`tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+`tdx_tests/direct/run_host_tdx_guest_repo_tests.sh`
+
+`tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp`
+
+### What changed
+- The standalone ML-DSA runner now defaults to:
+  - `HW` when `/dev/tdx_guest` is present
+  - `SIM` otherwise
+- The host-side guest orchestrator now defaults `TDXTEST_MLDSA_SGX_MODE` to `HW`
+- The host-side guest orchestrator now also performs a guest-side `/dev/tdx_guest` preflight before it spends time on dependency install and repo-local rebuilds for hardware flows
+- The ML-DSA verifier probe can now use the direct TDX quote path in non-`SIM` mode:
+  - it selects the requested `ML-DSA-65` or `ML-DSA-87` attestation key ID from `tdx_att_get_supported_att_key_ids()`
+  - it generates the quote through `tdx_att_get_quote()`
+  - it checks that the returned quote binds the expected `report_data`
+  - if standard DCAP verification still cannot complete for the ML-DSA quote, it falls back to the existing local ML-DSA cryptographic verification on that hardware-generated quote
+- The ML-DSA runner now treats hardware mode as a separate path:
+  - it skips the repo-local SGX wrapper-selection checks that only make sense for the old `SIM` flow
+  - it runs the ML-DSA verifier probe against the direct hardware quote path
+  - it keeps the direct capability probe as a second hardware check
+- The runner was tightened so that:
+  - `SIM` mode still permits a skip
+  - `HW` mode now fails if the TDX guest device is absent or inaccessible
+- The ML-DSA runner itself was found to reset `TDX_GUEST_DEV` after the initial device detection; that false-negative reset was removed so a real guest device is still visible at the direct-probe stage
+
+### Why this was needed
+- The direct ML-DSA capability probe was already generating real hardware-backed quotes in the TDX guest
+- The remaining mismatch was in the runner structure:
+  - `SIM` was still treated as the primary ML-DSA mode
+  - the hardware path was only a final capability probe
+  - the verifier probe still depended on the older quote-wrapper flow
+- This change moves the actual ML-DSA verification probe onto the hardware quote path, which is the missing step needed to stop treating ML-DSA as a `SIM`-only flow
+
+### Validation actually performed
+- Verified the updated runners still parse:
+
+```bash
+bash -n tdx_tests/direct/run_mldsa_tdx_only_tests.sh
+bash -n tdx_tests/direct/run_host_tdx_guest_repo_tests.sh
+```
+
+- Verified the updated ML-DSA verifier probe still parses with the repo include set:
+
+```bash
+g++ -std=c++14 -fsyntax-only \
+  -Iconfidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper \
+  -Iconfidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest \
+  -Iconfidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/inc \
+  -Iconfidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/common/inc \
+  -Iconfidential-computing.tee.dcap-pq/QuoteGeneration/common/inc/internal \
+  -Iconfidential-computing.tee.dcap-pq/QuoteGeneration/common/inc/internal/linux \
+  -Iconfidential-computing.tee.dcap-pq/ae/tdqe \
+  -Iconfidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/inc \
+  -Itdx_tests/sgxsdk/include \
+  tdx_tests/verifier/test_tdx_mldsa_quote_verify_probe.cpp
+```
+
+## Latest update: Moved the ML-DSA 65/87 wrapper translation units out of the nested mldsa-native submodule
+
+### Files
+`confidential-computing.tee.dcap-pq/ae/pq/mldsa_native_65.c`
+
+`confidential-computing.tee.dcap-pq/ae/pq/mldsa_native_87.c`
+
+`confidential-computing.tee.dcap-pq/ae/tdqe/linux/Makefile`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/linux/Makefile`
+
+`confidential-computing.tee.dcap-pq/QuoteVerification/QVL/Src/AttestationLibrary/CMakeLists.txt`
+
+`tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+
+`confidential-computing.tee.dcap-pq/.gitmodules`
+
+### What changed
+- Moved the local wrapper translation units for:
+  - `ML-DSA-65`
+  - `ML-DSA-87`
+- The wrapper files now live in the parent `dcap-pq` repository under:
+  - `ae/pq/mldsa_native_65.c`
+  - `ae/pq/mldsa_native_87.c`
+- The wrappers still include the upstream implementation from the nested `mldsa-native` submodule, but the wrapper files themselves are no longer untracked changes inside that submodule
+- Updated all local build references to use the new parent-repo paths:
+  - `ae/tdqe/linux/Makefile`
+  - `QuoteVerification/dcap_quoteverify/linux/Makefile`
+  - `QuoteVerification/QVL/Src/AttestationLibrary/CMakeLists.txt`
+  - `tdx_tests/direct/run_mldsa_tdx_only_tests.sh`
+- Added `ignore = untracked` for the nested `ae/pq/mldsa-native` submodule in `.gitmodules`, so local object-file leftovers in that vendor tree do not keep the parent repo artificially dirty
+
+### Why this was needed
+- The previous location of the two wrapper files was inside the nested `ae/pq/mldsa-native` submodule
+- That made the local integration depend on committing new files to a repository that is not owned by this repo workflow
+- Moving only the thin wrapper translation units into the parent repo keeps the real upstream source tree vendored through the submodule, while making the local integration code commit-friendly in `confidential-computing.tee.dcap-pq`
+
+### Validation actually performed
+- Verified that the direct ML-DSA runner script still parses after the path update:
+
+```bash
+bash -n tdx_tests/direct/run_mldsa_tdx_only_tests.sh
+```
+
+- Re-scanned the repo-local build files and test runner so they no longer reference the old wrapper file paths inside the nested submodule
+
 ## Latest update: Added the missing Boost dependency to the guest-side orchestration path
 
 ### Files

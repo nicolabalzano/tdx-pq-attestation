@@ -2,3 +2,6 @@ ssl_key/
 tdx_tests/direct/logs/
 tdx_tests/bin/*.o
 tdx_tests/bin/.run_mldsa_tdx_only_tests_sgx_mode
+tdx_tests/bin/local_tdx_pcs_proxy.log
+tdx_tests/bin/local_tdqe_identity.json
+tdx_tests/bin/sgx_default_qcnl_private_pcs_test.conf

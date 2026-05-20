@@ -1,0 +1,637 @@
+\chapter{Implementation: Chronological Integration of ML-DSA into the TDX/DCAP Attestation Stack}
+
+This chapter describes the implementation work performed to integrate ML-DSA
+into the TDX attestation stack used in this project. The discussion is limited
+to the engineering changes introduced in the codebase and to the architectural
+problems encountered during development. The cryptographic construction of
+ML-DSA, the TDX attestation model, the DCAP verification pipeline, and the
+meaning of quote collateral have already been introduced in the previous
+chapters.
+
+The implementation followed a chronological progression. The first steps
+introduced an algorithm identity and a quote layout for ML-DSA. The following
+steps moved the new algorithm through the public wrapper, the internal quote
+logic, the TDQE ECALL interface, the TDQE sealed state, and the quote signing
+path. The last steps moved the implementation from simulation to a real
+bare-metal TDX host, added host--guest orchestration, and addressed the
+verifier-side difference between a stock Intel TDQE identity and the modified
+TDQE used by this work.
+
+\section{Phase 1 -- Quote Layout and Algorithm Identity}
+
+The first implementation step was to make ML-DSA representable in the quote
+format. The existing code path was centered on ECDSA and did not contain an
+attestation-key identifier, signature-data structure, or verifier allowlist
+entry for ML-DSA.
+
+The quote header version was not changed. The generated TDX quote remains a
+version 4 quote. The post-quantum extension is represented through the
+\texttt{att\_key\_type} field, not through the quote version field. The
+repository-local quote headers were extended as follows:
+
+\begin{itemize}
+  \item \texttt{SGX\_QL\_ALG\_ECDSA\_P256 = 2};
+  \item \texttt{SGX\_QL\_ALG\_MLDSA\_65 = 5};
+  \item \texttt{SGX\_QL\_ALG\_MLDSA\_87 = 6}.
+\end{itemize}
+
+The implementation therefore treats the tuple
+
+\begin{equation}
+  (quote\_version, att\_key\_type)
+\end{equation}
+
+as:
+
+\begin{equation}
+  (4, 2) \quad \text{for ECDSA P-256},
+\end{equation}
+
+\begin{equation}
+  (4, 5) \quad \text{for ML-DSA-65},
+\end{equation}
+
+and:
+
+\begin{equation}
+  (4, 6) \quad \text{for ML-DSA-87}.
+\end{equation}
+
+The ML-DSA size constants added to the quote headers were:
+
+\begin{equation}
+  |pk_{65}| = 1952,\quad |\sigma_{65}| = 3309,
+\end{equation}
+
+\begin{equation}
+  |pk_{87}| = 2592,\quad |\sigma_{87}| = 4627.
+\end{equation}
+
+The TDQE-side private-key sizes used by the sealed blob implementation were:
+
+\begin{equation}
+  |sk_{65}| = 4032,\quad |sk_{87}| = 4896.
+\end{equation}
+
+New quote signature-data structures were added for version 4 quotes. Each
+ML-DSA signature-data object contains the quote signature, the attestation
+public key, and the certification-data area that follows the algorithm-specific
+signature payload.
+
+The first architectural problem appeared immediately on the verifier side. QVL
+contained an attestation-key allowlist that accepted only the ECDSA type. As a
+consequence, a quote with \texttt{att\_key\_type=5} or
+\texttt{att\_key\_type=6} could not reach any ML-DSA-specific parser logic,
+because it was rejected before the authentication-data layout was inspected.
+This made the quote-format change a cross-cutting modification: the generation
+headers, the wrapper headers, and the QVL constants had to evolve together.
+
+A second problem was caused by header resolution. Some compilation units were
+including SDK-provided quote headers rather than the modified repository-local
+headers. The SDK headers did not contain the ML-DSA constants. The TDX wrapper
+headers were therefore changed to include the repository-local quote headers
+explicitly.
+
+\section{Phase 2 -- Wrapper Context and Algorithm Propagation}
+
+After the quote format could represent ML-DSA, the public TDX wrapper had to
+carry the selected algorithm through the quote-generation path. The wrapper
+previously behaved as an ECDSA-oriented interface: even when a caller supplied
+a different attestation key identifier, the internal path still depended on
+ECDSA defaults unless the selected algorithm was stored and propagated
+explicitly.
+
+The wrapper context was extended with an algorithm field:
+
+\begin{center}
+\texttt{m\_att\_key\_algorithm\_id}
+\end{center}
+
+The default value remains \texttt{SGX\_QL\_ALG\_ECDSA\_P256}. When the caller
+creates a context with an ML-DSA attestation key id, the wrapper records
+\texttt{SGX\_QL\_ALG\_MLDSA\_65} or \texttt{SGX\_QL\_ALG\_MLDSA\_87}. The
+public wrapper then dispatches the following operations through
+algorithm-aware methods:
+
+\begin{itemize}
+  \item \texttt{init\_quote};
+  \item \texttt{get\_quote\_size};
+  \item \texttt{get\_quote};
+  \item \texttt{get\_keyid}.
+\end{itemize}
+
+The TDQE ECALL interface was changed accordingly. Both
+\texttt{gen\_att\_key} and \texttt{gen\_quote} now receive an explicit
+\texttt{algorithm\_id}. This prevented the selected algorithm from being lost
+between the untrusted wrapper and the trusted TDQE implementation.
+
+Unsupported algorithms are rejected through a dedicated TDQE error. This was
+important because a silent fallback to ECDSA would have produced valid-looking
+quotes with the wrong \texttt{att\_key\_type}. During testing, this distinction
+became essential: some early hardware paths requested an ML-DSA UUID but still
+returned an ECDSA quote header. The implementation therefore treats the quote
+header as the final authority for whether the selected algorithm actually
+survived the whole path.
+
+\section{Phase 3 -- ML-DSA Backend Integration in the TDQE Build}
+
+The next step was to integrate the ML-DSA backend into the TDQE build. The
+implementation uses a TDQE-facing adapter rather than calling the imported
+backend directly from all TDQE call sites. The adapter exposes one uniform
+interface for each supported ML-DSA variant:
+
+\begin{itemize}
+  \item key generation;
+  \item signing;
+  \item signature verification.
+\end{itemize}
+
+For ML-DSA-65, the adapter test confirmed that a fixed seed produces a
+deterministic key pair, that signing succeeds, that verification succeeds on
+the original message, and that verification rejects a modified message or a
+modified signature. The observed ML-DSA-65 adapter sizes were:
+
+\begin{equation}
+  |pk_{65}| = 1952,\quad |sk_{65}| = 4032,\quad |\sigma_{65}| = 3309.
+\end{equation}
+
+The backend integration exposed several concrete implementation problems. The
+repository initially referenced ML-DSA source files that were not present at
+the expected paths. To keep the parent repository self-contained, the ML-DSA
+65 and 87 wrapper translation units were moved into the parent
+\texttt{ae/pq} area rather than relying on modifications inside a nested
+submodule path.
+
+The SGX enclave toolchain also did not provide \texttt{cet.h}. The CET path
+was therefore disabled only for the ML-DSA native object by compiling that
+object with the CET macro undefined. This avoided changing the global enclave
+build configuration.
+
+The imported backend also exposed a randomized API path that required
+\texttt{randombytes}. The TDQE integration, however, requires deterministic
+key derivation from TDQE-controlled material. The backend configuration was
+therefore changed to disable the randomized API for this integration path. A
+host-side \texttt{randombytes} stub was used only in the standalone adapter
+test, not as the TDQE source of attestation-key randomness.
+
+Finally, the imported signing API expected the pure-ML-DSA domain-separation
+prefix to be prepared by the caller. The adapter was updated to construct that
+prefix before calling the backend internal signing and verification functions.
+This change was necessary before the adapter could pass deterministic
+sign/verify tests.
+
+\section{Phase 4 -- ML-DSA Sealed Blob State}
+
+After the backend worked in isolation, the TDQE persistent state had to be
+extended. The original sealed blob path was ECDSA-specific. It contained an
+ECDSA plaintext metadata structure, an ECDSA private key in the sealed payload,
+and ECDSA-specific validation logic. ML-DSA required a parallel persistent
+state without sharing the ECDSA blob.
+
+The implementation introduced algorithm-specific persistent labels:
+
+\begin{itemize}
+  \item \texttt{tdqe\_data.blob} for ECDSA;
+  \item \texttt{tdqe\_data\_mldsa\_65.blob} for ML-DSA-65;
+  \item \texttt{tdqe\_data\_mldsa\_87.blob} for ML-DSA-87.
+\end{itemize}
+
+For each ML-DSA variant \(v \in \{65,87\}\), the TDQE constructs a sealed
+container:
+
+\begin{equation}
+  B_v = \mathsf{Seal}_{TDQE}(P_v, C_v),
+\end{equation}
+
+where \(P_v\) is the authenticated plaintext metadata and \(C_v\) is the
+encrypted secret payload. The plaintext metadata contains the ML-DSA public
+key, the key identifier, authentication data, and certification-related fields.
+The encrypted payload contains the ML-DSA private key.
+
+The key identifier follows the existing attestation-key binding pattern:
+
+\begin{equation}
+  id_v = \mathsf{SHA256}(pk_v \parallel authentication\_data).
+\end{equation}
+
+The TDQE uses this identifier in the report data used by the certification
+flow. This preserves the existing relationship between the attestation public
+key, authentication data, and the certification state.
+
+The main issue in this phase was that adding new structures was not sufficient.
+The existing functions were not generic blob handlers. The following paths had
+to be generalized:
+
+\begin{itemize}
+  \item blob-size selection;
+  \item persistent label selection;
+  \item blob sealing;
+  \item blob unsealing;
+  \item blob verification;
+  \item key-id extraction;
+  \item certification-data storage;
+  \item quote signing.
+\end{itemize}
+
+The implementation therefore introduced algorithm-aware blob-size helpers and
+a generic blob verification path capable of opening ECDSA, ML-DSA-65, and
+ML-DSA-87 blobs while preserving their distinct plaintext and ciphertext
+layouts.
+
+\section{Phase 5 -- TDQE Quote Generation with ML-DSA}
+
+The next phase connected the ML-DSA sealed blob to the actual quote generation
+operation. The TDQE \texttt{gen\_quote} implementation was generalized so that
+it can unseal either the ECDSA blob or one of the ML-DSA blobs, extract the
+algorithm-specific private key, and write the matching quote signature-data
+layout.
+
+The implemented ML-DSA quote signing operation is:
+
+\begin{equation}
+  \sigma_v = \mathsf{Sign}_{\mathrm{MLDSA}\mbox{-}v}(sk_v, m_{quote}),
+\end{equation}
+
+where \(m_{quote}\) is the signed quote payload and \(sk_v\) is recovered only
+inside the TDQE after unsealing \(B_v\). Immediately after signing, the TDQE
+performs:
+
+\begin{equation}
+  \mathsf{Verify}_{\mathrm{MLDSA}\mbox{-}v}(pk_v, m_{quote}, \sigma_v).
+\end{equation}
+
+If the internal verification fails, quote generation fails. This mirrors the
+existing ECDSA path, where the TDQE verifies the generated signature before
+returning the quote.
+
+The most invasive part of this phase was not the signature call itself, but
+the removal of ECDSA-specific assumptions around the quote construction. The
+original path assumed ECDSA for:
+
+\begin{itemize}
+  \item the sealed plaintext type;
+  \item the sealed ciphertext type;
+  \item the attestation public-key field;
+  \item the signature field;
+  \item the certification-data copy;
+  \item the QE report and authentication-data pointers.
+\end{itemize}
+
+To avoid duplicating the whole quote-generation function, the implementation
+uses algorithm-neutral pointers after the selected blob is unsealed. The
+selected branch fills those pointers from the ECDSA, ML-DSA-65, or ML-DSA-87
+plaintext structures. The shared quote-construction code then copies the
+selected metadata into the final quote.
+
+The certification-storage ECALL also had to be changed. It originally exposed
+an ECDSA plaintext structure. This was replaced with an opaque byte buffer and
+an explicit size. The TDQE infers the algorithm from the blob size, validates
+that the plaintext size matches the selected algorithm, checks the corresponding
+key identifier against the QE report data, and reseals the updated blob.
+
+\section{Phase 6 -- Build System and Simulation Bring-Up}
+
+Before the hardware machine was available, the modified TDQE, wrapper, QGS,
+and verifier had to run in the local simulation environment. This phase was
+necessary to validate the internal state transitions before attempting real
+TDX hardware execution.
+
+The build system had to be adjusted in several locations:
+
+\begin{itemize}
+  \item the TDQE build was extended with the ML-DSA adapter and native backend
+        objects;
+  \item the quote verification build was extended with the ML-DSA helper
+        sources;
+  \item the QVL CMake build was aligned with the Makefile build so that unit
+        tests saw the ML-DSA verifier code;
+  \item the PCE wrapper, QGS, and TDX quote wrapper were made sensitive to
+        \texttt{SGX\_MODE};
+  \item versioned enclave symlinks were created where the runtime expected
+        \texttt{.so.1} names.
+\end{itemize}
+
+The main problems in this phase were not isolated compiler errors, but
+inconsistent runtime assumptions between components. The PCE wrapper linked
+against hardware SGX runtime libraries even when the rest of the stack was
+using simulation libraries. QGS and the TDX quote wrapper also needed
+simulation-aware runtime linking. Without this alignment, the ML-DSA bootstrap
+failed before reaching the trusted quote logic.
+
+The TDQE loader also expected the signed enclave at
+\texttt{libsgx\_tdqe.signed.so.1}, while the build produced
+\texttt{libsgx\_tdqe.signed.so}. This was fixed by creating the expected
+versioned symlink. In addition, QGS was changed to accept the TDQE signed
+enclave path explicitly through \texttt{QGS\_TDQE\_PATH}; deriving the TDQE
+path from the wrapper library directory was incorrect in the repository-local
+layout.
+
+Simulation exposed one further limitation: \texttt{sgx\_verify\_report2}
+caused a \texttt{SIGILL} in the simulated path. The implementation introduced
+explicit \texttt{SE\_SIM} bypasses for the affected checks so that the local
+simulation path could continue to exercise ML-DSA key generation, sealing, and
+quote assembly. These bypasses are marked in the logs and are not used as
+evidence of hardware-backed attestation.
+
+\section{Phase 7 -- QGS Selection and Context Management}
+
+Once the TDQE and wrapper could represent ML-DSA, QGS had to select the
+requested attestation key correctly. The initial QGS behavior still depended
+on the default ECDSA context. During a \texttt{GET\_QUOTE\_REQ}, this caused
+the request to carry an ML-DSA key id while the initialized context remained
+ECDSA.
+
+The implementation embedded the local default attestation key identifiers used
+by the test stack:
+
+\begin{itemize}
+  \item ECDSA: \texttt{...4f3f};
+  \item ML-DSA-65: \texttt{...4f40};
+  \item ML-DSA-87: \texttt{...4f41}.
+\end{itemize}
+
+These values are selection identifiers. They are not attestation private keys.
+QGS now uses the requested identifier to initialize the selected algorithm
+context before quote generation. This prevents ML-DSA requests from being
+routed through the default ECDSA context.
+
+This phase also exposed a memory-management bug. Switching from the default
+ECDSA context to an ML-DSA context could free the old context twice. The QGS
+cleanup path was adjusted so that context replacement does not double-free the
+default context.
+
+The final architectural outcome is that QGS remains an untrusted orchestrator:
+it selects the requested algorithm and routes the request, but it does not own
+or use the ML-DSA private key. The private key remains sealed and is only
+unsealed inside the TDQE.
+
+\section{Phase 8 -- Verifier and QVL Support}
+
+After quote generation began producing ML-DSA-shaped quotes, the verifier path
+had to be extended. The first verifier probe confirmed that generation was no
+longer the only blocker: QVL still rejected ML-DSA before signature verification
+because the parser and allowlist were ECDSA-only.
+
+The QVL implementation was extended in four areas:
+
+\begin{itemize}
+  \item attestation-key constants and allowlists;
+  \item ML-DSA v4 authentication-data parsing;
+  \item generic accessors for the quote signature and attestation public key;
+  \item ML-DSA signature verification in the quote verifier branch.
+\end{itemize}
+
+The verifier-side ML-DSA check verifies the quote signature over the signed
+quote payload using the attestation public key carried in the quote signature
+area. The local verifier fallback also checks the binding between the
+attestation public key, QE authentication data, and the QE report:
+
+\begin{equation}
+  \mathsf{SHA256}(attest\_pub\_key \parallel qe\_auth\_data)
+  =
+  QEReport.report\_data.
+\end{equation}
+
+This fallback was added only to classify and validate repository-local
+experiments when standard collateral verification could not complete. It does
+not replace DCAP collateral verification.
+
+Once the parser and ML-DSA signature branch were added, the next failure moved
+to certification data. The verifier could parse and validate the ML-DSA quote
+structure, but \texttt{tee\_qv\_get\_collateral} rejected local-only
+certification data. The observed local-only type was \texttt{3}, whereas the
+standard collateral path expects a PCK-chain-compatible certification layout.
+
+This result was important because it separated three concerns:
+
+\begin{itemize}
+  \item quote parsing was working;
+  \item ML-DSA quote signature verification was working;
+  \item standard collateral compatibility was still not solved.
+\end{itemize}
+
+\section{Phase 9 -- PCCS, QCNL, and Collateral Diagnostics}
+
+The next phase instrumented the collateral path. The implementation added
+diagnostics around the QPL and QCNL calls used by quote generation and
+verification. The goal was to distinguish malformed platform inputs from
+missing cache entries, network failures, TLS issues, and unsupported
+certification-data layouts.
+
+The ML-DSA simulation runner was extended with a local PCCS bootstrap path.
+It can generate local TLS material, start the PCCS service in a repository
+controlled configuration, and point the QCNL test configuration at that local
+service. Both \texttt{pccs\_url} and \texttt{collateral\_service} are set
+explicitly because they are used by different parts of the collateral path.
+
+When the local PCCS cache was empty, the ML-DSA quote generation path could
+fall back to local-only certification data only when explicitly enabled by:
+
+\begin{center}
+\texttt{TDX\_MLDSA\_LOCAL\_PCCS\_EMPTY\_FALLBACK=1}
+\end{center}
+
+This fallback is intentionally scoped to the repository-local test path. It is
+not enabled as a general hardware behavior.
+
+\section{Phase 10 -- Migration to the Bare-Metal TDX Host}
+
+The implementation was then moved to a new bare-metal TDX-capable machine.
+This phase was required because the initial development machine did not expose
+the device needed by direct TDX guest attestation. The new host had to be
+brought from a generic Ubuntu 24.04 installation to a working TDX host with
+attestation services.
+
+The firmware configuration had to enable SGX, TME, TME-MT, TDX, the SEAM
+loader, and a non-zero TDX/TME key split. After the Canonical TDX host setup
+and reboot, the host showed TDX initialization in the kernel log and
+\texttt{/sys/module/kvm\_intel/parameters/tdx} returned \texttt{Y}.
+
+The host attestation stack required \texttt{qgsd} and \texttt{pccs}. PCCS was
+configured for local connections and lazy cache fill. A valid Intel PCS
+subscription key was required because the configured PCS endpoint was the
+production endpoint:
+
+\begin{center}
+\texttt{https://api.trustedservices.intel.com/sgx/certification/v4/}
+\end{center}
+
+Before the key and platform cache were corrected, PCCS returned \texttt{401}
+errors from Intel PCS, and \texttt{qgsd} logged that no certificate data was
+available for the platform. The host then used \texttt{PCKIDRetrievalTool} to
+populate PCCS for the platform. After this step, PCCS accepted platform
+requests and \texttt{qgsd} returned successful quote initialization and quote
+generation results for the stock ECDSA path.
+
+This phase also clarified that the Canonical registration check and the
+\texttt{PCKIDRetrievalTool} workflow are not the same path. The registration
+script may report the MPA-oriented status, while the platform can still be
+populated for PCCS through \texttt{PCKIDRetrievalTool}.
+
+\section{Phase 11 -- Host--Guest Test Orchestration}
+
+Hardware quote generation had to run inside a TDX guest, while QGS, PCCS, and
+platform collateral remain host-side services. A host-side orchestration script
+was therefore added:
+
+\begin{center}
+\texttt{tdx\_tests/direct/run\_host\_tdx\_guest\_repo\_tests.sh}
+\end{center}
+
+The script performs host preflight checks, creates or reuses a TDX guest image,
+boots the guest, installs guest dependencies, synchronizes the repository into
+the guest, cleans stale build artifacts, runs the selected ML-DSA and ECDSA
+flows, and prints host \texttt{qgsd}/PCCS diagnostics on failure.
+
+Several realization problems appeared in this phase. The repository copy step
+initially attempted to archive local PCCS TLS and cache files, including
+root-owned private-key material, which caused permission failures. Those
+generated artifacts were excluded from the copy. The copied build tree also
+contained stale dependency files with absolute paths from the host, causing
+guest-side \texttt{make} failures. These stale files had to be removed before
+guest builds.
+
+Another problem was a broken absolute symlink in the repo-local SGX SDK:
+\texttt{libsgx\_urts.so.2} pointed to a path from the previous machine. The
+runner repairs this symlink in the guest. Finally, the hardware guest path
+could not safely inherit all repo-local SGX library paths. In hardware mode,
+using incompatible repo-local runtime libraries conflicted with the system PSW
+and caused quote initialization failures.
+
+\section{Phase 12 -- Hardware ML-DSA Quote Generation}
+
+Once the host and guest were operational, the ML-DSA runner was changed from a
+simulation-first structure to a hardware-first structure. When
+\texttt{/dev/tdx\_guest} is present, the runner executes the direct TDX
+hardware path.
+
+The verifier probe and the direct capability probe both select the requested
+ML-DSA key id through the direct TDX attestation interface and check the final
+quote header. The test fails if the selected key id is all-zero, if the
+selected key id does not match the requested ML-DSA identifier, or if the quote
+header does not contain the expected ML-DSA attestation key type.
+
+The stock host \texttt{qgsd} path worked for ECDSA but did not preserve the
+ML-DSA selection end to end in this repository-local setup. In earlier runs,
+the ML-DSA UUID was requested, but the returned quote still had
+\texttt{att\_key\_type=2}. Forcing a guest-local repo-local QGS failed for a
+different reason: the guest-local path still required SGX QE/uRTS/PSW support
+inside the guest and failed during enclave loading.
+
+The working hardware design was therefore:
+
+\begin{itemize}
+  \item keep stock host \texttt{qgsd} for ECDSA;
+  \item run the patched repository-local QGS on the host for ML-DSA;
+  \item expose the host repository-local QGS to the guest through vsock;
+  \item run the quote request inside the TDX guest through
+        \texttt{/dev/tdx\_guest}.
+\end{itemize}
+
+The observed hardware results were:
+
+\begin{itemize}
+  \item ML-DSA-65 selected key id \texttt{...4f40} and produced
+        \texttt{att\_key\_type=5};
+  \item ML-DSA-87 selected key id \texttt{...4f41} and produced
+        \texttt{att\_key\_type=6};
+  \item the local-certification ML-DSA-65 quote size observed by the direct
+        probe was \texttt{7102};
+  \item the ML-DSA-87 quote size observed by the direct probe was
+        \texttt{9060};
+  \item when the PCK-chain certification path was used for ML-DSA-65, the
+        verifier probe observed quote size \texttt{10376}.
+\end{itemize}
+
+All successful hardware ML-DSA runs were reported with \texttt{SGX\_MODE=HW}
+and a real TDX guest device.
+
+\section{Phase 13 -- DCAP Verification and TDQE Identity}
+
+The final phase addressed the distinction between quote generation,
+cryptographic quote verification, DCAP collateral retrieval, and TDQE identity
+verification.
+
+The verifier probe first executes the standard DCAP API sequence:
+
+\begin{enumerate}
+  \item generate the ML-DSA quote;
+  \item call \texttt{tee\_qv\_get\_collateral};
+  \item call \texttt{tdx\_qv\_verify\_quote}.
+\end{enumerate}
+
+After the ML-DSA quote carried PCK-chain-compatible certification data,
+\texttt{tee\_qv\_get\_collateral} could complete. The next failure was:
+
+\begin{equation}
+  \texttt{tdx\_qv\_verify\_quote} \rightarrow \texttt{0xe026}.
+\end{equation}
+
+The error \texttt{0xe026} is \texttt{QEIDENTITY\_MISMATCH}. This was not a
+quote header problem and not an ML-DSA signature problem. The quote was being
+generated by the modified repository-local TDQE, while the stock DCAP
+collateral path supplied the stock Intel TDQE identity. The verifier correctly
+rejected the quote because the embedded QE report did not match the stock Intel
+TDQE identity.
+
+Two verification modes were therefore separated.
+
+First, a stock Intel identity mode can be requested. In that mode, the verifier
+requires the standard Intel TDQE identity and fails when the modified TDQE does
+not match it.
+
+Second, a private TDQE identity mode was implemented for the repository-local
+ML-DSA TDQE. In this mode, the verifier derives a local TDQE identity from the
+quote's embedded QE report. The generated identity contains the report-derived
+fields needed by the identity check and is explicitly marked with:
+
+\begin{center}
+\texttt{"localtdqe":true}
+\end{center}
+
+The QVL identity verifier accepts this identity only when the environment
+explicitly enables the override:
+
+\begin{center}
+\texttt{TDX\_MLDSA\_ALLOW\_LOCAL\_TDQE\_IDENTITY=1}
+\end{center}
+
+and the identity JSON contains the local marker. This keeps the exception
+narrow. It does not globally disable TDQE identity verification.
+
+The implementation was then refined into a private PCS-compatible path. The
+local proxy forwards Intel PCS-compatible collateral requests upstream, but
+serves the TDX QE identity endpoint from the locally generated TDQE identity
+file. The runner writes a QCNL configuration whose
+\texttt{collateral\_service} points to this local proxy. This allows the
+verification flow to keep the DCAP API surface while using the private TDQE
+identity authority required by the modified TDQE.
+
+\section{Final Implementation Result}
+
+At the end of the implementation work, the system supports the following
+properties.
+
+\begin{itemize}
+  \item The quote format contains explicit ML-DSA-65 and ML-DSA-87 attestation
+        key types.
+  \item The public wrapper can select ML-DSA contexts and propagate the
+        selected algorithm into the TDQE ECALL surface.
+  \item The TDQE can generate ML-DSA attestation keys, seal them into
+        algorithm-specific blobs, unseal them later, and sign quotes with the
+        private key inside the TDQE.
+  \item The QGS path can select ML-DSA-65 or ML-DSA-87 contexts instead of
+        falling back to the default ECDSA context.
+  \item QVL can parse ML-DSA v4 quotes and verify the ML-DSA quote signature.
+  \item A real TDX guest can generate hardware-backed ML-DSA quotes through
+        the host repository-local QGS.
+  \item The verifier can use the DCAP API path with a private TDQE identity
+        authority for the modified repository-local TDQE.
+\end{itemize}
+
+The final limitation is also precise. The implementation does not make the
+modified ML-DSA TDQE accepted by the stock Intel TDQE identity. The stock Intel
+identity path is expected to reject the modified TDQE with
+\texttt{QEIDENTITY\_MISMATCH}. The implemented verification path is therefore
+best described as a DCAP API based verification path with a private TDQE
+identity authority, not as unmodified stock Intel DCAP identity verification.
