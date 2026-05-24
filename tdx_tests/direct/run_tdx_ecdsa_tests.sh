@@ -19,6 +19,7 @@ LOCAL_SGXSSL_LINUX_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerif
 LOCAL_SGXSSL_PACKAGE_DIR="$REPO_ROOT/confidential-computing.tee.dcap-pq/QuoteVerification/sgxssl/Linux/package"
 LOCAL_QCNL_CONF="$TESTS_DIR/sgx_default_qcnl_ecdsa_test.conf"
 LOCAL_VERIFIER_PORT="${TDX_LOCAL_VERIFIER_PORT:-8123}"
+LOCAL_VERIFIER_MODE="${TDXTEST_ECDSA_VERIFIER_MODE:-binding-only}"
 LOCAL_VERIFIER_PID=""
 BIN_DIR="$TESTS_DIR/bin"
 VERIFIER_BIN="$BIN_DIR/local_tdx_verifier"
@@ -33,12 +34,20 @@ print_machine_security_summary() {
 		echo "       - TDX device: not present"
 	fi
 	echo "       - SGX mode: ${SGX_MODE:-not set}"
-	echo "       - Verifier mode: local binding-only"
+	if [[ "$LOCAL_VERIFIER_MODE" == "dcap" ]]; then
+		echo "       - Verifier mode: local DCAP collateral verification"
+	else
+		echo "       - Verifier mode: local binding-only"
+	fi
 	echo "       - Trusted quoting path: direct TDX device"
 	echo "[INFO] For a higher-confidence hardware-backed run, you should see:"
 	echo "       - no SGX SIM mode"
 	echo "       - a real TDX guest device (/dev/tdx_guest or equivalent)"
-	echo "       - standard DCAP/collateral verification, not local binding-only mode"
+	if [[ "$LOCAL_VERIFIER_MODE" == "dcap" ]]; then
+		echo "       - collateral retrieval and quote verification succeed through tee_qv_get_collateral()/tdx_qv_verify_quote()"
+	else
+		echo "       - standard DCAP/collateral verification, not local binding-only mode"
+	fi
 	echo "       - a verifier path that does not rely on repo-local fallback logic"
 }
 
@@ -149,6 +158,15 @@ cleanup() {
 }
 trap cleanup EXIT
 
+case "$LOCAL_VERIFIER_MODE" in
+	binding-only|dcap)
+		;;
+	*)
+		echo "[ERROR] Unsupported TDXTEST_ECDSA_VERIFIER_MODE='$LOCAL_VERIFIER_MODE'. Use 'binding-only' or 'dcap'."
+		exit 1
+		;;
+esac
+
 if [[ -z "${TDX_VERIFIER_CHALLENGE_URL:-}" && -z "${TDX_VERIFIER_SUBMIT_URL:-}" && -z "${TDX_VERIFIER_CHALLENGE_HEX:-}" ]]; then
 	# Bring up a repo-local verifier automatically when no external verifier is configured.
 	echo "[INFO] Building local TDX verifier..."
@@ -167,10 +185,16 @@ if [[ -z "${TDX_VERIFIER_CHALLENGE_URL:-}" && -z "${TDX_VERIFIER_SUBMIT_URL:-}" 
 		-o "$VERIFIER_BIN"
 
 	echo "[INFO] Starting local TDX verifier on 127.0.0.1:$LOCAL_VERIFIER_PORT ..."
-	echo "[INFO] Local verifier runs in binding-only mode in this repo-local setup."
-	TDX_LOCAL_VERIFIER_SKIP_DCAP=1 \
-	LD_LIBRARY_PATH="$QV_BUILD_LINUX_DIR:$QG_BUILD_LINUX_DIR:${LD_LIBRARY_PATH:-}" \
-		"$VERIFIER_BIN" "$LOCAL_VERIFIER_PORT" >"$VERIFIER_LOG" 2>&1 &
+	if [[ "$LOCAL_VERIFIER_MODE" == "dcap" ]]; then
+		echo "[INFO] Local verifier runs in DCAP mode in this repo-local setup."
+		LD_LIBRARY_PATH="$QV_BUILD_LINUX_DIR:$QG_BUILD_LINUX_DIR:${LD_LIBRARY_PATH:-}" \
+			"$VERIFIER_BIN" "$LOCAL_VERIFIER_PORT" >"$VERIFIER_LOG" 2>&1 &
+	else
+		echo "[INFO] Local verifier runs in binding-only mode in this repo-local setup."
+		TDX_LOCAL_VERIFIER_SKIP_DCAP=1 \
+		LD_LIBRARY_PATH="$QV_BUILD_LINUX_DIR:$QG_BUILD_LINUX_DIR:${LD_LIBRARY_PATH:-}" \
+			"$VERIFIER_BIN" "$LOCAL_VERIFIER_PORT" >"$VERIFIER_LOG" 2>&1 &
+	fi
 	LOCAL_VERIFIER_PID=$!
 
 	# Wait until the local verifier is reachable before starting the guest-side test.
