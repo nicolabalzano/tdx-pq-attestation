@@ -44,6 +44,7 @@ int main()
 
     uint32_t last_mldsa_quote_size = 0;
     const mldsa_variant_t variants[] = {
+        { SGX_QL_ALG_MLDSA_44, "MLDSA_44" },
         { SGX_QL_ALG_MLDSA_65, "MLDSA_65" },
         { SGX_QL_ALG_MLDSA_87, "MLDSA_87" },
     };

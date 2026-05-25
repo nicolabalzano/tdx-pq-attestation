@@ -51,8 +51,18 @@ typedef enum {
     SGX_QL_ALG_RESERVED_1 = 1, ///< Reserved
     SGX_QL_ALG_ECDSA_P256 = 2, ///< ECDSA-256-with-P-256 curve, Non - Anonymous
     SGX_QL_ALG_ECDSA_P384 = 3, ///< ECDSA-384-with-P-384 curve (Note: currently not supported), Non-Anonymous
-    SGX_QL_ALG_MAX = 4
+    SGX_QL_ALG_MLDSA_44 = 4,  ///< ML-DSA-44 (Dilithium2-level) signature, Non-Anonymous
+    SGX_QL_ALG_MLDSA_65 = 5,  ///< ML-DSA-65 (Dilithium3-level) signature, Non-Anonymous
+    SGX_QL_ALG_MLDSA_87 = 6,  ///< ML-DSA-87 (Dilithium5-level) signature, Non-Anonymous
+    SGX_QL_ALG_MAX = 7
 } sgx_ql_attestation_algorithm_id_t;
+
+#define SGX_QL_MLDSA_44_SIG_SIZE 2420
+#define SGX_QL_MLDSA_44_PUB_KEY_SIZE 1312
+#define SGX_QL_MLDSA_65_SIG_SIZE 3309
+#define SGX_QL_MLDSA_65_PUB_KEY_SIZE 1952
+#define SGX_QL_MLDSA_87_SIG_SIZE 4627
+#define SGX_QL_MLDSA_87_PUB_KEY_SIZE 2592
 
 /** Enumerates the different certification data types used to describe the signer of the attestation key */
 typedef enum {
@@ -161,6 +171,51 @@ typedef struct _sgx_ql_ecdsa_sig_data_t {
 #endif
 } sgx_ql_ecdsa_sig_data_t;
 
+typedef struct _sgx_ql_mldsa_44_sig_data_t {
+    uint8_t               sig[SGX_QL_MLDSA_44_SIG_SIZE];
+    uint8_t               attest_pub_key[SGX_QL_MLDSA_44_PUB_KEY_SIZE];
+    sgx_report_body_t     qe_report;
+    uint8_t               qe_report_sig[32*2];
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning ( disable:4200 )
+#endif
+    uint8_t               auth_certification_data[];
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+} sgx_ql_mldsa_44_sig_data_t;
+
+typedef struct _sgx_ql_mldsa_65_sig_data_t {
+    uint8_t               sig[SGX_QL_MLDSA_65_SIG_SIZE];
+    uint8_t               attest_pub_key[SGX_QL_MLDSA_65_PUB_KEY_SIZE];
+    sgx_report_body_t     qe_report;
+    uint8_t               qe_report_sig[32*2];
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning ( disable:4200 )
+#endif
+    uint8_t               auth_certification_data[];
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+} sgx_ql_mldsa_65_sig_data_t;
+
+typedef struct _sgx_ql_mldsa_87_sig_data_t {
+    uint8_t               sig[SGX_QL_MLDSA_87_SIG_SIZE];
+    uint8_t               attest_pub_key[SGX_QL_MLDSA_87_PUB_KEY_SIZE];
+    sgx_report_body_t     qe_report;
+    uint8_t               qe_report_sig[32*2];
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning ( disable:4200 )
+#endif
+    uint8_t               auth_certification_data[];
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+} sgx_ql_mldsa_87_sig_data_t;
+
 /** The quote header.  It is designed to compatible with earlier versions of the quote. */
 typedef struct _sgx_quote_header_t {
     uint16_t            version;             ///< 0:  The version this quote structure.
@@ -191,4 +246,3 @@ typedef struct _sgx_quote3_t {
 #pragma pack(pop)
 
 #endif //_SGX_QUOTE_3_H_
-

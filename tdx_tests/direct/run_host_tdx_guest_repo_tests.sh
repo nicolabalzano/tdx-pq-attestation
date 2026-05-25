@@ -65,7 +65,7 @@ TDXTEST_PCCS_USER_TOKEN="${TDXTEST_PCCS_USER_TOKEN:-}"
 TDXTEST_CONFIGURE_GUEST_VSOCK_ATTEST="${TDXTEST_CONFIGURE_GUEST_VSOCK_ATTEST:-1}"
 TDXTEST_RUN_ECDSA="${TDXTEST_RUN_ECDSA:-1}"
 TDXTEST_STOP_GUEST_ON_EXIT="${TDXTEST_STOP_GUEST_ON_EXIT:-0}"
-TDXTEST_MLDSA_ALGS="${TDXTEST_MLDSA_ALGS-"65 87"}"
+TDXTEST_MLDSA_ALGS="${TDXTEST_MLDSA_ALGS-"44 65 87"}"
 TDXTEST_MLDSA_SGX_MODE="${TDXTEST_MLDSA_SGX_MODE:-HW}"
 TDXTEST_MLDSA_FORCE_LOCAL_QGS="${TDXTEST_MLDSA_FORCE_LOCAL_QGS:-}"
 TDXTEST_MLDSA_REQUIRE_STOCK_QE_IDENTITY="${TDXTEST_MLDSA_REQUIRE_STOCK_QE_IDENTITY:-}"
@@ -113,6 +113,7 @@ What it does:
   5. installs guest build/runtime dependencies
   6. copies the current repo snapshot into the guest
   7. runs:
+     - ML-DSA direct flow with TEST_MLDSA_ALG=44
      - ML-DSA direct flow with TEST_MLDSA_ALG=65
      - ML-DSA direct flow with TEST_MLDSA_ALG=87
      - ECDSA direct flow
@@ -148,7 +149,7 @@ Environment overrides:
   TDXTEST_CONFIGURE_GUEST_VSOCK_ATTEST 1=write /etc/tdx-attest.conf with the selected QGS port
   TDXTEST_RUN_ECDSA                 1=run ECDSA flow, 0=skip it
   TDXTEST_STOP_GUEST_ON_EXIT        1=stop guest at end, 0=leave it running
-  TDXTEST_MLDSA_ALGS                default: "65 87"
+  TDXTEST_MLDSA_ALGS                default: "44 65 87"
   TDXTEST_MLDSA_SGX_MODE            default: $TDXTEST_MLDSA_SGX_MODE
   TDXTEST_MLDSA_FORCE_LOCAL_QGS     empty=use remote host QGS in HW, 1=force guest repo-local QGS
   TDXTEST_MLDSA_REQUIRE_STOCK_QE_IDENTITY 1=require Intel TD_QE identity and fail local TDQE

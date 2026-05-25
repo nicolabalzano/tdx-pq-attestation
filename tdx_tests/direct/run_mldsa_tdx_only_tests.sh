@@ -525,6 +525,7 @@ gcc -std=c11 \
   "$TESTS_DIR/tdqe/test_tdqe_mldsa_adapter.c" \
   "$TESTS_DIR/tdqe/test_randombytes_stub.c" \
   "$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/tdqe/tdqe_mldsa_adapter.c" \
+  "$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/pq/mldsa_native_44.c" \
   "$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/pq/mldsa_native_65.c" \
   "$REPO_ROOT/confidential-computing.tee.dcap-pq/ae/pq/mldsa_native_87.c" \
   -o "$TDQE_MLDSA_ADAPTER_BIN"
@@ -610,6 +611,7 @@ if [[ "$SKIP_MLDSA_VERIFY_PROBE" != "1" ]]; then
     "$TESTS_DIR/verifier/test_tdx_mldsa_quote_verify_probe.cpp" \
     "$RANDOMBYTES_STUB_OBJ" \
     "$TDQE_LINUX_DIR/tdqe_mldsa_adapter.o" \
+    "$TDQE_LINUX_DIR/mldsa_native_44.o" \
     "$TDQE_LINUX_DIR/mldsa_native_65.o" \
     "$TDQE_LINUX_DIR/mldsa_native_87.o" \
     -L"$TDX_QUOTE_LINUX_DIR" \

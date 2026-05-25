@@ -18,6 +18,10 @@ struct mldsa_variant_t {
 static mldsa_variant_t get_requested_variant()
 {
     const char *value = std::getenv("TEST_MLDSA_ALG");
+    if (value != nullptr && std::strcmp(value, "44") == 0) {
+        static const uint8_t kMldsa44AttestationId[TDX_UUID_SIZE] = TDX_SGX_MLDSA_44_ATTESTATION_ID;
+        return {kMldsa44AttestationId, SGX_QL_ALG_MLDSA_44, "ML-DSA-44"};
+    }
     if (value != nullptr && std::strcmp(value, "87") == 0) {
         static const uint8_t kMldsa87AttestationId[TDX_UUID_SIZE] = TDX_SGX_MLDSA_87_ATTESTATION_ID;
         return {kMldsa87AttestationId, SGX_QL_ALG_MLDSA_87, "ML-DSA-87"};

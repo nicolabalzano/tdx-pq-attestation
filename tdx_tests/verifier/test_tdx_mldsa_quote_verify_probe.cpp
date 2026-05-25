@@ -30,6 +30,14 @@ struct mldsa_variant_t {
 static mldsa_variant_t get_requested_variant()
 {
     const char *value = std::getenv("TEST_MLDSA_ALG");
+    if (value != nullptr && std::strcmp(value, "44") == 0) {
+        static const uint8_t kMldsa44AttestationId[TDX_UUID_SIZE] = TDX_SGX_MLDSA_44_ATTESTATION_ID;
+        return {SGX_QL_ALG_MLDSA_44,
+                SGX_QL_MLDSA_44_SIG_SIZE,
+                SGX_QL_MLDSA_44_PUB_KEY_SIZE,
+                kMldsa44AttestationId,
+                "MLDSA_44"};
+    }
     if (value != nullptr && std::strcmp(value, "87") == 0) {
         static const uint8_t kMldsa87AttestationId[TDX_UUID_SIZE] = TDX_SGX_MLDSA_87_ATTESTATION_ID;
         return {SGX_QL_ALG_MLDSA_87,
@@ -241,6 +249,13 @@ bool locally_verify_mldsa_quote_v4(const uint8_t *quote_buf, uint32_t quote_size
         const auto *sig_data = reinterpret_cast<const sgx_mldsa_87_sig_data_v4_t *>(quote->signature_data);
         attest_pub_key = sig_data->attest_pub_key;
         certification_data = sig_data->certification_data;
+    } else if (variant.algorithm_id == SGX_QL_ALG_MLDSA_44) {
+        if (sig_data_len < sizeof(sgx_mldsa_44_sig_data_v4_t) + sizeof(sgx_ql_certification_data_t)) {
+            return false;
+        }
+        const auto *sig_data = reinterpret_cast<const sgx_mldsa_44_sig_data_v4_t *>(quote->signature_data);
+        attest_pub_key = sig_data->attest_pub_key;
+        certification_data = sig_data->certification_data;
     } else {
         if (sig_data_len < sizeof(sgx_mldsa_65_sig_data_v4_t) + sizeof(sgx_ql_certification_data_t)) {
             return false;
@@ -302,6 +317,12 @@ bool locally_verify_mldsa_quote_v4(const uint8_t *quote_buf, uint32_t quote_size
 
     if (variant.algorithm_id == SGX_QL_ALG_MLDSA_87) {
         return tdqe_mldsa87_verify(signature,
+                                   reinterpret_cast<const uint8_t *>(&quote->header),
+                                   signed_size,
+                                   attest_pub_key) == 0;
+    }
+    if (variant.algorithm_id == SGX_QL_ALG_MLDSA_44) {
+        return tdqe_mldsa44_verify(signature,
                                    reinterpret_cast<const uint8_t *>(&quote->header),
                                    signed_size,
                                    attest_pub_key) == 0;
