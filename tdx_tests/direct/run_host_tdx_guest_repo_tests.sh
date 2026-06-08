@@ -196,6 +196,7 @@ discover_host_pckcert_qeid_override() {
   local csv_path="${1:-$HOST_PCKID_RETRIEVAL_CSV}"
   local csv_line=""
   local qeid=""
+  local tmp_out=""
 
   if [[ -n "$HOST_PCKCERT_QEID_OVERRIDE" ]]; then
     HOST_PCKCERT_QEID_OVERRIDE="${HOST_PCKCERT_QEID_OVERRIDE^^}"
@@ -205,10 +206,12 @@ discover_host_pckcert_qeid_override() {
 
   if command -v PCKIDRetrievalTool >/dev/null 2>&1; then
     info "Refreshing host PCK ID data to discover the PCCS lookup QEID ..."
-    sudo /usr/bin/PCKIDRetrievalTool -f "$csv_path" >/tmp/tdx_host_qeid_discovery.out 2>&1 || {
-      sed -n '1,120p' /tmp/tdx_host_qeid_discovery.out >&2 || true
+    tmp_out="$(mktemp /tmp/tdx_host_qeid_discovery.XXXXXX.out)"
+    sudo /usr/bin/PCKIDRetrievalTool -f "$csv_path" >"$tmp_out" 2>&1 || {
+      sed -n '1,120p' "$tmp_out" >&2 || true
       fail "PCKIDRetrievalTool failed while discovering the host PCCS lookup QEID"
     }
+    rm -f "$tmp_out"
   fi
 
   [[ -f "$csv_path" ]] || return 1
@@ -622,6 +625,7 @@ copy_repo_to_guest() {
       --exclude='./confidential-computing.tee.dcap-pq/QuoteGeneration/build' \
       --exclude='./confidential-computing.tee.dcap-pq/QuoteVerification/build' \
       --exclude='./confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build' \
+      --exclude='./ssl_key' \
       --exclude='./confidential-computing.tee.dcap-pq/QuoteGeneration/pccs/service/ssl_key' \
       --exclude='./confidential-computing.tee.dcap-pq/QuoteGeneration/pccs/service/pckcache.db' \
       -czf "$archive_path" .
@@ -1000,6 +1004,7 @@ cleanup_exit() {
   stop_guest
 }
 
-trap cleanup_exit EXIT
-
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  trap cleanup_exit EXIT
+  main "$@"
+fi

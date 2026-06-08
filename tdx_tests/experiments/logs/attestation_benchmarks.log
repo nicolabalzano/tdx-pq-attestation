@@ -1,0 +1,887 @@
+[INFO] Building repo-local TDQE...
+make: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux'
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin  -Werror -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/tlibc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/libcxx -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../QuoteGeneration/../ae/dep/inc/internal -I../../../QuoteGeneration/quote_wrapper/common/inc -I../../../QuoteGeneration/pce_wrapper/inc -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa/src -I.. -I.  -U__CET__ -c ../../../QuoteGeneration/../ae/pq/mldsa_native_44.c -o mldsa_native_44.o
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin  -Werror -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/tlibc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/libcxx -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../QuoteGeneration/../ae/dep/inc/internal -I../../../QuoteGeneration/quote_wrapper/common/inc -I../../../QuoteGeneration/pce_wrapper/inc -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa/src -I.. -I.  -U__CET__ -c ../../../QuoteGeneration/../ae/pq/mldsa_native_65.c -o mldsa_native_65.o
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin  -Werror -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/tlibc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/libcxx -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../QuoteGeneration/../ae/dep/inc/internal -I../../../QuoteGeneration/quote_wrapper/common/inc -I../../../QuoteGeneration/pce_wrapper/inc -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa/src -I.. -I.  -U__CET__ -c ../../../QuoteGeneration/../ae/pq/mldsa_native_87.c -o mldsa_native_87.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin  -nostdinc++ -Werror -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/tlibc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/libcxx -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../QuoteGeneration/../ae/dep/inc/internal -I../../../QuoteGeneration/quote_wrapper/common/inc -I../../../QuoteGeneration/pce_wrapper/inc -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa/src -I.. -I.  -fno-exceptions -c ../quoting_enclave_tdqe.cpp -o quoting_enclave_tdqe.o
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin  -Werror -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/tlibc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/libcxx -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../QuoteGeneration/../ae/dep/inc/internal -I../../../QuoteGeneration/quote_wrapper/common/inc -I../../../QuoteGeneration/pce_wrapper/inc -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa/src -I.. -I.  -c ../tdqe_mldsa_adapter.c -o tdqe_mldsa_adapter.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin  -nostdinc++ -Werror -fno-exceptions -fno-rtti -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/tlibc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/libcxx -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../QuoteGeneration/../ae/dep/inc/internal -I../../../QuoteGeneration/quote_wrapper/common/inc -I../../../QuoteGeneration/pce_wrapper/inc -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa -I../../../QuoteGeneration/../ae/pq/mldsa-native/mldsa/src -I.. -I.  -c ../../../QuoteGeneration/../ae/dep/common/version.cpp -o version.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin  -nostdinc++ -Werror -o tdqe.so mldsa_native_44.o mldsa_native_65.o mldsa_native_87.o quoting_enclave_tdqe.o tdqe_mldsa_adapter.o version.o -nostdlib -nodefaultlibs -nostartfiles -Wl,-soname=libsgx_tdqe.signed.so.1 -L/root/tdx-pq-attestation/tdx_tests/sgxsdk/lib64 -Wl,--whole-archive -lsgx_trts -Wl,--no-whole-archive -Wl,--start-group -lsgx_tstdc -lsgx_tservice -lsgx_tcxx -lsgx_tcrypto -Wl,--end-group -Wl,--build-id -Wl,--version-script=/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux/enclave.lds -Wl,-z,relro,-z,now,-z,noexecstack -Wl,-Bstatic -Wl,-Bsymbolic -Wl,--no-undefined -Wl,-pie,-eenclave_entry -Wl,--export-dynamic -Wl,--defsym,__ImageBase=0 -Wl,-Map=out.map -Wl,--undefined=version -Wl,--gc-sections -fno-exceptions -fno-rtti
+strip --strip-unneeded --remove-section=.comment --remove-section=.note tdqe.so
+tcs_num 1, tcs_max_num 1, tcs_min_pool 1
+[0;32mINFO: Enclave configuration 'MiscSelect' and 'MiscSelectMask' will prevent enclave from using dynamic features. To use the dynamic features on SGX2 platform, suggest to set MiscMask[0]=0 and MiscSelect[0]=1.
+[0mThe required memory is 3133440B.
+The required memory is 0x2fd000, 3060 KB.
+<EnclaveConfiguration>
+    <IntelSigned>1</IntelSigned>
+    <ProvisionKey>1</ProvisionKey>
+    <ProdID>0x2</ProdID>
+    <ISVSVN>7</ISVSVN>
+    <TCSNum>1</TCSNum>
+    <TCSPolicy>1</TCSPolicy>
+    <HW>0</HW>
+    <StackMaxSize>0x44000</StackMaxSize>
+    <StackMinSize>0x44000</StackMinSize>
+    <HeapMaxSize>0x24000</HeapMaxSize>
+    <DisableDebug>1</DisableDebug>
+    <EnableIPPFIPS>1</EnableIPPFIPS>
+</EnclaveConfiguration>
+handle_compatible_metadata: Overwrite with metadata version 0x100000005
+Succeed.
+SIGN =>  libsgx_tdqe.signed.so
+make: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux'
+[INFO] Building repo-local ID enclave...
+make: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/id_enclave/linux'
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64 -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin -fcf-protection=none -mindirect-branch-register -mfunction-return=thunk-extern -Wa,-mlfence-after-load=yes -Wa,-mlfence-before-indirect-branch=memory -Wa,-mlfence-before-ret=shl -fno-plt -nostdinc++ -Werror -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/tlibc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/libcxx -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../QuoteGeneration/../ae/dep/inc/internal -I../../../QuoteGeneration/quote_wrapper/quote/inc -I../../../QuoteGeneration/quote_wrapper/common/inc -I../../../QuoteGeneration/pce_wrapper/inc -I.. -I. -fno-exceptions -c ../id_enclave.cpp -o id_enclave.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64 -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin -fcf-protection=none -mindirect-branch-register -mfunction-return=thunk-extern -Wa,-mlfence-after-load=yes -Wa,-mlfence-before-indirect-branch=memory -Wa,-mlfence-before-ret=shl -fno-plt -nostdinc++ -Werror -fno-exceptions -fno-rtti -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/tlibc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/libcxx -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../QuoteGeneration/../ae/dep/inc/internal -I../../../QuoteGeneration/quote_wrapper/quote/inc -I../../../QuoteGeneration/quote_wrapper/common/inc -I../../../QuoteGeneration/pce_wrapper/inc -I.. -I.  -c ../../../QuoteGeneration/../ae/dep/common/version.cpp -o version.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64 -ffreestanding -nostdinc -fvisibility=hidden -fpie -fno-strict-overflow -fno-delete-null-pointer-checks -B/usr/local/bin -fcf-protection=none -mindirect-branch-register -mfunction-return=thunk-extern -Wa,-mlfence-after-load=yes -Wa,-mlfence-before-indirect-branch=memory -Wa,-mlfence-before-ret=shl -fno-plt -nostdinc++ -Werror -o id_enclave.so id_enclave.o version.o -nostdlib -nodefaultlibs -nostartfiles -Wl,-soname=libsgx_id_enclave.signed.so.1 -L/root/tdx-pq-attestation/tdx_tests/sgxsdk/lib64/cve_2020_0551_load -Wl,--whole-archive -lsgx_trts -Wl,--no-whole-archive -Wl,--start-group -lsgx_tstdc -lsgx_tservice -lsgx_tcxx -lsgx_tcrypto -Wl,--end-group -Wl,--build-id -Wl,--version-script=/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/id_enclave/linux/enclave.lds -Wl,-z,relro,-z,now,-z,noexecstack -Wl,-Bstatic -Wl,-Bsymbolic -Wl,--no-undefined -Wl,-pie,-eenclave_entry -Wl,--export-dynamic -Wl,--defsym,__ImageBase=0 -Wl,-Map=out.map -Wl,--undefined=version -Wl,--gc-sections -fno-exceptions -fno-rtti
+strip --strip-unneeded --remove-section=.comment --remove-section=.note id_enclave.so
+tcs_num 1, tcs_max_num 1, tcs_min_pool 1
+[0;32mINFO: SGX1 only enclave, which will run on all platforms.
+[0mThe required memory is 385024B.
+The required memory is 0x5e000, 376 KB.
+<EnclaveConfiguration>
+    <IntelSigned>1</IntelSigned>
+    <ProvisionKey>1</ProvisionKey>
+    <ProdID>0x1</ProdID>
+    <ISVSVN>5</ISVSVN>
+    <TCSNum>1</TCSNum>
+    <TCSPolicy>1</TCSPolicy>
+    <HW>0</HW>
+    <StackMaxSize>0x2000</StackMaxSize>
+    <StackMinSize>0x2000</StackMinSize>
+    <HeapMaxSize>0x1000</HeapMaxSize>
+    <DisableDebug>1</DisableDebug>
+    <EnableIPPFIPS>1</EnableIPPFIPS>
+</EnclaveConfiguration>
+handle_compatible_metadata: Overwrite with metadata version 0x100000005
+Succeed.
+make: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/id_enclave/linux'
+[INFO] Building repo-local PCE wrapper...
+make: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/pce_wrapper/linux'
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -fPIC -Werror -g -I. -I../inc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/common -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/inc/internal -c pce_u.c -o pce_u.o
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -fPIC -Werror -g -I. -I../inc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/common -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/inc/internal -c /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_trace.c -o se_trace.o
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -fPIC -Werror -g -I. -I../inc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/common -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/inc/internal -c /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_thread.c -o se_thread.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -fPIC -Werror -g -I. -I../inc -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/common -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/dep/inc/internal -c ../pce_wrapper.cpp -o pce_wrapper.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -fPIC -Werror -g pce_u.o se_trace.o se_thread.o pce_wrapper.o -shared -pthread -Wl,-z,relro,-z,now,-z,noexecstack -Wl,--version-script=pce_wrapper.lds -Wl,--gc-sections -m64 -L/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//build/linux -L/root/tdx-pq-attestation/tdx_tests/sgxsdk/lib64 -lsgx_urts -lpthread -ldl \
+-Wl,-soname=libsgx_pce_logic.so.1 -o libsgx_pce_logic.so
+ar rcsD libsgx_pce_logic.a pce_u.o se_trace.o se_thread.o pce_wrapper.o
+make: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/pce_wrapper/linux'
+[INFO] Building repo-local TDX quote wrapper...
+make: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/linux'
+/root/tdx-pq-attestation/tdx_tests/sgxsdk/bin/x64/sgx_edger8r --untrusted ../../../../ae/tdqe/tdqe.edl --search-path ../../../../ae/tdqe
+GEN  =>  tdqe_u.c
+CC   <=  tdqe_u.c
+/root/tdx-pq-attestation/tdx_tests/sgxsdk/bin/x64/sgx_edger8r --untrusted ../../../../ae/id_enclave/linux/../id_enclave.edl
+GEN  =>  id_enclave_u.c
+CC   <=  id_enclave_u.c
+CC   <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_thread.c
+CC   <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_trace.c
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -MMD -fPIC -Werror -Wno-attributes -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../inc -I../../common/inc -I./ -I../../../../ae/tdqe -I../../../pce_wrapper/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -c ../td_ql_logic.cpp -o ../td_ql_logic.o
+CXX  <=  ../td_ql_logic.cpp
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -MMD -fPIC -Werror -Wno-attributes -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../inc -I../../common/inc -I./ -I../../../../ae/tdqe -I../../../pce_wrapper/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -c ../td_ql_wrapper.cpp -o ../td_ql_wrapper.o
+CXX  <=  ../td_ql_wrapper.cpp
+true
+make[1]: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/pce_wrapper/linux'
+make[1]: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/pce_wrapper/linux'
+g++ tdqe_u.o id_enclave_u.o se_thread.o se_trace.o ../td_ql_logic.o ../td_ql_wrapper.o -shared -Wl,-z,relro,-z,now,-z,noexecstack -g -L/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//build/linux -L../../../pce_wrapper/linux -lsgx_pce_logic -L/root/tdx-pq-attestation/tdx_tests/sgxsdk/lib64 -lsgx_urts -lsgx_uae_service -lpthread -ldl -Wl,--version-script=td_ql_logic.lds -Wl,--gc-sections \
+       -Wl,-soname=libsgx_tdx_logic.so.1 -o libsgx_tdx_logic.so
+LINK =>  libsgx_tdx_logic.so
+make: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_quote/linux'
+[INFO] Building repo-local libtdx_attest...
+make: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest/linux'
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -fPIC -Werror -MMD -Wno-attributes -I./ -I../../qgs_msg_lib/inc -c ../tdx_attest.c -o ../tdx_attest.o
+make -C ../../qgs_msg_lib/linux CXXFLAGS="-Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -fPIC -Werror"
+make[1]: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs_msg_lib/linux'
+g++ -c -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -fPIC -Werror -MMD -Werror -fPIC -Wno-attributes -I../inc/ ../qgs_msg_lib.cpp -o ../qgs_msg_lib.o
+ar rcsD libqgs_msg.a ../qgs_msg_lib.o
+make[1]: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/qgs_msg_lib/linux'
+cc ../tdx_attest.o -shared -Wl,-soname=libtdx_attest.so.1 -L../../qgs_msg_lib/linux -lqgs_msg -Wl,-z,relro,-z,now,-z,noexecstack -Wl,--version-script=tdx_attest.lds -Wl,--gc-sections -o libtdx_attest.so
+LINK =>  libtdx_attest.so
+make: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/quote_wrapper/tdx_attest/linux'
+[INFO] Building repo-local QCNL/QPL/QuoteVerification libraries...
+make: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/qcnl/linux'
+CXX  <=  network_wrapper.cpp
+CXX  <=  qcnl_config_impl.cpp
+CXX  <=  ../certification_provider.cpp
+CXX  <=  ../certification_service.cpp
+CXX  <=  ../pccs_response_object.cpp
+CXX  <=  ../qcnl_config.cpp
+CXX  <=  ../qcnl_util.cpp
+CXX  <=  ../sgx_default_qcnl_wrapper.cpp
+CC  <=  ../../common/src/se_thread.c
+make -C ../../../tools/PCKCertSelection/PCKCertSelectionLib -f Makefile.static_lib
+make[1]: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib'
+Compiling pck_sorter.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/pck_sorter.o done
+Compiling pck_cert_selection.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/pck_cert_selection.o done
+Compiling config_selector.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/config_selector.o done
+Compiling tcb_manager.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/tcb_manager.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/ParserUtils.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/ParserUtils.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Certificate.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/Certificate.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/X509/DistinguishedName.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/DistinguishedName.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Extension.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/Extension.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/X509/PckCertificate.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/PckCertificate.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Signature.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/Signature.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Tcb.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/Tcb.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Validity.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/Validity.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/OpensslHelpers/OidUtils.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/OidUtils.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/Json/JsonParser.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/JsonParser.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TcbInfo.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/TcbInfo.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TcbLevel.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/TcbLevel.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TdxModule.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/TdxModule.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TcbComponent.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/TcbComponent.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TdxModuleTcb.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/TdxModuleTcb.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TdxModuleTcbLevel.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/TdxModuleTcbLevel.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TdxModuleIdentity.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/TdxModuleIdentity.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationCommons/src/Utils/GMTime.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/GMTime.o done
+Compiling /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../../../QuoteVerification/QVL/Src/AttestationCommons/src/Utils/TimeUtils.cpp...
+	 -> /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib/../static_out/TimeUtils.o done
+Archiving...
+make[1]: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/tools/PCKCertSelection/PCKCertSelectionLib'
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  network_wrapper.o qcnl_config_impl.o ../certification_provider.o ../certification_service.o ../pccs_response_object.o ../qcnl_config.o ../qcnl_util.o ../sgx_default_qcnl_wrapper.o ../../common/src/se_thread.o -shared -Wl,-soname=libsgx_default_qcnl_wrapper.so.1 -pthread -Wl,-z,relro,-z,now,-z,noexecstack -Wl,--version-script=sgx_default_qcnl.lds -Wl,--gc-sections  -g -L../../build/linux -L/root/tdx-pq-attestation/tdx_tests/sgxsdk/lib64 -lpthread -ldl ../../../tools/PCKCertSelection/static_out/libPCKCertSelection.a -o libsgx_default_qcnl_wrapper.so
+make: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/qcnl/linux'
+make: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/qpl/linux'
+CXX  <=  x509.cpp
+CXX  <=  ../sgx_base64.cpp
+CXX  <=  ../sgx_default_quote_provider.cpp
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  x509.o ../sgx_base64.o ../sgx_default_quote_provider.o -shared -Wl,-soname=libdcap_quoteprov.so.1 -pthread -Wl,-z,relro,-z,now,-z,noexecstack -Wl,--version-script=sgx_default_quote_provider.lds -Wl,--gc-sections  -g -L../../build/linux -L/root/tdx-pq-attestation/tdx_tests/sgxsdk/lib64 -L../../../prebuilt/openssl/lib/linux64 -lcrypto -lsgx_default_qcnl_wrapper -lpthread -ldl -o libdcap_quoteprov.so
+make: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration/qpl/linux'
+make: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/linux'
+GEN  =>  qve_u.h
+CXX  <=  ../sgx_dcap_pcs_com.cpp
+CXX  <=  ../sgx_dcap_quoteverify.cpp
+CXX  <=  ../sgx_urts_wrapper.cpp
+In file included from /root/tdx-pq-attestation/tdx_tests/sgxsdk/include/sgx_quote.h:45,
+                 from /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//quote_wrapper/common/inc/sgx_ql_quote.h:43,
+                 from ../../../ae/QvE/Include/sgx_qve_def.h:35,
+                 from ../inc/tee_qv_class.h:11,
+                 from ../tee_qv_class.cpp:11:
+../linux/qve_u.h:45:36: warning: redundant redeclaration of ‘void ocall_qvt_token_malloc(uint64_t, uint8_t**)’ in same scope [-Wredundant-decls]
+   45 | void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_qvt_token_malloc, (uint64_t verification_result_token_buffer_size, uint8_t** p_verification_result_token));
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~
+/root/tdx-pq-attestation/tdx_tests/sgxsdk/include/sgx_defs.h:49:48: note: in definition of macro ‘SGX_UBRIDGE’
+   49 | #define SGX_UBRIDGE(attr, fname, args...) attr fname args
+      |                                                ^~~~~
+In file included from ../tee_qv_class.cpp:12:
+../inc/sgx_dcap_qv_internal.h:93:6: note: previous declaration of ‘void ocall_qvt_token_malloc(uint64_t, uint8_t**)’
+   93 | void ocall_qvt_token_malloc(uint64_t verification_result_token_buffer_size,
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+CXX  <=  ../tee_qv_class.cpp
+CXX  <=  config.cpp
+CXX  <=  qve_parser.cpp
+CC  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_trace.c
+CC  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_thread.c
+CC  <=  qve_u.c
+CC  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/tdqe/tdqe_mldsa_adapter.c
+CC  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/pq/mldsa_native_44.c
+CC  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/pq/mldsa_native_65.c
+CC  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/pq/mldsa_native_87.c
+CXX  <=  ../../../ae/QvE/qve/qve.cpp
+CXX  <=  ../../../ae/QvE/qve/qve_logic.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationCommons/src/Utils/ByteOperands.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationCommons/src/Utils/GMTime.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationCommons/src/Utils/Logger.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationCommons/src/Utils/TimeUtils.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/CertVerification/CertificateChain.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/CertVerification/X509Constants.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/OpensslHelpers/DigestUtils.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/OpensslHelpers/KeyUtils.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/OpensslHelpers/SignatureVerification.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/PckParser/CrlStore.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/PckParser/PckParser.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/PckParser/PckParserUtils.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/Quote.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/QuoteStructures.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/QuoteVerification/VerificationCollateralInfo.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Utils/JsonParser.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Utils/StatusPrinter.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/BaseVerifier.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/Checks/TDRelaunchCheck.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/Checks/TcbLevelCheck.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/Checks/TdxModuleCheck.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/CommonVerifier.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/EnclaveIdentityVerifier.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/EnclaveReportVerifier.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/PckCertVerifier.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/PckCrlVerifier.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/QuoteVerifier.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/TCBInfoVerifier.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationLibrary/src/Verifiers/TCBSigningChain.cpp
+ar: creating libsgx_dcap_qvl_parser.a
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/EnclaveIdentity.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/IdentityTcbLevel.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/JsonParser.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TcbComponent.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TcbInfo.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TcbLevel.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TdxModule.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TdxModuleIdentity.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TdxModuleTcb.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/Json/TdxModuleTcbLevel.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/OpensslHelpers/OidUtils.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/ParserUtils.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Certificate.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Configuration.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/DistinguishedName.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Extension.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/PckCertificate.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/PlatformPckCertificate.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/ProcessorPckCertificate.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Signature.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Tcb.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/QVL/Src/AttestationParsers/src/X509/Validity.cpp
+ar: creating libsgx_dcap_qvl_attestation.a
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//qpl/sgx_base64.cpp
+CXX  <=  /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/common/ec_key.cpp
+make -C /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal libdcap_qal.a
+make[1]: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteVerification/appraisal/qal'
+/root/tdx-pq-attestation/tdx_tests/sgxsdk/bin/x64/sgx_edger8r --untrusted ../../../ae/qae/qae.edl --search-path /root/tdx-pq-attestation/tdx_tests/sgxsdk/include
+GEN  =>  qae_u.h
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c appraisal.cpp -o appraisal.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c ../common/ec_key.cpp -o ec_key.o
+In file included from ../../../external/jwt-cpp//include/jwt-cpp/jwt.h:8,
+                 from ../common/ec_key.cpp:7:
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘const T& picojson::value::get() const [with T = double]’:
+../../../external/jwt-cpp//include/picojson/picojson.h:387:122: warning: conversion from ‘int64_t’ {aka ‘long int’} to ‘double’ may change value [-Wconversion]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                                                                       ~~~^~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:375:12: note: in definition of macro ‘GET’
+  375 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h:387:117: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:375:12: note: in definition of macro ‘GET’
+  375 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h:387:117: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:375:12: note: in definition of macro ‘GET’
+  375 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘T& picojson::value::get() [with T = double]’:
+../../../external/jwt-cpp//include/picojson/picojson.h:387:122: warning: conversion from ‘int64_t’ {aka ‘long int’} to ‘double’ may change value [-Wconversion]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                                                                       ~~~^~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:379:12: note: in definition of macro ‘GET’
+  379 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h:387:117: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:379:12: note: in definition of macro ‘GET’
+  379 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘bool picojson::value::evaluate_as_boolean() const’:
+../../../external/jwt-cpp//include/picojson/picojson.h:431:23: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  431 |     return u_.number_ != 0;
+      |            ~~~~~~~~~~~^~~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘std::string picojson::value::to_str() const’:
+../../../external/jwt-cpp//include/picojson/picojson.h:496:90: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  496 |     SNPRINTF(buf, sizeof(buf), fabs(u_.number_) < (1ULL << 53) && modf(u_.number_, &tmp) == 0 ? "%.f" : "%.17g", u_.number_);
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~^~~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In function ‘bool picojson::operator==(const value&, const value&)’:
+../../../external/jwt-cpp//include/picojson/picojson.h:1155:40: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+ 1155 |   return y.is<type>() && x.get<type>() == y.get<type>()
+      |                          ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:1157:3: note: in expansion of macro ‘PICOJSON_CMP’
+ 1157 |   PICOJSON_CMP(double);
+      |   ^~~~~~~~~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::hmacsha::hmacsha(std::string, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:832:66: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::hmacsha’ [-Wshadow]
+  832 |                         hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
+      |                                                  ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:884:41: note: shadowed declaration is here
+  884 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::hmacsha::hmacsha(std::string, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:832:66: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::hmacsha’ [-Wshadow]
+  832 |                         hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
+      |                                                  ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:884:41: note: shadowed declaration is here
+  884 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::hmacsha::hmacsha(std::string, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:832:66: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::hmacsha’ [-Wshadow]
+  832 |                         hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
+      |                                                  ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:884:41: note: shadowed declaration is here
+  884 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::rsa::rsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:902:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::rsa’ [-Wshadow]
+  902 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:990:41: note: shadowed declaration is here
+  990 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::rsa::rsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:902:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::rsa’ [-Wshadow]
+  902 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:990:41: note: shadowed declaration is here
+  990 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::rsa::rsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:902:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::rsa’ [-Wshadow]
+  902 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:990:41: note: shadowed declaration is here
+  990 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::ecdsa::ecdsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string, size_t)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1010:92: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::ecdsa’ [-Wshadow]
+ 1010 |                                   const std::string& private_key_password, const EVP_MD* (*md)(), std::string name, size_t siglen)
+      |                                                                            ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1214:41: note: shadowed declaration is here
+ 1214 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::ecdsa::ecdsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string, size_t)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1010:92: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::ecdsa’ [-Wshadow]
+ 1010 |                                   const std::string& private_key_password, const EVP_MD* (*md)(), std::string name, size_t siglen)
+      |                                                                            ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1214:41: note: shadowed declaration is here
+ 1214 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::ecdsa::ecdsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string, size_t)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1010:92: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::ecdsa’ [-Wshadow]
+ 1010 |                                   const std::string& private_key_password, const EVP_MD* (*md)(), std::string name, size_t siglen)
+      |                                                                            ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1214:41: note: shadowed declaration is here
+ 1214 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::pss::pss(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1377:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::pss’ [-Wshadow]
+ 1377 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1496:41: note: shadowed declaration is here
+ 1496 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::pss::pss(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1377:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::pss’ [-Wshadow]
+ 1377 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1496:41: note: shadowed declaration is here
+ 1496 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::pss::pss(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1377:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::pss’ [-Wshadow]
+ 1377 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1496:41: note: shadowed declaration is here
+ 1496 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::decoded_jwt<json_traits>::decoded_jwt(const typename json_traits::string_type&)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2559:89: warning: declaration of ‘token’ shadows a member of ‘jwt::decoded_jwt<json_traits>’ [-Wshadow]
+ 2559 |                 JWT_CLAIM_EXPLICIT decoded_jwt(const typename json_traits::string_type& token)
+      |                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2533:57: note: shadowed declaration is here
+ 2533 |                 const typename json_traits::string_type token;
+      |                                                         ^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::decoded_jwt<json_traits>::decoded_jwt(const typename json_traits::string_type&, Decode)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2576:70: warning: declaration of ‘token’ shadows a member of ‘jwt::decoded_jwt<json_traits>’ [-Wshadow]
+ 2576 |                 decoded_jwt(const typename json_traits::string_type& token, Decode decode) : token(token) {
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2533:57: note: shadowed declaration is here
+ 2533 |                 const typename json_traits::string_type token;
+      |                                                         ^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In member function ‘void jwt::verifier<Clock, json_traits>::verify(const jwt::decoded_jwt<json_traits>&, std::error_code&) const’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:3290:43: warning: declaration of ‘algo’ shadows a member of ‘jwt::verifier<Clock, json_traits>’ [-Wshadow]
+ 3290 |                         const std::string algo = jwt.get_algorithm();
+      |                                           ^~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:3091:24: note: shadowed declaration is here
+ 3091 |                 struct algo : public algo_base {
+      |                        ^~~~
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c ../common/format_util.cpp -o format_util.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c opa_builtins.cpp -o opa_builtins.o
+In function ‘int rdrand_cpuid()’,
+    inlined from ‘uint64_t get_rand_n(std::string, uint64_t)’ at opa_builtins.cpp:101:42:
+opa_builtins.cpp:80:5: warning: ‘ebx’ may be used uninitialized [-Wmaybe-uninitialized]
+   80 |     if (memcmp(&ebx, "Genu", 4) != 0 ||
+      |     ^~
+opa_builtins.cpp: In function ‘uint64_t get_rand_n(std::string, uint64_t)’:
+opa_builtins.cpp:77:23: note: ‘ebx’ was declared here
+   77 |     unsigned int eax, ebx, ecx, edx;
+      |                       ^~~
+In function ‘int rdrand_cpuid()’,
+    inlined from ‘uint64_t get_rand_n(std::string, uint64_t)’ at opa_builtins.cpp:101:42:
+opa_builtins.cpp:81:38: warning: ‘ecx’ may be used uninitialized [-Wmaybe-uninitialized]
+   80 |     if (memcmp(&ebx, "Genu", 4) != 0 ||
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   81 |         memcmp(&edx, "ineI", 4) != 0 ||
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+   82 |         memcmp(&ecx, "ntel", 4) != 0)
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+opa_builtins.cpp: In function ‘uint64_t get_rand_n(std::string, uint64_t)’:
+opa_builtins.cpp:77:28: note: ‘ecx’ was declared here
+   77 |     unsigned int eax, ebx, ecx, edx;
+      |                            ^~~
+In function ‘int rdrand_cpuid()’,
+    inlined from ‘uint64_t get_rand_n(std::string, uint64_t)’ at opa_builtins.cpp:101:42:
+opa_builtins.cpp:80:38: warning: ‘edx’ may be used uninitialized [-Wmaybe-uninitialized]
+   80 |     if (memcmp(&ebx, "Genu", 4) != 0 ||
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+   81 |         memcmp(&edx, "ineI", 4) != 0 ||
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+opa_builtins.cpp: In function ‘uint64_t get_rand_n(std::string, uint64_t)’:
+opa_builtins.cpp:77:33: note: ‘edx’ was declared here
+   77 |     unsigned int eax, ebx, ecx, edx;
+      |                                 ^~~
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c opa_helper.cpp -o opa_helper.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c opa_wasm.cpp -o opa_wasm.o
+In file included from ../../../external/jwt-cpp//include/jwt-cpp/jwt.h:8,
+                 from opa_wasm.cpp:14:
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘const T& picojson::value::get() const [with T = double]’:
+../../../external/jwt-cpp//include/picojson/picojson.h:387:122: warning: conversion from ‘int64_t’ {aka ‘long int’} to ‘double’ may change value [-Wconversion]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                                                                       ~~~^~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:375:12: note: in definition of macro ‘GET’
+  375 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h:387:117: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:375:12: note: in definition of macro ‘GET’
+  375 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h:387:117: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:375:12: note: in definition of macro ‘GET’
+  375 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘T& picojson::value::get() [with T = double]’:
+../../../external/jwt-cpp//include/picojson/picojson.h:387:122: warning: conversion from ‘int64_t’ {aka ‘long int’} to ‘double’ may change value [-Wconversion]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                                                                       ~~~^~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:379:12: note: in definition of macro ‘GET’
+  379 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h:387:117: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:379:12: note: in definition of macro ‘GET’
+  379 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘bool picojson::value::evaluate_as_boolean() const’:
+../../../external/jwt-cpp//include/picojson/picojson.h:431:23: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  431 |     return u_.number_ != 0;
+      |            ~~~~~~~~~~~^~~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘std::string picojson::value::to_str() const’:
+../../../external/jwt-cpp//include/picojson/picojson.h:496:90: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  496 |     SNPRINTF(buf, sizeof(buf), fabs(u_.number_) < (1ULL << 53) && modf(u_.number_, &tmp) == 0 ? "%.f" : "%.17g", u_.number_);
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~^~~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In function ‘bool picojson::operator==(const value&, const value&)’:
+../../../external/jwt-cpp//include/picojson/picojson.h:1155:40: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+ 1155 |   return y.is<type>() && x.get<type>() == y.get<type>()
+      |                          ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:1157:3: note: in expansion of macro ‘PICOJSON_CMP’
+ 1157 |   PICOJSON_CMP(double);
+      |   ^~~~~~~~~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::hmacsha::hmacsha(std::string, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:832:66: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::hmacsha’ [-Wshadow]
+  832 |                         hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
+      |                                                  ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:884:41: note: shadowed declaration is here
+  884 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::hmacsha::hmacsha(std::string, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:832:66: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::hmacsha’ [-Wshadow]
+  832 |                         hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
+      |                                                  ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:884:41: note: shadowed declaration is here
+  884 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::hmacsha::hmacsha(std::string, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:832:66: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::hmacsha’ [-Wshadow]
+  832 |                         hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
+      |                                                  ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:884:41: note: shadowed declaration is here
+  884 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::rsa::rsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:902:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::rsa’ [-Wshadow]
+  902 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:990:41: note: shadowed declaration is here
+  990 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::rsa::rsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:902:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::rsa’ [-Wshadow]
+  902 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:990:41: note: shadowed declaration is here
+  990 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::rsa::rsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:902:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::rsa’ [-Wshadow]
+  902 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:990:41: note: shadowed declaration is here
+  990 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::ecdsa::ecdsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string, size_t)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1010:92: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::ecdsa’ [-Wshadow]
+ 1010 |                                   const std::string& private_key_password, const EVP_MD* (*md)(), std::string name, size_t siglen)
+      |                                                                            ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1214:41: note: shadowed declaration is here
+ 1214 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::ecdsa::ecdsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string, size_t)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1010:92: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::ecdsa’ [-Wshadow]
+ 1010 |                                   const std::string& private_key_password, const EVP_MD* (*md)(), std::string name, size_t siglen)
+      |                                                                            ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1214:41: note: shadowed declaration is here
+ 1214 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::ecdsa::ecdsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string, size_t)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1010:92: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::ecdsa’ [-Wshadow]
+ 1010 |                                   const std::string& private_key_password, const EVP_MD* (*md)(), std::string name, size_t siglen)
+      |                                                                            ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1214:41: note: shadowed declaration is here
+ 1214 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::pss::pss(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1377:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::pss’ [-Wshadow]
+ 1377 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1496:41: note: shadowed declaration is here
+ 1496 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::pss::pss(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1377:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::pss’ [-Wshadow]
+ 1377 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1496:41: note: shadowed declaration is here
+ 1496 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::pss::pss(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1377:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::pss’ [-Wshadow]
+ 1377 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1496:41: note: shadowed declaration is here
+ 1496 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::decoded_jwt<json_traits>::decoded_jwt(const typename json_traits::string_type&)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2559:89: warning: declaration of ‘token’ shadows a member of ‘jwt::decoded_jwt<json_traits>’ [-Wshadow]
+ 2559 |                 JWT_CLAIM_EXPLICIT decoded_jwt(const typename json_traits::string_type& token)
+      |                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2533:57: note: shadowed declaration is here
+ 2533 |                 const typename json_traits::string_type token;
+      |                                                         ^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::decoded_jwt<json_traits>::decoded_jwt(const typename json_traits::string_type&, Decode)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2576:70: warning: declaration of ‘token’ shadows a member of ‘jwt::decoded_jwt<json_traits>’ [-Wshadow]
+ 2576 |                 decoded_jwt(const typename json_traits::string_type& token, Decode decode) : token(token) {
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2533:57: note: shadowed declaration is here
+ 2533 |                 const typename json_traits::string_type token;
+      |                                                         ^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In member function ‘void jwt::verifier<Clock, json_traits>::verify(const jwt::decoded_jwt<json_traits>&, std::error_code&) const’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:3290:43: warning: declaration of ‘algo’ shadows a member of ‘jwt::verifier<Clock, json_traits>’ [-Wshadow]
+ 3290 |                         const std::string algo = jwt.get_algorithm();
+      |                                           ^~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:3091:24: note: shadowed declaration is here
+ 3091 |                 struct algo : public algo_base {
+      |                        ^~~~
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c qae_ocalls.cpp -o qae_ocalls.o
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c qae_u.c -o qae_u.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c qae_wrapper.cpp -o qae_wrapper.o
+qae_wrapper.cpp: In function ‘quote3_error_t load_enclave(sgx_enclave_id_t*, sgx_target_info_t*)’:
+qae_wrapper.cpp:90:22: warning: ‘char* __builtin_strncpy(char*, const char*, long unsigned int)’ specified bound 261 equals destination size [-Wstringop-truncation]
+   90 |         (void)strncpy(p_file_path, dl_info.dli_fname, buf_size);
+      |                      ^
+qae_wrapper.cpp:81:16: warning: ‘char* __builtin_strncpy(char*, const char*, long unsigned int)’ output may be truncated copying 260 bytes from a string of length 260 [-Wstringop-truncation]
+   81 |         strncpy(p_file_path, s_qae_info.m_qae_path, buf_size - 1);
+      |                ^
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c qal_auth.cpp -o qal_auth.o
+g++ -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c qal_json.cpp -o qal_json.o
+In file included from ../../../external/jwt-cpp//include/jwt-cpp/jwt.h:8,
+                 from qal_json.cpp:33:
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘const T& picojson::value::get() const [with T = double]’:
+../../../external/jwt-cpp//include/picojson/picojson.h:387:122: warning: conversion from ‘int64_t’ {aka ‘long int’} to ‘double’ may change value [-Wconversion]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                                                                       ~~~^~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:375:12: note: in definition of macro ‘GET’
+  375 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h:387:117: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:375:12: note: in definition of macro ‘GET’
+  375 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h:387:117: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:375:12: note: in definition of macro ‘GET’
+  375 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘T& picojson::value::get() [with T = double]’:
+../../../external/jwt-cpp//include/picojson/picojson.h:387:122: warning: conversion from ‘int64_t’ {aka ‘long int’} to ‘double’ may change value [-Wconversion]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                                                                       ~~~^~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:379:12: note: in definition of macro ‘GET’
+  379 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h:387:117: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  387 |     (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, (const_cast<value *>(this)->u_.number_ = u_.int64_)),
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:379:12: note: in definition of macro ‘GET’
+  379 |     return var;                                                                                                                    \
+      |            ^~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘bool picojson::value::evaluate_as_boolean() const’:
+../../../external/jwt-cpp//include/picojson/picojson.h:431:23: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  431 |     return u_.number_ != 0;
+      |            ~~~~~~~~~~~^~~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In member function ‘std::string picojson::value::to_str() const’:
+../../../external/jwt-cpp//include/picojson/picojson.h:496:90: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+  496 |     SNPRINTF(buf, sizeof(buf), fabs(u_.number_) < (1ULL << 53) && modf(u_.number_, &tmp) == 0 ? "%.f" : "%.17g", u_.number_);
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~^~~~
+../../../external/jwt-cpp//include/picojson/picojson.h: In function ‘bool picojson::operator==(const value&, const value&)’:
+../../../external/jwt-cpp//include/picojson/picojson.h:1155:40: warning: comparing floating-point with ‘==’ or ‘!=’ is unsafe [-Wfloat-equal]
+ 1155 |   return y.is<type>() && x.get<type>() == y.get<type>()
+      |                          ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+../../../external/jwt-cpp//include/picojson/picojson.h:1157:3: note: in expansion of macro ‘PICOJSON_CMP’
+ 1157 |   PICOJSON_CMP(double);
+      |   ^~~~~~~~~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::hmacsha::hmacsha(std::string, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:832:66: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::hmacsha’ [-Wshadow]
+  832 |                         hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
+      |                                                  ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:884:41: note: shadowed declaration is here
+  884 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::hmacsha::hmacsha(std::string, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:832:66: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::hmacsha’ [-Wshadow]
+  832 |                         hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
+      |                                                  ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:884:41: note: shadowed declaration is here
+  884 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::hmacsha::hmacsha(std::string, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:832:66: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::hmacsha’ [-Wshadow]
+  832 |                         hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
+      |                                                  ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:884:41: note: shadowed declaration is here
+  884 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::rsa::rsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:902:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::rsa’ [-Wshadow]
+  902 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:990:41: note: shadowed declaration is here
+  990 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::rsa::rsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:902:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::rsa’ [-Wshadow]
+  902 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:990:41: note: shadowed declaration is here
+  990 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::rsa::rsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:902:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::rsa’ [-Wshadow]
+  902 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:990:41: note: shadowed declaration is here
+  990 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::ecdsa::ecdsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string, size_t)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1010:92: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::ecdsa’ [-Wshadow]
+ 1010 |                                   const std::string& private_key_password, const EVP_MD* (*md)(), std::string name, size_t siglen)
+      |                                                                            ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1214:41: note: shadowed declaration is here
+ 1214 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::ecdsa::ecdsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string, size_t)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1010:92: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::ecdsa’ [-Wshadow]
+ 1010 |                                   const std::string& private_key_password, const EVP_MD* (*md)(), std::string name, size_t siglen)
+      |                                                                            ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1214:41: note: shadowed declaration is here
+ 1214 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::ecdsa::ecdsa(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string, size_t)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1010:92: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::ecdsa’ [-Wshadow]
+ 1010 |                                   const std::string& private_key_password, const EVP_MD* (*md)(), std::string name, size_t siglen)
+      |                                                                            ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1214:41: note: shadowed declaration is here
+ 1214 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::pss::pss(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1377:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::pss’ [-Wshadow]
+ 1377 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1496:41: note: shadowed declaration is here
+ 1496 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::pss::pss(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1377:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::pss’ [-Wshadow]
+ 1377 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1496:41: note: shadowed declaration is here
+ 1496 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::algorithm::pss::pss(const std::string&, const std::string&, const std::string&, const std::string&, const EVP_MD* (*)(), std::string)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1377:90: warning: declaration of ‘md’ shadows a member of ‘jwt::algorithm::pss’ [-Wshadow]
+ 1377 |                                 const std::string& private_key_password, const EVP_MD* (*md)(), std::string name)
+      |                                                                          ~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:1496:41: note: shadowed declaration is here
+ 1496 |                         const EVP_MD* (*md)();
+      |                                         ^~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::decoded_jwt<json_traits>::decoded_jwt(const typename json_traits::string_type&)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2559:89: warning: declaration of ‘token’ shadows a member of ‘jwt::decoded_jwt<json_traits>’ [-Wshadow]
+ 2559 |                 JWT_CLAIM_EXPLICIT decoded_jwt(const typename json_traits::string_type& token)
+      |                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2533:57: note: shadowed declaration is here
+ 2533 |                 const typename json_traits::string_type token;
+      |                                                         ^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In constructor ‘jwt::decoded_jwt<json_traits>::decoded_jwt(const typename json_traits::string_type&, Decode)’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2576:70: warning: declaration of ‘token’ shadows a member of ‘jwt::decoded_jwt<json_traits>’ [-Wshadow]
+ 2576 |                 decoded_jwt(const typename json_traits::string_type& token, Decode decode) : token(token) {
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:2533:57: note: shadowed declaration is here
+ 2533 |                 const typename json_traits::string_type token;
+      |                                                         ^~~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h: In member function ‘void jwt::verifier<Clock, json_traits>::verify(const jwt::decoded_jwt<json_traits>&, std::error_code&) const’:
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:3290:43: warning: declaration of ‘algo’ shadows a member of ‘jwt::verifier<Clock, json_traits>’ [-Wshadow]
+ 3290 |                         const std::string algo = jwt.get_algorithm();
+      |                                           ^~~~
+../../../external/jwt-cpp//include/jwt-cpp/jwt.h:3091:24: note: shadowed declaration is here
+ 3091 |                 struct algo : public algo_base {
+      |                        ^~~~
+qal_json.cpp: In function ‘quote3_error_t get_default_platform_policy_from_pccs(const uint8_t*, uint32_t, uint8_t**, uint32_t*)’:
+qal_json.cpp:187:55: warning: conversion from ‘uint32_t’ {aka ‘unsigned int’} to ‘uint16_t’ {aka ‘short unsigned int’} may change value [-Wconversion]
+  187 |     ret = tee_dcap_get_default_platform_policy(fmspc, fmspc_size, pp_default_platform_policy, p_default_platform_policy_size);
+      |                                                       ^~~~~~~~~~
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_thread.c -o se_thread.o
+cc -Wjump-misses-init -Wstrict-prototypes -Wunsuffixed-float-constants -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -I./ -I/root/tdx-pq-attestation/tdx_tests/sgxsdk/include -I../../../prebuilt/openssl/inc -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal/linux -I../../../external/wasm-micro-runtime//core/iwasm/include -I../../../external/jwt-cpp//include -I/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/inc/internal -I../../dcap_quoteverify/inc -I../common/ -I../../QVL/Src/ThirdParty/rapidjson/include/ -c /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_trace.c -o se_trace.o
+test -f ../../../external/wasm-micro-runtime//product-mini/platforms/linux/build//libvmlib.a || (mkdir -p ../../../external/wasm-micro-runtime//product-mini/platforms/linux/build/ && cd ../../../external/wasm-micro-runtime//product-mini/platforms/linux/build/ && cmake .. -DCMAKE_BUILD_TYPE=Release -DWAMR_DISABLE_HW_BOUND_CHECK=1 && make vmlib)
+CMake Deprecation Warning at CMakeLists.txt:4 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Build Configurations:
+     Build as target X86_64
+     CMAKE_BUILD_TYPE Release
+     WAMR Interpreter enabled
+     WAMR AOT enabled
+     WAMR JIT disabled
+     Libc builtin enabled
+     Libc WASI enabled
+     Fast interpreter enabled
+     Multiple modules disabled
+     Hardware boundary check disabled
+     SIMD enabled
+     Reference types disabled
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/cc
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build
+make[2]: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+make[3]: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+make[4]: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+make[5]: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+make[5]: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+make[5]: Entering directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+[  2%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/platform/linux/platform_init.c.o
+[  5%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/platform/common/posix/posix_malloc.c.o
+[  7%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/platform/common/posix/posix_memmap.c.o
+[ 10%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/platform/common/posix/posix_socket.c.o
+[ 12%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/platform/common/posix/posix_thread.c.o
+[ 15%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/platform/common/posix/posix_time.c.o
+[ 17%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/mem-alloc/ems/ems_alloc.c.o
+[ 20%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/mem-alloc/ems/ems_hmu.c.o
+[ 23%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/mem-alloc/ems/ems_kfc.c.o
+[ 25%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/mem-alloc/mem_alloc.c.o
+[ 28%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/utils/bh_assert.c.o
+[ 30%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/utils/bh_common.c.o
+[ 33%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/utils/bh_hashmap.c.o
+[ 35%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/utils/bh_list.c.o
+[ 38%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/utils/bh_log.c.o
+[ 41%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/utils/bh_queue.c.o
+[ 43%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/utils/bh_vector.c.o
+[ 46%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/shared/utils/runtime_timer.c.o
+[ 48%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/libraries/libc-builtin/libc_builtin_wrapper.c.o
+[ 51%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/libraries/libc-wasi/libc_wasi_wrapper.c.o
+[ 53%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c.o
+[ 56%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/random.c.o
+[ 58%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/str.c.o
+[ 61%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/common/wasm_application.c.o
+[ 64%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/common/wasm_c_api.c.o
+[ 66%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/common/wasm_exec_env.c.o
+[ 69%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/common/wasm_memory.c.o
+[ 71%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/common/wasm_native.c.o
+[ 74%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/common/wasm_runtime_common.c.o
+[ 76%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/common/wasm_shared_memory.c.o
+[ 79%] Building ASM object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/common/arch/invokeNative_em64_simd.s.o
+[ 82%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/interpreter/wasm_interp_fast.c.o
+[ 84%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/interpreter/wasm_loader.c.o
+[ 87%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/interpreter/wasm_runtime.c.o
+[ 89%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/aot/aot_intrinsic.c.o
+[ 92%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/aot/aot_loader.c.o
+[ 94%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/aot/aot_runtime.c.o
+[ 97%] Building C object CMakeFiles/vmlib.dir/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/core/iwasm/aot/arch/aot_reloc_x86_64.c.o
+[100%] Linking C static library libvmlib.a
+make[5]: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+[100%] Built target vmlib
+make[4]: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+make[3]: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+make[2]: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/external/wasm-micro-runtime/product-mini/platforms/linux/build'
+cp -f ../../../external/wasm-micro-runtime//product-mini/platforms/linux/build//libvmlib.a libdcap_qal.a
+ar rsD libdcap_qal.a appraisal.o ec_key.o format_util.o opa_builtins.o opa_helper.o opa_wasm.o qae_ocalls.o qae_u.o qae_wrapper.o qal_auth.o qal_json.o se_thread.o se_trace.o
+make[1]: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteVerification/appraisal/qal'
+g++ -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -m64 -Wnon-virtual-dtor -std=c++17 -Wnon-virtual-dtor -std=c++14 -O2 -D_FORTIFY_SOURCE=2 -UDEBUG -DNDEBUG -ffunction-sections -fdata-sections -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -Wall -Wextra -Winit-self -Wpointer-arith -Wreturn-type -Waddress -Wsequence-point -Wformat-security -Wmissing-include-dirs -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wconversion -Wredundant-decls -Wimplicit-fallthrough -DITT_ARCH_IA64  -g -fPIC -USGX_TRUSTED -fcf-protection=none ../sgx_dcap_pcs_com.o ../sgx_dcap_quoteverify.o ../sgx_urts_wrapper.o ../tee_qv_class.o config.o qve_parser.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_trace.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//common/src/se_thread.o qve_u.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/tdqe/tdqe_mldsa_adapter.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/pq/mldsa_native_44.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/pq/mldsa_native_65.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../ae/pq/mldsa_native_87.o ../../../ae/QvE/qve/untrusted_qve.o ../../../ae/QvE/qve/untrusted_qve_logic.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/appraisal.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/format_util.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/opa_builtins.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/opa_helper.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/opa_wasm.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/qae_ocalls.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/qae_u.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/qae_wrapper.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/qal_auth.o /root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/appraisal/qal/qal_json.o sgx_base64.o ec_key.o -L/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../QuoteVerification/sgxssl/Linux/package/lib64 -lsgx_usgxssl -shared -Wl,-soname=libsgx_dcap_quoteverify.so.1 -pthread -ldl -L. -lsgx_dcap_qvl_parser -lsgx_dcap_qvl_attestation -Wl,-z,relro,-z,now,-z,noexecstack -L/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../prebuilt/openssl/lib/linux64 -lcrypto -Wl,--version-script=sgx_dcap_quoteverify.lds -Wl,--gc-sections -L/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteGeneration//../external/wasm-micro-runtime/product-mini/platforms/linux/build/ -lvmlib -o libsgx_dcap_quoteverify.so
+make: Leaving directory '/root/tdx-pq-attestation/confidential-computing.tee.dcap-pq/QuoteVerification/dcap_quoteverify/linux'
+[INFO] Compiling attestation benchmark binary...
+[INFO] Starting private local PCS proxy on http://127.0.0.1:18081 ...
+[INFO] Running benchmark: alg=ecdsa path=direct verifier=stock_dcap transport=vsock:4050 -> host qgsd
+[bench] wrote /root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/ecdsa_direct.json (10/10 measured iterations succeeded)
+[INFO] Running benchmark: alg=44 path=direct verifier=local_pcs_tdqe_identity transport=vsock:4051 -> host repo-local QGS
+[bench] wrote /root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/44_direct.json (10/10 measured iterations succeeded)
+[INFO] Running benchmark: alg=65 path=direct verifier=local_pcs_tdqe_identity transport=vsock:4051 -> host repo-local QGS
+[bench] wrote /root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/65_direct.json (10/10 measured iterations succeeded)
+[INFO] Running benchmark: alg=87 path=direct verifier=local_pcs_tdqe_identity transport=vsock:4051 -> host repo-local QGS
+[bench] wrote /root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/87_direct.json (10/10 measured iterations succeeded)
+[aggregate] wrote /root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks.json
+[INFO] Benchmark JSON written to: /root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks.json

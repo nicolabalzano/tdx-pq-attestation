@@ -1,0 +1,443 @@
+--no-daemon option found, will not run as a daemon
+port number [4051] found in cmdline
+thread number [1] found in cmdline
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] about to call tee_att_create_context
+[qgs-debug] tee_att_create_context ret=0x0 ctx=0x7d1288000b70
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=2
+[qgs-debug] ensure_context about to create selected context algorithm_id=4
+[qgs-debug] ensure_context create_context ret=0x0 ctx=0x7d1288000b70
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=4
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=8847 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=8847
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=4
+[qgs-debug] ensure_context about to create selected context algorithm_id=5
+[qgs-debug] ensure_context create_context ret=0x0 ctx=0x7d1288000b70
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=5
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=10376 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=10376
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=5
+[qgs-debug] ensure_context about to create selected context algorithm_id=6
+[qgs-debug] ensure_context create_context ret=0x0 ctx=0x7d1288000b70
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0
+[qgs-debug] get_resp enter req_size=1064
+[qgs-debug] get_resp req_type=0
+[qgs-debug] ensure_context requested algorithm_id=6
+[qgs-debug] ensure_context current algorithm_id=6
+[qgs-debug] ensure_context_for_quote_request ret=0x0
+[qgs-debug] GET_QUOTE_REQ about to call tee_att_init_quote selected-context bootstrap
+[qgs-debug] GET_QUOTE_REQ tee_att_init_quote selected-context ret=0x0 hash_size=32
+[qgs-debug] about to call tee_att_get_quote_size
+[mldsa_get_quote_size td_ql_logic.cpp:3212] [tdx-quote-debug] mldsa_get_quote_size: quote_size=12334 (platform cert path, cert_data_size=3678).
+[qgs-debug] tee_att_get_quote_size ret=0x0 size=12334
+[qgs-debug] about to call tee_att_get_quote
+[qgs-debug] tee_att_get_quote ret=0x0

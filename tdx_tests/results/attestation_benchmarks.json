@@ -1,0 +1,3639 @@
+{
+  "generated_at_utc": "2026-05-25T19:16:17Z",
+  "environment": {
+    "hostname": "ubuntu",
+    "kernel": "6.8.0-1028-intel",
+    "machine": "x86_64",
+    "cpu_model": "INTEL(R) XEON(R) GOLD 6542Y",
+    "sgx_mode": "HW",
+    "tdx_guest_device": "/dev/tdx_guest",
+    "ecdsa_quote_transport_port": "4050",
+    "mldsa_quote_transport_port": "4051",
+    "mldsa_verifier_mode": "local_pcs_tdqe_identity",
+    "ecdsa_verifier_mode": "stock_dcap",
+    "measured_iterations": "10",
+    "warmup_iterations": "2"
+  },
+  "scenarios": [
+    {
+      "scenario": {
+        "algorithm": "mldsa_44",
+        "att_key_type_expected": 4,
+        "path_mode": "direct",
+        "execution_context": "guest_tdx_direct_full",
+        "verifier_mode": "local_pcs_tdqe_identity",
+        "measured_iterations": 10,
+        "warmup_iterations": 2,
+        "stop_after_quote_size": false,
+        "qcnl_conf_path": "/root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/sgx_default_qcnl_private_pcs_bench.conf",
+        "quote_transport": "vsock:4051 -> host repo-local QGS",
+        "tdqe_path": "",
+        "local_tdqe_identity_file": "/root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/local_tdqe_identity.json"
+      },
+      "setup_error": "",
+      "raw_file": "/home/ubuntu/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/44_direct.json",
+      "reliability": {
+        "attempted_measured_iterations": 10,
+        "successful_measured_iterations": 10,
+        "failed_measured_iterations": 0,
+        "success_rate": 1.0,
+        "failure_stage_counts": {}
+      },
+      "dimensions": {
+        "quote_size_bytes": {
+          "count": 10,
+          "min": 8847,
+          "max": 8847,
+          "mean": 8847.0,
+          "median": 8847.0,
+          "p95": 8847,
+          "stdev": 0.0,
+          "values": [
+            8847,
+            8847,
+            8847,
+            8847,
+            8847,
+            8847,
+            8847,
+            8847,
+            8847,
+            8847
+          ]
+        },
+        "collateral_size_bytes": {
+          "count": 10,
+          "min": 14388,
+          "max": 14388,
+          "mean": 14388.0,
+          "median": 14388.0,
+          "p95": 14388,
+          "stdev": 0.0,
+          "values": [
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388
+          ]
+        }
+      },
+      "latency_nanoseconds": {
+        "context_create": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_full": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "report_generation": {
+          "count": 10,
+          "min": 22464,
+          "max": 60363,
+          "mean": 26849.5,
+          "median": 23160.0,
+          "p95": 60363,
+          "stdev": 11180.345578290502,
+          "values": [
+            22913,
+            22464,
+            60363,
+            23407,
+            22766,
+            22913,
+            23494,
+            23441,
+            24061,
+            22673
+          ]
+        },
+        "quote_generation": {
+          "count": 10,
+          "min": 11817252,
+          "max": 13616209,
+          "mean": 12901933.4,
+          "median": 13004058.5,
+          "p95": 13616209,
+          "stdev": 609696.8202251345,
+          "values": [
+            13501987,
+            13445099,
+            12941179,
+            12756569,
+            12032218,
+            13454074,
+            13616209,
+            12387809,
+            13066938,
+            11817252
+          ]
+        },
+        "collateral_fetch": {
+          "count": 10,
+          "min": 1372428802,
+          "max": 1505056396,
+          "mean": 1425423489.9,
+          "median": 1413755546.5,
+          "p95": 1505056396,
+          "stdev": 47807128.54252561,
+          "values": [
+            1376932725,
+            1505056396,
+            1467503050,
+            1417359127,
+            1491580076,
+            1384101674,
+            1410151966,
+            1372428802,
+            1376058022,
+            1453063061
+          ]
+        },
+        "verification": {
+          "count": 10,
+          "min": 13014448,
+          "max": 14495393,
+          "mean": 13659978.0,
+          "median": 13589175.0,
+          "p95": 14495393,
+          "stdev": 417977.68117783515,
+          "values": [
+            13170566,
+            13618940,
+            13740009,
+            13559410,
+            13014448,
+            13411053,
+            14152758,
+            13541077,
+            14495393,
+            13896126
+          ]
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 1398505964,
+          "max": 1532383119,
+          "mean": 1452249856.3,
+          "median": 1441062268.0,
+          "p95": 1532383119,
+          "stdev": 47558639.063857354,
+          "values": [
+            1403872725,
+            1532383119,
+            1494528537,
+            1443941039,
+            1516886599,
+            1411275275,
+            1438183497,
+            1398505964,
+            1403883415,
+            1479038393
+          ]
+        }
+      },
+      "cycles": {
+        "context_create": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_full": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "report_generation": {
+          "count": 10,
+          "min": 64790,
+          "max": 174614,
+          "mean": 77493.8,
+          "median": 66799.0,
+          "p95": 174614,
+          "stdev": 32400.287880819826,
+          "values": [
+            66040,
+            64790,
+            174614,
+            67518,
+            65650,
+            66080,
+            67786,
+            67624,
+            69432,
+            65404
+          ]
+        },
+        "quote_generation": {
+          "count": 10,
+          "min": 34265640,
+          "max": 39482736,
+          "mean": 37411065.6,
+          "median": 37706957.0,
+          "p95": 39482736,
+          "stdev": 1767796.3947072185,
+          "values": [
+            39150446,
+            38985578,
+            37524288,
+            36988578,
+            34888988,
+            39012288,
+            39482736,
+            35922488,
+            37889626,
+            34265640
+          ]
+        },
+        "collateral_fetch": {
+          "count": 10,
+          "min": 3980105542,
+          "max": 4364648964,
+          "mean": 4133763987.8,
+          "median": 4099930061.0,
+          "p95": 4364648964,
+          "stdev": 138631017.9742858,
+          "values": [
+            3993091064,
+            4364648964,
+            4255744596,
+            4110353870,
+            4325655054,
+            4013960072,
+            4089506252,
+            3980105542,
+            3990628940,
+            4213945524
+          ]
+        },
+        "verification": {
+          "count": 10,
+          "min": 37741196,
+          "max": 42036044,
+          "mean": 39613071.8,
+          "median": 39407609.0,
+          "p95": 42036044,
+          "stdev": 1212196.683833923,
+          "values": [
+            38193268,
+            39493704,
+            39844714,
+            39321514,
+            37741196,
+            38891616,
+            41042366,
+            39268606,
+            42036044,
+            40297690
+          ]
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 4055732686,
+          "max": 4443898604,
+          "mean": 4211563409.2,
+          "median": 4179122434.0,
+          "p95": 4443898604,
+          "stdev": 137909967.05242366,
+          "values": [
+            4071219388,
+            4443898604,
+            4334120670,
+            4187443986,
+            4399047138,
+            4092767274,
+            4170800882,
+            4055732686,
+            4071325998,
+            4289277466
+          ]
+        }
+      },
+      "stage_share_of_end_to_end": {
+        "report_generation": 1.8488209782582713e-05,
+        "quote_generation": 0.008884100310996878,
+        "collateral_fetch": 0.981527719707718,
+        "verification": 0.009406079773905089
+      },
+      "variability": {
+        "quote_generation_cv": 0.04725623682301247,
+        "quote_generation_p95_over_p50": 1.0470738039205223,
+        "collateral_fetch_cv": 0.033538894848631616,
+        "collateral_fetch_p95_over_p50": 1.0645803652024788
+      },
+      "verification_outputs": {
+        "qv_results": {
+          "OK": 10
+        },
+        "qv_ret_codes": {
+          "0": 10
+        },
+        "quote_versions": {
+          "4": 10
+        },
+        "att_key_types": {
+          "4": 10
+        }
+      },
+      "cold_start_reference": {
+        "iteration": 0,
+        "warmup": true,
+        "success": true,
+        "failure_stage": "",
+        "tee_error": 0,
+        "attest_error": 0,
+        "qv_ret": 0,
+        "qv_result": "OK",
+        "collateral_expiration_status": 0,
+        "quote_version": 4,
+        "att_key_type": 4,
+        "quote_size": 8847,
+        "collateral_size": 14388,
+        "quote_binds_report_data": true,
+        "used_local_tdqe_identity_file": true,
+        "selected_att_key_id_hex": "e86c046e8cc44d958173fc43c1fa4f42",
+        "stages": {
+          "context_create": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "init_quote_size_query": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "init_quote_full": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "quote_size_query": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "report_generation": {
+            "present": true,
+            "nanoseconds": 16003,
+            "cycles": 46094
+          },
+          "quote_generation": {
+            "present": true,
+            "nanoseconds": 48902458,
+            "cycles": 141811732
+          },
+          "collateral_fetch": {
+            "present": true,
+            "nanoseconds": 2261185665,
+            "cycles": 6557416780
+          },
+          "verification": {
+            "present": true,
+            "nanoseconds": 14229683,
+            "cycles": 41264076
+          },
+          "end_to_end": {
+            "present": true,
+            "nanoseconds": 2324519627,
+            "cycles": 6741087650
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "algorithm": "mldsa_44",
+        "att_key_type_expected": 4,
+        "path_mode": "wrapper",
+        "execution_context": "host_sgx_wrapper_prequote",
+        "verifier_mode": "not_applicable_prequote",
+        "measured_iterations": 10,
+        "warmup_iterations": 2,
+        "stop_after_quote_size": true,
+        "qcnl_conf_path": "",
+        "quote_transport": "local host SGX quote-wrapper prequote",
+        "tdqe_path": "/home/ubuntu/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux/libsgx_tdqe.signed.so.1",
+        "local_tdqe_identity_file": ""
+      },
+      "setup_error": "",
+      "raw_file": "/home/ubuntu/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/44_wrapper.json",
+      "reliability": {
+        "attempted_measured_iterations": 10,
+        "successful_measured_iterations": 10,
+        "failed_measured_iterations": 0,
+        "success_rate": 1.0,
+        "failure_stage_counts": {}
+      },
+      "dimensions": {
+        "quote_size_bytes": {
+          "count": 10,
+          "min": 5573,
+          "max": 5573,
+          "mean": 5573.0,
+          "median": 5573.0,
+          "p95": 5573,
+          "stdev": 0.0,
+          "values": [
+            5573,
+            5573,
+            5573,
+            5573,
+            5573,
+            5573,
+            5573,
+            5573,
+            5573,
+            5573
+          ]
+        },
+        "collateral_size_bytes": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        }
+      },
+      "latency_nanoseconds": {
+        "context_create": {
+          "count": 10,
+          "min": 44616,
+          "max": 68158,
+          "mean": 51680.8,
+          "median": 47088.0,
+          "p95": 68158,
+          "stdev": 8497.271465594118,
+          "values": [
+            44701,
+            45497,
+            62451,
+            45365,
+            68158,
+            48679,
+            45263,
+            61938,
+            50140,
+            44616
+          ]
+        },
+        "init_quote_size_query": {
+          "count": 10,
+          "min": 82,
+          "max": 120,
+          "mean": 97.3,
+          "median": 93.0,
+          "p95": 120,
+          "stdev": 12.923234889144435,
+          "values": [
+            85,
+            84,
+            120,
+            92,
+            113,
+            94,
+            82,
+            112,
+            102,
+            89
+          ]
+        },
+        "init_quote_full": {
+          "count": 10,
+          "min": 15221214,
+          "max": 16214110,
+          "mean": 15531877.2,
+          "median": 15420646.0,
+          "p95": 16214110,
+          "stdev": 343880.581931228,
+          "values": [
+            15267570,
+            15308432,
+            16214110,
+            15221214,
+            16144463,
+            15566610,
+            15330331,
+            15511020,
+            15510961,
+            15244061
+          ]
+        },
+        "quote_size_query": {
+          "count": 10,
+          "min": 8126501,
+          "max": 9287549,
+          "mean": 8697104.2,
+          "median": 8642325.5,
+          "p95": 9287549,
+          "stdev": 377135.693206782,
+          "values": [
+            8592046,
+            9287549,
+            8921667,
+            9252381,
+            8126501,
+            8692605,
+            8936194,
+            8439012,
+            8240497,
+            8482590
+          ]
+        },
+        "report_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "collateral_fetch": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "verification": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 23771708,
+          "max": 25198797,
+          "mean": 24281207.1,
+          "median": 24310307.5,
+          "p95": 25198797,
+          "stdev": 416801.43307154067,
+          "values": [
+            23904785,
+            24641915,
+            25198797,
+            24519950,
+            24339686,
+            24308366,
+            24312249,
+            24012543,
+            23802072,
+            23771708
+          ]
+        }
+      },
+      "cycles": {
+        "context_create": {
+          "count": 10,
+          "min": 129210,
+          "max": 197248,
+          "mean": 149660.8,
+          "median": 136400.0,
+          "p95": 197248,
+          "stdev": 24577.84918498769,
+          "values": [
+            129448,
+            131770,
+            180856,
+            131370,
+            197248,
+            141030,
+            131086,
+            179366,
+            145224,
+            129210
+          ]
+        },
+        "init_quote_size_query": {
+          "count": 10,
+          "min": 134,
+          "max": 188,
+          "mean": 157.2,
+          "median": 155.0,
+          "p95": 188,
+          "stdev": 17.6,
+          "values": [
+            138,
+            142,
+            188,
+            154,
+            180,
+            156,
+            134,
+            176,
+            158,
+            146
+          ]
+        },
+        "init_quote_full": {
+          "count": 10,
+          "min": 44139832,
+          "max": 47019940,
+          "mean": 45041239.6,
+          "median": 44718858.0,
+          "p95": 47019940,
+          "stdev": 997453.3216654501,
+          "values": [
+            44273314,
+            44393520,
+            47019940,
+            44139832,
+            46818002,
+            45142188,
+            44456918,
+            44981098,
+            44980798,
+            44206786
+          ]
+        },
+        "quote_size_query": {
+          "count": 10,
+          "min": 23566240,
+          "max": 26933106,
+          "mean": 25220900.4,
+          "median": 25062101.0,
+          "p95": 26933106,
+          "stdev": 1093599.0964918726,
+          "values": [
+            24916246,
+            26933106,
+            25872300,
+            26830782,
+            23566240,
+            25207956,
+            25914256,
+            24472428,
+            23896852,
+            24598838
+          ]
+        },
+        "report_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "collateral_fetch": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "verification": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 68938226,
+          "max": 73076794,
+          "mean": 70415773.2,
+          "median": 70500159.0,
+          "p95": 73076794,
+          "stdev": 1208727.1345696514,
+          "values": [
+            69324156,
+            71461842,
+            73076794,
+            71108120,
+            70585356,
+            70494540,
+            70505778,
+            69636640,
+            69026280,
+            68938226
+          ]
+        }
+      },
+      "stage_share_of_end_to_end": {
+        "context_create": 0.002128427956120847,
+        "init_quote_size_query": 4.007214287134843e-06,
+        "init_quote_full": 0.6396666004302561,
+        "quote_size_query": 0.35818253038993264
+      },
+      "variability": {
+        "quote_generation_cv": null,
+        "quote_generation_p95_over_p50": null,
+        "collateral_fetch_cv": null,
+        "collateral_fetch_p95_over_p50": null
+      },
+      "verification_outputs": {
+        "qv_results": {
+          "UNSET": 10
+        },
+        "qv_ret_codes": {
+          "0": 10
+        },
+        "quote_versions": {},
+        "att_key_types": {
+          "4": 10
+        }
+      },
+      "cold_start_reference": {
+        "iteration": 0,
+        "warmup": true,
+        "success": true,
+        "failure_stage": "",
+        "tee_error": 0,
+        "attest_error": 0,
+        "qv_ret": 0,
+        "qv_result": "UNSET",
+        "collateral_expiration_status": 0,
+        "quote_version": 0,
+        "att_key_type": 4,
+        "quote_size": 5573,
+        "collateral_size": 0,
+        "quote_binds_report_data": false,
+        "used_local_tdqe_identity_file": false,
+        "selected_att_key_id_hex": "",
+        "stages": {
+          "context_create": {
+            "present": true,
+            "nanoseconds": 1737,
+            "cycles": 4884
+          },
+          "init_quote_size_query": {
+            "present": true,
+            "nanoseconds": 150,
+            "cycles": 316
+          },
+          "init_quote_full": {
+            "present": true,
+            "nanoseconds": 15285405,
+            "cycles": 44326382
+          },
+          "quote_size_query": {
+            "present": true,
+            "nanoseconds": 10751653,
+            "cycles": 31178840
+          },
+          "report_generation": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "quote_generation": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "collateral_fetch": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "verification": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "end_to_end": {
+            "present": true,
+            "nanoseconds": 26039637,
+            "cycles": 75515186
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "algorithm": "mldsa_65",
+        "att_key_type_expected": 5,
+        "path_mode": "direct",
+        "execution_context": "guest_tdx_direct_full",
+        "verifier_mode": "local_pcs_tdqe_identity",
+        "measured_iterations": 10,
+        "warmup_iterations": 2,
+        "stop_after_quote_size": false,
+        "qcnl_conf_path": "/root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/sgx_default_qcnl_private_pcs_bench.conf",
+        "quote_transport": "vsock:4051 -> host repo-local QGS",
+        "tdqe_path": "",
+        "local_tdqe_identity_file": "/root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/local_tdqe_identity.json"
+      },
+      "setup_error": "",
+      "raw_file": "/home/ubuntu/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/65_direct.json",
+      "reliability": {
+        "attempted_measured_iterations": 10,
+        "successful_measured_iterations": 10,
+        "failed_measured_iterations": 0,
+        "success_rate": 1.0,
+        "failure_stage_counts": {}
+      },
+      "dimensions": {
+        "quote_size_bytes": {
+          "count": 10,
+          "min": 10376,
+          "max": 10376,
+          "mean": 10376.0,
+          "median": 10376.0,
+          "p95": 10376,
+          "stdev": 0.0,
+          "values": [
+            10376,
+            10376,
+            10376,
+            10376,
+            10376,
+            10376,
+            10376,
+            10376,
+            10376,
+            10376
+          ]
+        },
+        "collateral_size_bytes": {
+          "count": 10,
+          "min": 14388,
+          "max": 14388,
+          "mean": 14388.0,
+          "median": 14388.0,
+          "p95": 14388,
+          "stdev": 0.0,
+          "values": [
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388
+          ]
+        }
+      },
+      "latency_nanoseconds": {
+        "context_create": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_full": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "report_generation": {
+          "count": 10,
+          "min": 20690,
+          "max": 25744,
+          "mean": 23367.8,
+          "median": 23559.5,
+          "p95": 25744,
+          "stdev": 1573.4371166335184,
+          "values": [
+            21468,
+            24058,
+            23515,
+            25163,
+            24816,
+            25744,
+            22641,
+            23604,
+            21979,
+            20690
+          ]
+        },
+        "quote_generation": {
+          "count": 10,
+          "min": 11896503,
+          "max": 14999701,
+          "mean": 12926100.3,
+          "median": 12876861.0,
+          "p95": 14999701,
+          "stdev": 811844.3402937597,
+          "values": [
+            12778585,
+            14999701,
+            13187638,
+            12077823,
+            12836964,
+            13110701,
+            11896503,
+            13115991,
+            12916758,
+            12340339
+          ]
+        },
+        "collateral_fetch": {
+          "count": 10,
+          "min": 1363219905,
+          "max": 1506389059,
+          "mean": 1393168844.7,
+          "median": 1374889667.5,
+          "p95": 1506389059,
+          "stdev": 41977577.0340213,
+          "values": [
+            1404213473,
+            1378162913,
+            1371741851,
+            1363219905,
+            1506389059,
+            1378037484,
+            1363870530,
+            1371685614,
+            1369633695,
+            1424733923
+          ]
+        },
+        "verification": {
+          "count": 10,
+          "min": 12573936,
+          "max": 14230370,
+          "mean": 13461815.9,
+          "median": 13529052.5,
+          "p95": 14230370,
+          "stdev": 420914.5412060386,
+          "values": [
+            13093628,
+            13526596,
+            12573936,
+            13666401,
+            13531509,
+            13149376,
+            13714833,
+            13458586,
+            13672924,
+            14230370
+          ]
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 1389244500,
+          "max": 1533034209,
+          "mean": 1419849527.6,
+          "median": 1401603215.5,
+          "p95": 1533034209,
+          "stdev": 42010186.92646493,
+          "values": [
+            1430391803,
+            1406965310,
+            1397791543,
+            1389244500,
+            1533034209,
+            1404612073,
+            1389814143,
+            1398594358,
+            1396487443,
+            1451559894
+          ]
+        }
+      },
+      "cycles": {
+        "context_create": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_full": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "report_generation": {
+          "count": 10,
+          "min": 59648,
+          "max": 74306,
+          "mean": 67382.8,
+          "median": 67870.0,
+          "p95": 74306,
+          "stdev": 4551.362450959054,
+          "values": [
+            61910,
+            69408,
+            67682,
+            72534,
+            71612,
+            74306,
+            65282,
+            68058,
+            63388,
+            59648
+          ]
+        },
+        "quote_generation": {
+          "count": 10,
+          "min": 34494304,
+          "max": 43494496,
+          "mean": 37480820.4,
+          "median": 37337999.0,
+          "p95": 43494496,
+          "stdev": 2354458.8230923554,
+          "values": [
+            37053158,
+            43494496,
+            38239054,
+            35020838,
+            37221936,
+            38015984,
+            34494304,
+            38031822,
+            37454062,
+            35782550
+          ]
+        },
+        "collateral_fetch": {
+          "count": 10,
+          "min": 3953388184,
+          "max": 4368582200,
+          "mean": 4040239664.4,
+          "median": 3987230660.0,
+          "p95": 4368582200,
+          "stdev": 121736308.08315548,
+          "values": [
+            4072274844,
+            3996725436,
+            3978103632,
+            3953388184,
+            4368582200,
+            3996357688,
+            3955271544,
+            3977935056,
+            3971983360,
+            4131774700
+          ]
+        },
+        "verification": {
+          "count": 10,
+          "min": 36463568,
+          "max": 41267320,
+          "mean": 39038471.6,
+          "median": 39233376.0,
+          "p95": 41267320,
+          "stdev": 1220715.9186424334,
+          "values": [
+            37970706,
+            39226376,
+            36463568,
+            39631886,
+            39240376,
+            38132064,
+            39772410,
+            39029234,
+            39650776,
+            41267320
+          ]
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 4028863102,
+          "max": 4445857592,
+          "mean": 4117617133.2,
+          "median": 4064700218.0,
+          "p95": 4445857592,
+          "stdev": 121831161.30163531,
+          "values": [
+            4148195780,
+            4080256692,
+            4053651140,
+            4028863102,
+            4445857592,
+            4073427130,
+            4030511528,
+            4055973306,
+            4049862056,
+            4209573006
+          ]
+        }
+      },
+      "stage_share_of_end_to_end": {
+        "report_generation": 1.6457941173174215e-05,
+        "quote_generation": 0.009103852238377152,
+        "collateral_fetch": 0.9812087954523613,
+        "verification": 0.009481156727047533
+      },
+      "variability": {
+        "quote_generation_cv": 0.06280659452207404,
+        "quote_generation_p95_over_p50": 1.1648569476676032,
+        "collateral_fetch_cv": 0.03013100471900131,
+        "collateral_fetch_p95_over_p50": 1.0956435957069262
+      },
+      "verification_outputs": {
+        "qv_results": {
+          "OK": 10
+        },
+        "qv_ret_codes": {
+          "0": 10
+        },
+        "quote_versions": {
+          "4": 10
+        },
+        "att_key_types": {
+          "5": 10
+        }
+      },
+      "cold_start_reference": {
+        "iteration": 0,
+        "warmup": true,
+        "success": true,
+        "failure_stage": "",
+        "tee_error": 0,
+        "attest_error": 0,
+        "qv_ret": 0,
+        "qv_result": "OK",
+        "collateral_expiration_status": 0,
+        "quote_version": 4,
+        "att_key_type": 5,
+        "quote_size": 10376,
+        "collateral_size": 14388,
+        "quote_binds_report_data": true,
+        "used_local_tdqe_identity_file": true,
+        "selected_att_key_id_hex": "e86c046e8cc44d958173fc43c1fa4f40",
+        "stages": {
+          "context_create": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "init_quote_size_query": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "init_quote_full": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "quote_size_query": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "report_generation": {
+            "present": true,
+            "nanoseconds": 22003,
+            "cycles": 63344
+          },
+          "quote_generation": {
+            "present": true,
+            "nanoseconds": 35538679,
+            "cycles": 103058734
+          },
+          "collateral_fetch": {
+            "present": true,
+            "nanoseconds": 1386385568,
+            "cycles": 4020574768
+          },
+          "verification": {
+            "present": true,
+            "nanoseconds": 13747043,
+            "cycles": 39865150
+          },
+          "end_to_end": {
+            "present": true,
+            "nanoseconds": 1436043345,
+            "cycles": 4164588106
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "algorithm": "mldsa_65",
+        "att_key_type_expected": 5,
+        "path_mode": "wrapper",
+        "execution_context": "host_sgx_wrapper_prequote",
+        "verifier_mode": "not_applicable_prequote",
+        "measured_iterations": 10,
+        "warmup_iterations": 2,
+        "stop_after_quote_size": true,
+        "qcnl_conf_path": "",
+        "quote_transport": "local host SGX quote-wrapper prequote",
+        "tdqe_path": "/home/ubuntu/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux/libsgx_tdqe.signed.so.1",
+        "local_tdqe_identity_file": ""
+      },
+      "setup_error": "",
+      "raw_file": "/home/ubuntu/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/65_wrapper.json",
+      "reliability": {
+        "attempted_measured_iterations": 10,
+        "successful_measured_iterations": 10,
+        "failed_measured_iterations": 0,
+        "success_rate": 1.0,
+        "failure_stage_counts": {}
+      },
+      "dimensions": {
+        "quote_size_bytes": {
+          "count": 10,
+          "min": 7102,
+          "max": 7102,
+          "mean": 7102.0,
+          "median": 7102.0,
+          "p95": 7102,
+          "stdev": 0.0,
+          "values": [
+            7102,
+            7102,
+            7102,
+            7102,
+            7102,
+            7102,
+            7102,
+            7102,
+            7102,
+            7102
+          ]
+        },
+        "collateral_size_bytes": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        }
+      },
+      "latency_nanoseconds": {
+        "context_create": {
+          "count": 10,
+          "min": 62721,
+          "max": 88617,
+          "mean": 66840.3,
+          "median": 64138.5,
+          "p95": 88617,
+          "stdev": 7353.540726072033,
+          "values": [
+            67002,
+            62721,
+            64498,
+            63898,
+            64074,
+            63809,
+            63529,
+            66052,
+            64203,
+            88617
+          ]
+        },
+        "init_quote_size_query": {
+          "count": 10,
+          "min": 107,
+          "max": 163,
+          "mean": 123.1,
+          "median": 118.5,
+          "p95": 163,
+          "stdev": 14.194717327231283,
+          "values": [
+            117,
+            119,
+            107,
+            121,
+            118,
+            118,
+            117,
+            127,
+            124,
+            163
+          ]
+        },
+        "init_quote_full": {
+          "count": 10,
+          "min": 21087114,
+          "max": 21751393,
+          "mean": 21184149.8,
+          "median": 21123517.5,
+          "p95": 21751393,
+          "stdev": 190849.17682756716,
+          "values": [
+            21162161,
+            21087114,
+            21107327,
+            21148068,
+            21091515,
+            21124074,
+            21155544,
+            21091341,
+            21122961,
+            21751393
+          ]
+        },
+        "quote_size_query": {
+          "count": 10,
+          "min": 8843397,
+          "max": 10266525,
+          "mean": 9558486.5,
+          "median": 9443780.0,
+          "p95": 10266525,
+          "stdev": 474004.2953694091,
+          "values": [
+            9478757,
+            9165392,
+            9337210,
+            9547206,
+            9408803,
+            10133050,
+            8843397,
+            10263639,
+            10266525,
+            9140886
+          ]
+        },
+        "report_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "collateral_fetch": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "verification": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 30063052,
+          "max": 31454279,
+          "mean": 30810077.6,
+          "median": 30734143.5,
+          "p95": 31454279,
+          "stdev": 452272.54941488546,
+          "values": [
+            30708511,
+            30315820,
+            30509597,
+            30759776,
+            30564976,
+            31321495,
+            30063052,
+            31421612,
+            31454279,
+            30981658
+          ]
+        }
+      },
+      "cycles": {
+        "context_create": {
+          "count": 10,
+          "min": 181638,
+          "max": 256730,
+          "mean": 193597.0,
+          "median": 185778.0,
+          "p95": 256730,
+          "stdev": 21315.250976706797,
+          "values": [
+            193948,
+            181638,
+            186796,
+            185104,
+            185628,
+            184862,
+            183982,
+            191354,
+            185928,
+            256730
+          ]
+        },
+        "init_quote_size_query": {
+          "count": 10,
+          "min": 172,
+          "max": 242,
+          "mean": 193.2,
+          "median": 187.0,
+          "p95": 242,
+          "stdev": 18.24719156473127,
+          "values": [
+            184,
+            188,
+            172,
+            192,
+            184,
+            186,
+            182,
+            202,
+            200,
+            242
+          ]
+        },
+        "init_quote_full": {
+          "count": 10,
+          "min": 61151500,
+          "max": 63077966,
+          "mean": 61432917.2,
+          "median": 61257044.0,
+          "p95": 63077966,
+          "stdev": 553475.0710326167,
+          "values": [
+            61369088,
+            61151500,
+            61210218,
+            61328300,
+            61164394,
+            61258676,
+            61349950,
+            61163668,
+            61255412,
+            63077966
+          ]
+        },
+        "quote_size_query": {
+          "count": 10,
+          "min": 25645118,
+          "max": 29772138,
+          "mean": 27718855.8,
+          "median": 27386237.0,
+          "p95": 29772138,
+          "stdev": 1374612.4426349269,
+          "values": [
+            27487690,
+            26578844,
+            27077104,
+            27686184,
+            27284784,
+            29385122,
+            25645118,
+            29763782,
+            29772138,
+            26507792
+          ]
+        },
+        "report_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "collateral_fetch": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "verification": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 87183180,
+          "max": 91217718,
+          "mean": 89349553.8,
+          "median": 89129347.0,
+          "p95": 91217718,
+          "stdev": 1311597.2035415294,
+          "values": [
+            89055030,
+            87916178,
+            88478172,
+            89203664,
+            88638738,
+            90832692,
+            87183180,
+            91123028,
+            91217718,
+            89847138
+          ]
+        }
+      },
+      "stage_share_of_end_to_end": {
+        "context_create": 0.0021694297842339743,
+        "init_quote_size_query": 3.995445957591486e-06,
+        "init_quote_full": 0.6875721014087935,
+        "quote_size_query": 0.3102389622024191
+      },
+      "variability": {
+        "quote_generation_cv": null,
+        "quote_generation_p95_over_p50": null,
+        "collateral_fetch_cv": null,
+        "collateral_fetch_p95_over_p50": null
+      },
+      "verification_outputs": {
+        "qv_results": {
+          "UNSET": 10
+        },
+        "qv_ret_codes": {
+          "0": 10
+        },
+        "quote_versions": {},
+        "att_key_types": {
+          "5": 10
+        }
+      },
+      "cold_start_reference": {
+        "iteration": 0,
+        "warmup": true,
+        "success": true,
+        "failure_stage": "",
+        "tee_error": 0,
+        "attest_error": 0,
+        "qv_ret": 0,
+        "qv_result": "UNSET",
+        "collateral_expiration_status": 0,
+        "quote_version": 0,
+        "att_key_type": 5,
+        "quote_size": 7102,
+        "collateral_size": 0,
+        "quote_binds_report_data": false,
+        "used_local_tdqe_identity_file": false,
+        "selected_att_key_id_hex": "",
+        "stages": {
+          "context_create": {
+            "present": true,
+            "nanoseconds": 2186,
+            "cycles": 6146
+          },
+          "init_quote_size_query": {
+            "present": true,
+            "nanoseconds": 96,
+            "cycles": 124
+          },
+          "init_quote_full": {
+            "present": true,
+            "nanoseconds": 21177747,
+            "cycles": 61414212
+          },
+          "quote_size_query": {
+            "present": true,
+            "nanoseconds": 11472519,
+            "cycles": 33269624
+          },
+          "report_generation": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "quote_generation": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "collateral_fetch": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "verification": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "end_to_end": {
+            "present": true,
+            "nanoseconds": 32653110,
+            "cycles": 94694286
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "algorithm": "mldsa_87",
+        "att_key_type_expected": 6,
+        "path_mode": "direct",
+        "execution_context": "guest_tdx_direct_full",
+        "verifier_mode": "local_pcs_tdqe_identity",
+        "measured_iterations": 10,
+        "warmup_iterations": 2,
+        "stop_after_quote_size": false,
+        "qcnl_conf_path": "/root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/sgx_default_qcnl_private_pcs_bench.conf",
+        "quote_transport": "vsock:4051 -> host repo-local QGS",
+        "tdqe_path": "",
+        "local_tdqe_identity_file": "/root/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/local_tdqe_identity.json"
+      },
+      "setup_error": "",
+      "raw_file": "/home/ubuntu/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/87_direct.json",
+      "reliability": {
+        "attempted_measured_iterations": 10,
+        "successful_measured_iterations": 10,
+        "failed_measured_iterations": 0,
+        "success_rate": 1.0,
+        "failure_stage_counts": {}
+      },
+      "dimensions": {
+        "quote_size_bytes": {
+          "count": 10,
+          "min": 12334,
+          "max": 12334,
+          "mean": 12334.0,
+          "median": 12334.0,
+          "p95": 12334,
+          "stdev": 0.0,
+          "values": [
+            12334,
+            12334,
+            12334,
+            12334,
+            12334,
+            12334,
+            12334,
+            12334,
+            12334,
+            12334
+          ]
+        },
+        "collateral_size_bytes": {
+          "count": 10,
+          "min": 14388,
+          "max": 14388,
+          "mean": 14388.0,
+          "median": 14388.0,
+          "p95": 14388,
+          "stdev": 0.0,
+          "values": [
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388,
+            14388
+          ]
+        }
+      },
+      "latency_nanoseconds": {
+        "context_create": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_full": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "report_generation": {
+          "count": 10,
+          "min": 21771,
+          "max": 22839,
+          "mean": 22212.7,
+          "median": 22195.5,
+          "p95": 22839,
+          "stdev": 353.95961634062155,
+          "values": [
+            22229,
+            22839,
+            22283,
+            22166,
+            21771,
+            22039,
+            21802,
+            22225,
+            21940,
+            22833
+          ]
+        },
+        "quote_generation": {
+          "count": 10,
+          "min": 12520942,
+          "max": 14507844,
+          "mean": 13385695.1,
+          "median": 13557748.5,
+          "p95": 14507844,
+          "stdev": 657638.788453426,
+          "values": [
+            12621508,
+            13599060,
+            13821267,
+            13516437,
+            14507844,
+            13951787,
+            12937267,
+            13855151,
+            12525688,
+            12520942
+          ]
+        },
+        "collateral_fetch": {
+          "count": 10,
+          "min": 1338188714,
+          "max": 1498838238,
+          "mean": 1393246825.0,
+          "median": 1370616124.0,
+          "p95": 1498838238,
+          "stdev": 54534035.228287354,
+          "values": [
+            1368551072,
+            1360422030,
+            1372681176,
+            1498838238,
+            1364743531,
+            1494416914,
+            1384942460,
+            1346083437,
+            1338188714,
+            1403600678
+          ]
+        },
+        "verification": {
+          "count": 10,
+          "min": 11605087,
+          "max": 14627172,
+          "mean": 13598080.3,
+          "median": 13563520.5,
+          "p95": 14627172,
+          "stdev": 815814.6941054752,
+          "values": [
+            13802662,
+            13568955,
+            13523902,
+            13116757,
+            13386663,
+            14509176,
+            14627172,
+            13558086,
+            11605087,
+            14282343
+          ]
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 1362621878,
+          "max": 1525744833,
+          "mean": 1420497508.5,
+          "median": 1397743801.0,
+          "p95": 1525744833,
+          "stdev": 54940423.446368836,
+          "values": [
+            1395197866,
+            1387853323,
+            1400289736,
+            1525744833,
+            1392914615,
+            1523141506,
+            1412785456,
+            1373760244,
+            1362621878,
+            1430665628
+          ]
+        }
+      },
+      "cycles": {
+        "context_create": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_full": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "report_generation": {
+          "count": 10,
+          "min": 62714,
+          "max": 65866,
+          "mean": 64030.6,
+          "median": 64004.0,
+          "p95": 65866,
+          "stdev": 1029.1386884186213,
+          "values": [
+            64106,
+            65866,
+            64192,
+            63916,
+            62714,
+            63458,
+            62872,
+            64092,
+            63272,
+            65818
+          ]
+        },
+        "quote_generation": {
+          "count": 10,
+          "min": 36306144,
+          "max": 42068320,
+          "mean": 38814027.0,
+          "median": 39312891.0,
+          "p95": 42068320,
+          "stdev": 1907136.2934364707,
+          "values": [
+            36598384,
+            39432682,
+            40076856,
+            39193100,
+            42068320,
+            40455896,
+            37513266,
+            40175586,
+            36320036,
+            36306144
+          ]
+        },
+        "collateral_fetch": {
+          "count": 10,
+          "min": 3880781278,
+          "max": 4346672596,
+          "mean": 4040453061.4,
+          "median": 3974826410.0,
+          "p95": 4346672596,
+          "stdev": 158150338.7306435,
+          "values": [
+            3968838464,
+            3945263336,
+            3980814356,
+            4346672596,
+            3957792964,
+            4333848804,
+            4016369144,
+            3903675056,
+            3880781278,
+            4070474616
+          ]
+        },
+        "verification": {
+          "count": 10,
+          "min": 33653494,
+          "max": 42417796,
+          "mean": 39433468.8,
+          "median": 39333341.0,
+          "p95": 42417796,
+          "stdev": 2365900.397951393,
+          "values": [
+            40026848,
+            39349124,
+            39218462,
+            38037722,
+            38820436,
+            42075532,
+            42417796,
+            39317558,
+            33653494,
+            41417716
+          ]
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 3951639334,
+          "max": 4424705102,
+          "mean": 4119483401.4,
+          "median": 4053500257.0,
+          "p95": 4424705102,
+          "stdev": 159328940.1564026,
+          "values": [
+            4046117922,
+            4024817610,
+            4060882592,
+            4424705102,
+            4039492602,
+            4417153314,
+            4097116762,
+            3983941632,
+            3951639334,
+            4148967144
+          ]
+        }
+      },
+      "stage_share_of_end_to_end": {
+        "report_generation": 1.5637267835447247e-05,
+        "quote_generation": 0.009423244335102611,
+        "collateral_fetch": 0.9808160990519611,
+        "verification": 0.009572758993684642
+      },
+      "variability": {
+        "quote_generation_cv": 0.04912996923509979,
+        "quote_generation_p95_over_p50": 1.070077675507847,
+        "collateral_fetch_cv": 0.03914168993587145,
+        "collateral_fetch_p95_over_p50": 1.0935507117965293
+      },
+      "verification_outputs": {
+        "qv_results": {
+          "OK": 10
+        },
+        "qv_ret_codes": {
+          "0": 10
+        },
+        "quote_versions": {
+          "4": 10
+        },
+        "att_key_types": {
+          "6": 10
+        }
+      },
+      "cold_start_reference": {
+        "iteration": 0,
+        "warmup": true,
+        "success": true,
+        "failure_stage": "",
+        "tee_error": 0,
+        "attest_error": 0,
+        "qv_ret": 0,
+        "qv_result": "OK",
+        "collateral_expiration_status": 0,
+        "quote_version": 4,
+        "att_key_type": 6,
+        "quote_size": 12334,
+        "collateral_size": 14388,
+        "quote_binds_report_data": true,
+        "used_local_tdqe_identity_file": true,
+        "selected_att_key_id_hex": "e86c046e8cc44d958173fc43c1fa4f41",
+        "stages": {
+          "context_create": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "init_quote_size_query": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "init_quote_full": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "quote_size_query": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "report_generation": {
+            "present": true,
+            "nanoseconds": 51490,
+            "cycles": 148756
+          },
+          "quote_generation": {
+            "present": true,
+            "nanoseconds": 36604436,
+            "cycles": 106150026
+          },
+          "collateral_fetch": {
+            "present": true,
+            "nanoseconds": 1370577483,
+            "cycles": 3974718624
+          },
+          "verification": {
+            "present": true,
+            "nanoseconds": 12614462,
+            "cycles": 36581154
+          },
+          "end_to_end": {
+            "present": true,
+            "nanoseconds": 1420097478,
+            "cycles": 4118329578
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "algorithm": "mldsa_87",
+        "att_key_type_expected": 6,
+        "path_mode": "wrapper",
+        "execution_context": "host_sgx_wrapper_prequote",
+        "verifier_mode": "not_applicable_prequote",
+        "measured_iterations": 10,
+        "warmup_iterations": 2,
+        "stop_after_quote_size": true,
+        "qcnl_conf_path": "",
+        "quote_transport": "local host SGX quote-wrapper prequote",
+        "tdqe_path": "/home/ubuntu/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux/libsgx_tdqe.signed.so.1",
+        "local_tdqe_identity_file": ""
+      },
+      "setup_error": "",
+      "raw_file": "/home/ubuntu/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/87_wrapper.json",
+      "reliability": {
+        "attempted_measured_iterations": 10,
+        "successful_measured_iterations": 10,
+        "failed_measured_iterations": 0,
+        "success_rate": 1.0,
+        "failure_stage_counts": {}
+      },
+      "dimensions": {
+        "quote_size_bytes": {
+          "count": 10,
+          "min": 9060,
+          "max": 9060,
+          "mean": 9060.0,
+          "median": 9060.0,
+          "p95": 9060,
+          "stdev": 0.0,
+          "values": [
+            9060,
+            9060,
+            9060,
+            9060,
+            9060,
+            9060,
+            9060,
+            9060,
+            9060,
+            9060
+          ]
+        },
+        "collateral_size_bytes": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        }
+      },
+      "latency_nanoseconds": {
+        "context_create": {
+          "count": 10,
+          "min": 61789,
+          "max": 64269,
+          "mean": 62818.8,
+          "median": 62568.0,
+          "p95": 64269,
+          "stdev": 768.0902030360756,
+          "values": [
+            62787,
+            64269,
+            64071,
+            63232,
+            62745,
+            61789,
+            62269,
+            62391,
+            62356,
+            62279
+          ]
+        },
+        "init_quote_size_query": {
+          "count": 10,
+          "min": 104,
+          "max": 121,
+          "mean": 110.5,
+          "median": 109.5,
+          "p95": 121,
+          "stdev": 4.652956049652737,
+          "values": [
+            104,
+            121,
+            109,
+            107,
+            113,
+            110,
+            107,
+            114,
+            113,
+            107
+          ]
+        },
+        "init_quote_full": {
+          "count": 10,
+          "min": 21216459,
+          "max": 21365869,
+          "mean": 21305071.4,
+          "median": 21321719.5,
+          "p95": 21365869,
+          "stdev": 42265.19923577789,
+          "values": [
+            21365869,
+            21293731,
+            21216459,
+            21335973,
+            21322548,
+            21294142,
+            21245683,
+            21320891,
+            21326225,
+            21329193
+          ]
+        },
+        "quote_size_query": {
+          "count": 10,
+          "min": 8672898,
+          "max": 9836946,
+          "mean": 9165416.2,
+          "median": 9132397.0,
+          "p95": 9836946,
+          "stdev": 354117.8143431364,
+          "values": [
+            9329843,
+            9011557,
+            9836946,
+            8939390,
+            9682269,
+            8731826,
+            9110218,
+            9154576,
+            8672898,
+            9184639
+          ]
+        },
+        "report_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "collateral_fetch": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "verification": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 30062092,
+          "max": 31118094,
+          "mean": 30533910.3,
+          "median": 30478604.0,
+          "p95": 31118094,
+          "stdev": 343274.9248960809,
+          "values": [
+            30759098,
+            30370169,
+            31118094,
+            30339200,
+            31068163,
+            30088355,
+            30418751,
+            30538457,
+            30062092,
+            30576724
+          ]
+        }
+      },
+      "cycles": {
+        "context_create": {
+          "count": 10,
+          "min": 178922,
+          "max": 186144,
+          "mean": 181956.4,
+          "median": 181224.0,
+          "p95": 186144,
+          "stdev": 2226.784372138443,
+          "values": [
+            181846,
+            186144,
+            185620,
+            183122,
+            181706,
+            178922,
+            180392,
+            180742,
+            180644,
+            180426
+          ]
+        },
+        "init_quote_size_query": {
+          "count": 10,
+          "min": 156,
+          "max": 186,
+          "mean": 165.4,
+          "median": 165.0,
+          "p95": 186,
+          "stdev": 8.85663593019381,
+          "values": [
+            156,
+            186,
+            166,
+            158,
+            172,
+            164,
+            158,
+            170,
+            168,
+            156
+          ]
+        },
+        "init_quote_full": {
+          "count": 10,
+          "min": 61526618,
+          "max": 61959892,
+          "mean": 61783572.8,
+          "median": 61831912.0,
+          "p95": 61959892,
+          "stdev": 122574.77321602516,
+          "values": [
+            61959892,
+            61750612,
+            61526618,
+            61873172,
+            61834282,
+            61751870,
+            61611314,
+            61829542,
+            61844908,
+            61853518
+          ]
+        },
+        "quote_size_query": {
+          "count": 10,
+          "min": 25150748,
+          "max": 28526470,
+          "mean": 26579020.8,
+          "median": 26483242.0,
+          "p95": 28526470,
+          "stdev": 1026970.1770280186,
+          "values": [
+            27055960,
+            26132808,
+            28526470,
+            25923388,
+            28077956,
+            25321568,
+            26418942,
+            26547542,
+            25150748,
+            26634826
+          ]
+        },
+        "report_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "collateral_fetch": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "verification": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 87180392,
+          "max": 90242820,
+          "mean": 88548676.0,
+          "median": 88388278.0,
+          "p95": 90242820,
+          "stdev": 995504.249488469,
+          "values": [
+            89201728,
+            88073826,
+            90242820,
+            87984016,
+            90098024,
+            87256560,
+            88214716,
+            88561840,
+            87180392,
+            88672838
+          ]
+        }
+      },
+      "stage_share_of_end_to_end": {
+        "context_create": 0.002057345403284295,
+        "init_quote_size_query": 3.618927248895468e-06,
+        "init_quote_full": 0.6977511622545114,
+        "quote_size_query": 0.3001717143316557
+      },
+      "variability": {
+        "quote_generation_cv": null,
+        "quote_generation_p95_over_p50": null,
+        "collateral_fetch_cv": null,
+        "collateral_fetch_p95_over_p50": null
+      },
+      "verification_outputs": {
+        "qv_results": {
+          "UNSET": 10
+        },
+        "qv_ret_codes": {
+          "0": 10
+        },
+        "quote_versions": {},
+        "att_key_types": {
+          "6": 10
+        }
+      },
+      "cold_start_reference": {
+        "iteration": 0,
+        "warmup": true,
+        "success": true,
+        "failure_stage": "",
+        "tee_error": 0,
+        "attest_error": 0,
+        "qv_ret": 0,
+        "qv_result": "UNSET",
+        "collateral_expiration_status": 0,
+        "quote_version": 0,
+        "att_key_type": 6,
+        "quote_size": 9060,
+        "collateral_size": 0,
+        "quote_binds_report_data": false,
+        "used_local_tdqe_identity_file": false,
+        "selected_att_key_id_hex": "",
+        "stages": {
+          "context_create": {
+            "present": true,
+            "nanoseconds": 2150,
+            "cycles": 6002
+          },
+          "init_quote_size_query": {
+            "present": true,
+            "nanoseconds": 107,
+            "cycles": 138
+          },
+          "init_quote_full": {
+            "present": true,
+            "nanoseconds": 21423562,
+            "cycles": 62127044
+          },
+          "quote_size_query": {
+            "present": true,
+            "nanoseconds": 11144369,
+            "cycles": 32317696
+          },
+          "report_generation": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "quote_generation": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "collateral_fetch": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "verification": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "end_to_end": {
+            "present": true,
+            "nanoseconds": 32570779,
+            "cycles": 94455522
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "algorithm": "ecdsa_p256",
+        "att_key_type_expected": 2,
+        "path_mode": "direct",
+        "execution_context": "guest_tdx_direct_full",
+        "verifier_mode": "stock_dcap",
+        "measured_iterations": 10,
+        "warmup_iterations": 2,
+        "stop_after_quote_size": false,
+        "qcnl_conf_path": "/root/tdx-pq-attestation/tdx_tests/sgx_default_qcnl_ecdsa_test.conf",
+        "quote_transport": "vsock:4050 -> host qgsd",
+        "tdqe_path": "",
+        "local_tdqe_identity_file": ""
+      },
+      "setup_error": "",
+      "raw_file": "/home/ubuntu/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/ecdsa_direct.json",
+      "reliability": {
+        "attempted_measured_iterations": 10,
+        "successful_measured_iterations": 10,
+        "failed_measured_iterations": 0,
+        "success_rate": 1.0,
+        "failure_stage_counts": {}
+      },
+      "dimensions": {
+        "quote_size_bytes": {
+          "count": 10,
+          "min": 5006,
+          "max": 5006,
+          "mean": 5006.0,
+          "median": 5006.0,
+          "p95": 5006,
+          "stdev": 0.0,
+          "values": [
+            5006,
+            5006,
+            5006,
+            5006,
+            5006,
+            5006,
+            5006,
+            5006,
+            5006,
+            5006
+          ]
+        },
+        "collateral_size_bytes": {
+          "count": 10,
+          "min": 14355,
+          "max": 14355,
+          "mean": 14355.0,
+          "median": 14355.0,
+          "p95": 14355,
+          "stdev": 0.0,
+          "values": [
+            14355,
+            14355,
+            14355,
+            14355,
+            14355,
+            14355,
+            14355,
+            14355,
+            14355,
+            14355
+          ]
+        }
+      },
+      "latency_nanoseconds": {
+        "context_create": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_full": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "report_generation": {
+          "count": 10,
+          "min": 18379,
+          "max": 19518,
+          "mean": 19031.7,
+          "median": 19044.0,
+          "p95": 19518,
+          "stdev": 306.81461829580417,
+          "values": [
+            18379,
+            19158,
+            19518,
+            19365,
+            19219,
+            19023,
+            18734,
+            18980,
+            18876,
+            19065
+          ]
+        },
+        "quote_generation": {
+          "count": 10,
+          "min": 3487487,
+          "max": 4704908,
+          "mean": 4068358.0,
+          "median": 4058769.5,
+          "p95": 4704908,
+          "stdev": 352287.5753003503,
+          "values": [
+            4181059,
+            4122684,
+            3994855,
+            4230855,
+            3958504,
+            3487487,
+            3914572,
+            4704908,
+            3589287,
+            4499369
+          ]
+        },
+        "collateral_fetch": {
+          "count": 10,
+          "min": 989864,
+          "max": 1099502,
+          "mean": 1022426.7,
+          "median": 1018355.0,
+          "p95": 1099502,
+          "stdev": 30996.498850837976,
+          "values": [
+            1041201,
+            1099502,
+            992556,
+            989864,
+            1001571,
+            1026756,
+            1009954,
+            1033278,
+            998690,
+            1030895
+          ]
+        },
+        "verification": {
+          "count": 10,
+          "min": 11756319,
+          "max": 11832488,
+          "mean": 11782896.0,
+          "median": 11778377.0,
+          "p95": 11832488,
+          "stdev": 21404.149107124067,
+          "values": [
+            11787494,
+            11760619,
+            11790405,
+            11832488,
+            11779236,
+            11777518,
+            11773043,
+            11767423,
+            11804415,
+            11756319
+          ]
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 16314440,
+          "max": 17528314,
+          "mean": 16896502.7,
+          "median": 16903504.5,
+          "p95": 17528314,
+          "stdev": 355129.7098137665,
+          "values": [
+            17032083,
+            17005837,
+            16801172,
+            17076271,
+            16762288,
+            16314440,
+            16720058,
+            17528314,
+            16415091,
+            17309473
+          ]
+        }
+      },
+      "cycles": {
+        "context_create": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "init_quote_full": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_size_query": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "report_generation": {
+          "count": 10,
+          "min": 52902,
+          "max": 56232,
+          "mean": 54782.6,
+          "median": 54768.0,
+          "p95": 56232,
+          "stdev": 884.3420379016255,
+          "values": [
+            52902,
+            55196,
+            56232,
+            55746,
+            55236,
+            54760,
+            53954,
+            54662,
+            54362,
+            54776
+          ]
+        },
+        "quote_generation": {
+          "count": 10,
+          "min": 10111452,
+          "max": 13641850,
+          "mean": 11795844.6,
+          "median": 11768138.0,
+          "p95": 13641850,
+          "stdev": 1021626.1212381171,
+          "values": [
+            12122692,
+            11953536,
+            11582740,
+            12267092,
+            11477118,
+            10111452,
+            11349870,
+            13641850,
+            10406412,
+            13045684
+          ]
+        },
+        "collateral_fetch": {
+          "count": 10,
+          "min": 2869848,
+          "max": 3187714,
+          "mean": 2964195.6,
+          "median": 2952345.0,
+          "p95": 3187714,
+          "stdev": 89902.29386083539,
+          "values": [
+            3018828,
+            3187714,
+            2877460,
+            2869848,
+            2903802,
+            2976690,
+            2928000,
+            2995640,
+            2895266,
+            2988708
+          ]
+        },
+        "verification": {
+          "count": 10,
+          "min": 34092224,
+          "max": 34313102,
+          "mean": 34169139.0,
+          "median": 34156070.0,
+          "p95": 34313102,
+          "stdev": 62127.97026299829,
+          "values": [
+            34182240,
+            34103972,
+            34191060,
+            34313102,
+            34158634,
+            34153506,
+            34140618,
+            34124478,
+            34231556,
+            34092224
+          ]
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 47311504,
+          "max": 50831742,
+          "mean": 48999474.2,
+          "median": 49019776.0,
+          "p95": 50831742,
+          "stdev": 1029876.5196991143,
+          "values": [
+            49392656,
+            49316534,
+            48723018,
+            49520802,
+            48610232,
+            47311504,
+            48487784,
+            50831742,
+            47603384,
+            50197086
+          ]
+        }
+      },
+      "stage_share_of_end_to_end": {
+        "report_generation": 0.0011263691864470866,
+        "quote_generation": 0.2407810700376475,
+        "collateral_fetch": 0.06051114352794439,
+        "verification": 0.6973570927195485
+      },
+      "variability": {
+        "quote_generation_cv": 0.0865920784995692,
+        "quote_generation_p95_over_p50": 1.1591956626263207,
+        "collateral_fetch_cv": 0.030316597611191078,
+        "collateral_fetch_p95_over_p50": 1.0796843929670892
+      },
+      "verification_outputs": {
+        "qv_results": {
+          "OK": 10
+        },
+        "qv_ret_codes": {
+          "0": 10
+        },
+        "quote_versions": {
+          "4": 10
+        },
+        "att_key_types": {
+          "2": 10
+        }
+      },
+      "cold_start_reference": {
+        "iteration": 0,
+        "warmup": true,
+        "success": true,
+        "failure_stage": "",
+        "tee_error": 0,
+        "attest_error": 0,
+        "qv_ret": 0,
+        "qv_result": "OK",
+        "collateral_expiration_status": 0,
+        "quote_version": 4,
+        "att_key_type": 2,
+        "quote_size": 5006,
+        "collateral_size": 14355,
+        "quote_binds_report_data": true,
+        "used_local_tdqe_identity_file": false,
+        "selected_att_key_id_hex": "e86c046e8cc44d958173fc43c1fa4f3f",
+        "stages": {
+          "context_create": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "init_quote_size_query": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "init_quote_full": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "quote_size_query": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "report_generation": {
+            "present": true,
+            "nanoseconds": 28048,
+            "cycles": 80874
+          },
+          "quote_generation": {
+            "present": true,
+            "nanoseconds": 4034467,
+            "cycles": 11697304
+          },
+          "collateral_fetch": {
+            "present": true,
+            "nanoseconds": 6226438,
+            "cycles": 18055232
+          },
+          "verification": {
+            "present": true,
+            "nanoseconds": 12288573,
+            "cycles": 35635406
+          },
+          "end_to_end": {
+            "present": true,
+            "nanoseconds": 22586855,
+            "cycles": 65501290
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "algorithm": "ecdsa_p256",
+        "att_key_type_expected": 2,
+        "path_mode": "wrapper",
+        "execution_context": "host_sgx_wrapper_prequote",
+        "verifier_mode": "not_applicable_prequote",
+        "measured_iterations": 10,
+        "warmup_iterations": 2,
+        "stop_after_quote_size": true,
+        "qcnl_conf_path": "/home/ubuntu/tdx-pq-attestation/tdx_tests/sgx_default_qcnl_wrapper_ecdsa_test.conf",
+        "quote_transport": "local host SGX quote-wrapper prequote",
+        "tdqe_path": "/home/ubuntu/tdx-pq-attestation/confidential-computing.tee.dcap-pq/ae/tdqe/linux/libsgx_tdqe.signed.so.1",
+        "local_tdqe_identity_file": ""
+      },
+      "setup_error": "",
+      "raw_file": "/home/ubuntu/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks/raw/ecdsa_wrapper.json",
+      "reliability": {
+        "attempted_measured_iterations": 10,
+        "successful_measured_iterations": 10,
+        "failed_measured_iterations": 0,
+        "success_rate": 1.0,
+        "failure_stage_counts": {}
+      },
+      "dimensions": {
+        "quote_size_bytes": {
+          "count": 10,
+          "min": 5243,
+          "max": 5243,
+          "mean": 5243.0,
+          "median": 5243.0,
+          "p95": 5243,
+          "stdev": 0.0,
+          "values": [
+            5243,
+            5243,
+            5243,
+            5243,
+            5243,
+            5243,
+            5243,
+            5243,
+            5243,
+            5243
+          ]
+        },
+        "collateral_size_bytes": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        }
+      },
+      "latency_nanoseconds": {
+        "context_create": {
+          "count": 10,
+          "min": 35448,
+          "max": 37870,
+          "mean": 36492.2,
+          "median": 36432.0,
+          "p95": 37870,
+          "stdev": 664.0963484314607,
+          "values": [
+            37319,
+            36055,
+            35928,
+            35448,
+            36103,
+            36372,
+            36691,
+            36492,
+            36644,
+            37870
+          ]
+        },
+        "init_quote_size_query": {
+          "count": 10,
+          "min": 83,
+          "max": 301,
+          "mean": 149.7,
+          "median": 132.5,
+          "p95": 301,
+          "stdev": 65.96673404072692,
+          "values": [
+            83,
+            90,
+            114,
+            202,
+            301,
+            113,
+            83,
+            158,
+            202,
+            151
+          ]
+        },
+        "init_quote_full": {
+          "count": 10,
+          "min": 22531241,
+          "max": 22663632,
+          "mean": 22592695.9,
+          "median": 22600152.5,
+          "p95": 22663632,
+          "stdev": 42181.2271856806,
+          "values": [
+            22558041,
+            22610871,
+            22539281,
+            22663632,
+            22558588,
+            22641082,
+            22531241,
+            22598044,
+            22623918,
+            22602261
+          ]
+        },
+        "quote_size_query": {
+          "count": 10,
+          "min": 77755,
+          "max": 81345,
+          "mean": 79830.2,
+          "median": 80126.0,
+          "p95": 81345,
+          "stdev": 1120.2022853038643,
+          "values": [
+            80349,
+            81345,
+            78283,
+            80303,
+            78960,
+            79594,
+            77755,
+            79949,
+            80779,
+            80985
+          ]
+        },
+        "report_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "collateral_fetch": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "verification": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 22646118,
+          "max": 22779958,
+          "mean": 22709545.1,
+          "median": 22718358.0,
+          "p95": 22779958,
+          "stdev": 42807.47313600746,
+          "values": [
+            22676163,
+            22728728,
+            22653979,
+            22779958,
+            22674300,
+            22757578,
+            22646118,
+            22715070,
+            22741911,
+            22721646
+          ]
+        }
+      },
+      "cycles": {
+        "context_create": {
+          "count": 10,
+          "min": 102618,
+          "max": 109584,
+          "mean": 105539.4,
+          "median": 105423.0,
+          "p95": 109584,
+          "stdev": 1930.943821036749,
+          "values": [
+            108026,
+            104060,
+            103934,
+            102618,
+            104504,
+            105290,
+            105784,
+            105556,
+            106038,
+            109584
+          ]
+        },
+        "init_quote_size_query": {
+          "count": 10,
+          "min": 116,
+          "max": 368,
+          "mean": 172.0,
+          "median": 124.0,
+          "p95": 368,
+          "stdev": 81.95120499419151,
+          "values": [
+            126,
+            142,
+            118,
+            232,
+            118,
+            116,
+            122,
+            118,
+            368,
+            260
+          ]
+        },
+        "init_quote_full": {
+          "count": 10,
+          "min": 65339676,
+          "max": 65723604,
+          "mean": 65517811.8,
+          "median": 65539563.0,
+          "p95": 65723604,
+          "stdev": 122361.78719011912,
+          "values": [
+            65417488,
+            65570580,
+            65362426,
+            65723604,
+            65418964,
+            65658212,
+            65339676,
+            65533384,
+            65608042,
+            65545742
+          ]
+        },
+        "quote_size_query": {
+          "count": 10,
+          "min": 225184,
+          "max": 235544,
+          "mean": 231119.0,
+          "median": 231909.0,
+          "p95": 235544,
+          "stdev": 3226.4576550762295,
+          "values": [
+            232596,
+            235544,
+            226678,
+            232500,
+            228628,
+            230408,
+            225184,
+            231318,
+            233890,
+            234444
+          ]
+        },
+        "report_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "quote_generation": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "collateral_fetch": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "verification": {
+          "count": 0,
+          "min": null,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "p95": null,
+          "stdev": null,
+          "values": []
+        },
+        "end_to_end": {
+          "count": 10,
+          "min": 65674000,
+          "max": 66062142,
+          "mean": 65857941.0,
+          "median": 65883498.0,
+          "p95": 66062142,
+          "stdev": 124142.53345006295,
+          "values": [
+            65761132,
+            65913572,
+            65696802,
+            66062142,
+            65755728,
+            65997238,
+            65674000,
+            65873964,
+            65951800,
+            65893032
+          ]
+        }
+      },
+      "stage_share_of_end_to_end": {
+        "context_create": 0.0016069102150355267,
+        "init_quote_size_query": 6.591941817451904e-06,
+        "init_quote_full": 0.9948546217246772,
+        "quote_size_query": 0.0035152707660357314
+      },
+      "variability": {
+        "quote_generation_cv": null,
+        "quote_generation_p95_over_p50": null,
+        "collateral_fetch_cv": null,
+        "collateral_fetch_p95_over_p50": null
+      },
+      "verification_outputs": {
+        "qv_results": {
+          "UNSET": 10
+        },
+        "qv_ret_codes": {
+          "0": 10
+        },
+        "quote_versions": {},
+        "att_key_types": {
+          "2": 10
+        }
+      },
+      "cold_start_reference": {
+        "iteration": 0,
+        "warmup": true,
+        "success": true,
+        "failure_stage": "",
+        "tee_error": 0,
+        "attest_error": 0,
+        "qv_ret": 0,
+        "qv_result": "UNSET",
+        "collateral_expiration_status": 0,
+        "quote_version": 0,
+        "att_key_type": 2,
+        "quote_size": 5243,
+        "collateral_size": 0,
+        "quote_binds_report_data": false,
+        "used_local_tdqe_identity_file": false,
+        "selected_att_key_id_hex": "",
+        "stages": {
+          "context_create": {
+            "present": true,
+            "nanoseconds": 1866,
+            "cycles": 5246
+          },
+          "init_quote_size_query": {
+            "present": true,
+            "nanoseconds": 79,
+            "cycles": 104
+          },
+          "init_quote_full": {
+            "present": true,
+            "nanoseconds": 31675739,
+            "cycles": 91858914
+          },
+          "quote_size_query": {
+            "present": true,
+            "nanoseconds": 81224,
+            "cycles": 235124
+          },
+          "report_generation": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "quote_generation": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "collateral_fetch": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "verification": {
+            "present": false,
+            "nanoseconds": 0,
+            "cycles": 0
+          },
+          "end_to_end": {
+            "present": true,
+            "nanoseconds": 31759370,
+            "cycles": 92102480
+          }
+        }
+      }
+    }
+  ],
+  "comparisons": {
+    "quote_size_expansion_vs_ecdsa": {
+      "direct:mldsa_44": 1.7672792648821414,
+      "wrapper:mldsa_44": 1.0629410642761778,
+      "direct:mldsa_65": 2.0727127447063523,
+      "wrapper:mldsa_65": 1.354567995422468,
+      "direct:mldsa_87": 2.4638433879344785,
+      "wrapper:mldsa_87": 1.7280183101277895
+    },
+    "collateral_size_expansion_vs_ecdsa": {
+      "direct:mldsa_44": 1.0022988505747126,
+      "direct:mldsa_65": 1.0022988505747126,
+      "direct:mldsa_87": 1.0022988505747126
+    },
+    "latency_ratio_vs_ecdsa": {
+      "quote_generation": {
+        "direct:mldsa_44": 3.1712876300463235,
+        "direct:mldsa_65": 3.177227839831205,
+        "direct:mldsa_87": 3.2901959709543753
+      },
+      "collateral_fetch": {
+        "direct:mldsa_44": 1394.1571458374474,
+        "direct:mldsa_65": 1362.6099990346497,
+        "direct:mldsa_87": 1362.6862688542856
+      },
+      "verification": {
+        "direct:mldsa_44": 1.1593056579638825,
+        "direct:mldsa_65": 1.1424878824356932,
+        "direct:mldsa_87": 1.1540524757241344
+      },
+      "end_to_end": {
+        "direct:mldsa_44": 85.94973066822875,
+        "wrapper:mldsa_44": 1.069207110625919,
+        "direct:mldsa_65": 84.03215463043722,
+        "wrapper:mldsa_65": 1.356701662861578,
+        "direct:mldsa_87": 84.07050463170701,
+        "wrapper:mldsa_87": 1.3445408160113255
+      }
+    }
+  }
+}

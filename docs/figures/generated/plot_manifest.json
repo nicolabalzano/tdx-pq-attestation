@@ -1,0 +1,13 @@
+{
+  "input_json": "/home/ubuntu/tdx-pq-attestation/tdx_tests/results/attestation_benchmarks.json",
+  "output_dir": "/home/ubuntu/tdx-pq-attestation/docs/figures/generated",
+  "plots": [
+    "/home/ubuntu/tdx-pq-attestation/docs/figures/generated/quote_size_comparison.png",
+    "/home/ubuntu/tdx-pq-attestation/docs/figures/generated/direct_path_latency_by_stage.png",
+    "/home/ubuntu/tdx-pq-attestation/docs/figures/generated/direct_path_latency_without_collateral.png",
+    "/home/ubuntu/tdx-pq-attestation/docs/figures/generated/end_to_end_latency_comparison.png",
+    "/home/ubuntu/tdx-pq-attestation/docs/figures/generated/end_to_end_stage_share.png",
+    "/home/ubuntu/tdx-pq-attestation/docs/figures/generated/end_to_end_latency_without_collateral.png",
+    "/home/ubuntu/tdx-pq-attestation/docs/figures/generated/end_to_end_stage_share_without_collateral.png"
+  ]
+}
